@@ -1,8 +1,8 @@
 {
-	"recommendations": [
-		"bradlc.vscode-tailwindcss",
-		"dbaeumer.vscode-eslint",
-		"bourhaouta.tailwindshades",
-		"editorconfig.editorconfig"
-	]
+  "recommendations": [
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+    "bourhaouta.tailwindshades",
+    "editorconfig.editorconfig"
+  ]
 }

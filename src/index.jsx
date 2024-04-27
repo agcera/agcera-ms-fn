@@ -1,31 +1,22 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
-import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
-import { Button } from '@mui/material';
-import { Provider } from 'react-redux';
-import store from './redux/store';
-import Users from './components/Users';
-import App from './app';
+import { CacheProvider } from '@emotion/react';
 import { StyledEngineProvider } from '@mui/material/styles';
-
+import ReactDOM from 'react-dom/client';
+import App from './app';
+import './index.css';
 
 const cache = createCache({
   key: 'css',
   prepend: true,
 });
 
-
-
-const rootElement = document.getElementById('root')
+const rootElement = document.getElementById('root');
 ReactDOM.createRoot(rootElement).render(
   // <React.StrictMode>
-		<CacheProvider value={cache}>
-			<StyledEngineProvider injectFirst>
-							<App/>
-			</StyledEngineProvider>
-
-		</CacheProvider>,
+  <CacheProvider value={cache}>
+    <StyledEngineProvider injectFirst>
+      <App />
+    </StyledEngineProvider>
+  </CacheProvider>
   // </React.StrictMode>,
-)
+);
