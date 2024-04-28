@@ -106,17 +106,17 @@ const Sidebar = () => {
                                 width = '100px'
                                 height= '100px'
                                 src ={flowers}
-                 
+
                                 />
                             </Box>
 
                             <Box textAlign="center">
-                                <Typography variant="h2" color={colors.secondary} fontWeight="bold"
+                                <Typography className="text-primary" color={colors.secondary} fontWeight="bold"
                                 sx={{mt: '10px'}}>User Name</Typography>
                                 <Typography
-                                variant='h5'
+                                className="text-primary"
                                 color={colors.text_light}
-                                >Maputo 1klm</Typography>
+                                >Maputo 1k Shop</Typography>
                             </Box>
 
                         </Box>
