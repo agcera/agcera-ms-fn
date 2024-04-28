@@ -1,6 +1,7 @@
 import { ColorModeContext, useMode } from './themeConfig';
 import { Button, CssBaseline, ThemeProvider, Typography } from '@mui/material';
 import Topbar from './global/Topbar';
+import Sidebar from './global/Sidebar';
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -11,8 +12,11 @@ function App() {
         <CssBaseline />
         <div className="h-full w-full flex relative">
           {/* the topbar */}
+             <Sidebar/>
+
           <main className="main-content w-full">
-            <Topbar />
+
+          <Topbar />
 
             {/* routes will be defined here */}
             <Typography variant="display" className="text-primary font-semibold">

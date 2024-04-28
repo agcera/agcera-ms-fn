@@ -19,12 +19,24 @@ export const tokens = (mode) => {
       light: '#ff0d20',
       dark: '#b41419',
     },
-    background: '#fcfbfb',
-    highlight: '#cfcfcf',
-    success: '#03d263',
-    error: '#ff0d20',
-    text_light: '#ffffff',
-    text_dark: '#28272A',
+    background: {
+      main: '#fcfbfb',
+    },
+    highlight: {
+      main: '#cfcfcf',
+    },
+    success: {
+      main: '#03d263',
+    },
+    error: {
+      main: '#ff0d20',
+    },
+    text_light: {
+      main: '#ffffff',
+    },
+    text_dark: {
+      main: '#28272A',
+    },
   };
 };
 
