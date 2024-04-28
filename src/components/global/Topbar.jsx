@@ -9,7 +9,7 @@ import {
   MdOutlinePersonOutline,
   MdOutlineSettingsSuggest,
 } from 'react-icons/md';
-import { ColorModeContext, tokens } from '../themeConfig';
+import { ColorModeContext, tokens } from '../../themeConfig';
 
 function Topbar() {
   const theme = useTheme();

@@ -1,7 +1,9 @@
 import { ColorModeContext, useMode } from './themeConfig';
-import { Button, CssBaseline, ThemeProvider, Typography } from '@mui/material';
-import Topbar from './global/Topbar';
-import Sidebar from './global/Sidebar';
+import { CssBaseline, ThemeProvider } from '@mui/material';
+import Topbar from './components/global/Topbar';
+import Sidebar from './components/global/Sidebar';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { DashboardPage } from './pages';
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -12,17 +14,22 @@ function App() {
         <CssBaseline />
         <div className="h-full w-full flex relative">
           {/* the topbar */}
-             <Sidebar/>
+          <Sidebar />
 
           <main className="main-content w-full">
-
-          <Topbar />
+            <Topbar />
 
             {/* routes will be defined here */}
-            <Typography variant="display" className="text-primary font-semibold">
+            {/* <Typography variant="display" className="text-primary font-semibold">
               Hello World
             </Typography>
-            <Button>Hello click me</Button>
+            <Button>Hello click me</Button> */}
+
+            <Router>
+              <Routes>
+                <Route path="/" element={DashboardPage} />
+              </Routes>
+            </Router>
           </main>
         </div>
       </ThemeProvider>
