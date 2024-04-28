@@ -1,5 +1,3 @@
-function Sidebar(){
-
-}
+function Sidebar() {}
 
 export default Sidebar;

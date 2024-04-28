@@ -2,41 +2,91 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
-
-html, 
-body, 
-#root,
-.app
-.content {
-  height: 100%;
-  width: 100%;
-  font-family: 'Source Sans 3', sans-serif
-
-}
-
-.app {
-  display: flex;
-  position:  relative
-} 
-
-
-::-webkit-scrollbar{
+::-webkit-scrollbar {
   width: 10px;
 }
 
 /* track  */
-::-webkit-scrollbar-track{
+::-webkit-scrollbar-track {
   background: #e0e0e0;
 }
 
 /* Handle  */
-::-webkit-scrollbar-thumb{
-  background:  #888;
+::-webkit-scrollbar-thumb {
+  background: #888;
 }
 
 /* handle on hover  */
-::-webkit-scrollbar:hover{
+::-webkit-scrollbar:hover {
   background: #555;
+}
+
+@layer base {
+  /**
+	 * custom colors variables
+	 */
+  :root {
+    /* add your light color variables here */
+    --primary-main: #005ea2;
+    --primary-light: #008cc9;
+    --primary-dark: #183884;
+
+    --secondary-main: #bf1723;
+    --secondary-light: #ff0d20;
+    --secondary-dark: #b41419;
+
+    --background: #fcfbfb;
+
+    --highlight: #cfcfcf;
+
+    --text-light: #ffffff;
+    --text-dark: #28272a;
+
+    --success: #03d263;
+    --error: #ff0d20;
+  }
+
+  .dark {
+    /* add your dark color variables here */
+  }
+
+  /**
+	 * Custom fonts
+	 */
+  @font-face {
+    font-family: 'Graphik';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/fonts/GraphikRegular.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Graphik';
+    font-style: italic;
+    font-weight: 400;
+    src: url('/fonts/GraphikRegularItalic.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Graphik';
+    font-style: normal;
+    font-weight: 500;
+    src: url('/fonts/GraphikMedium.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Graphik';
+    font-style: italic;
+    font-weight: 500;
+    src: url('/fonts/GraphikMediumItalic.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Graphik';
+    font-style: normal;
+    font-weight: 600;
+    src: url('/fonts/GraphikSemibold.otf') format('opentype');
+  }
+  @font-face {
+    font-family: 'Graphik';
+    font-style: italic;
+    font-weight: 600;
+    src: url('/fonts/GraphikSemiboldItalic.otf') format('opentype');
+  }
 }
