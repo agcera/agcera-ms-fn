@@ -358,29 +358,36 @@ export default {
   content: ['./*.html', './src/**/*.{js,jsx}'],
 
   theme: {
-    colors: {
-      ...defaultColors,
-    },
     typography: {
       fontFamily: ['Graphik', ...defaultTheme.fontFamily.sans],
     },
+    textColor: {
+      light: 'rgb(var(--text-light))',
+      dark: 'rgb(var(--text-dark))',
+      DEFAULT: 'rgb(var(--text-dark))',
+      white: '#ffffff',
+      black: '#28272A',
+    },
     extend: {
       colors: {
+        ...defaultColors,
         primary: {
-          light: 'var(--primary-light)',
-          DEFAULT: 'var(--primary-main)',
-          dark: 'var(--primary-dark)',
+          light: 'rgb(var(--primary-light))',
+          DEFAULT: 'rgb(var(--primary-main))',
+          dark: 'rgb(var(--primary-dark))',
         },
         secondary: {
-          light: 'var(--secondary-light)',
-          DEFAULT: 'var(--secondary-main)',
-          dark: 'var(--secondary-dark)',
+          light: 'rgb(var(--secondary-light))',
+          DEFAULT: 'rgb(var(--secondary-main))',
+          dark: 'rgb(var(--secondary-dark))',
         },
-        background: 'var(--background)',
-        success: 'var(--success)',
-        error: 'var(--error)',
-        highlight: 'var(--highlight)',
+        background: 'rgb(var(--background))',
+        success: 'rgb(var(--success))',
+        error: 'rgb(var(--error))',
+        highlight: 'rgb(var(--highlight))',
 
+        white: '#ffffff',
+        black: '#28272A',
         blue: '#E6EEF5',
         purple: '#9747FF',
         gray: {

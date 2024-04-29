@@ -42,29 +42,10 @@ export const tokens = (mode) => {
 
 createTheme({
   components: {
-    MuiButton: {
-      variants: [
-        {
-          props: { variant: 'contained', color: 'primary' },
-          style: {
-            color: 'black',
-            backgroundColor: '#ff0000',
-            '&:hover': {
-              backgroundColor: '#008cc9',
-            },
-          },
-        },
-        {
-          props: { variant: 'contained', color: 'secondary' },
-          style: {
-            color: 'white',
-            backgroundColor: '#bf1723',
-            '&:hover': {
-              backgroundColor: '#ff0d20',
-            },
-          },
-        },
-      ],
+    MuiTypography: {
+      defaultProps: {
+        component: 'p',
+      },
     },
   },
 });
@@ -78,6 +59,10 @@ export const themeSettings = (mode) => {
       mode: mode,
       ...defaultColors,
       ...colors,
+      common: {
+        white: '#ffffff',
+        black: '#28272A',
+      },
     },
     typography: {
       fontFamily: ['Graphik', 'sans-serif', ...defaultTheme.fontFamily.sans].join(','),
@@ -103,8 +88,30 @@ export const themeSettings = (mode) => {
       info2: {
         fontSize: '0.625rem',
       },
+      allVariants: {
+        lineHeight: 1.25,
+      },
     },
-    components: {},
+    components: {
+      MuiPaper: {
+        defaultProps: {
+          sx: {
+            maxWidth: (theme) => theme.breakpoints.values.xl,
+            marginX: 'auto',
+          },
+        },
+        styleOverrides: {
+          root: {
+            backgroundColor: colors.background.main,
+          },
+        },
+      },
+      MuiTypography: {
+        defaultProps: {
+          component: 'p',
+        },
+      },
+    },
   };
 };
 
