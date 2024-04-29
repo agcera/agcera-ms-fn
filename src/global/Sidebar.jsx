@@ -7,7 +7,7 @@ import { IoMenuOutline } from 'react-icons/io5';
 import { MdAnalytics, MdOutlineStore, MdOutlineProductionQuantityLimits, MdOutlinePeopleAlt } from 'react-icons/md';
 import { RiExchangeDollarFill } from 'react-icons/ri';
 import { GrTransaction } from 'react-icons/gr';
-import { logo, profile } from '../assets';
+import { profile } from '../assets';
 
 /* eslint-disable */
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -18,9 +18,9 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
     <MenuItem
       active={selected === title}
       style={{ color: colors.primary.main }}
-      className="text-red-500"
       onClick={() => setSelected(title)}
       icon={icon}
+      className="pr-2 text-sm"
     >
       <Typography variant="body2">{title}</Typography>
       <Link to={to} />
@@ -38,19 +38,24 @@ const Sidebar = () => {
     <Box
       sx={{
         '& .pro-sidebar-inner': {
-          background: `${colors.primary} !important`,
+          background: `red !important`,
         },
         '& .pro-icon-wrapper': {
-          backgroundColor: 'transparend !important',
+          backgroundColor: 'red !important',
         },
         '& .pro-inner-item': {
           padding: '5px 35px 30px !important',
         },
         '& .pro-inner-item:hover': {
-          color: '#868dfb !important',
+          color: 'red !important',
         },
         '& .pro-menu-item.active': {
-          color: '#6870fa !important',
+          color: 'red !important',
+        },
+        zIndex: 100,
+        scale: 1,
+        '@media (max-width:600px)': {
+          position: 'fixed',
         },
       }}
     >
@@ -61,10 +66,12 @@ const Sidebar = () => {
           {/* menu and logo item */}
           <MenuItem
             onClick={() => setIsCollapsed(!isCollapsed)}
-            icon={isCollapsed ? <IoMenuOutline /> : undefined}
+            icon={isCollapsed ? <IoMenuOutline className="text-lg" /> : undefined}
             style={{
               margin: '10px 0 20px 0',
-              color: colors.secondary,
+              color: colors.primary.main,
+              // borderBottom: `1px solid ${colors.primary.main}`,
+              shadow: '20px 20px red',
             }}
           >
             {!isCollapsed && (
@@ -73,7 +80,7 @@ const Sidebar = () => {
                   <IoMenuOutline sx={{ fontSize: '30px' }} />
                 </IconButton>
 
-                <img src={logo} width="50%" />
+                {/* <img src={logo} width="50%" /> */}
               </Box>
             )}
           </MenuItem>
