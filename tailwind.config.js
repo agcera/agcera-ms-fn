@@ -361,14 +361,14 @@ export default {
     typography: {
       fontFamily: ['Graphik', ...defaultTheme.fontFamily.sans],
     },
-    textColor: {
-      light: 'rgb(var(--text-light))',
-      dark: 'rgb(var(--text-dark))',
-      DEFAULT: 'rgb(var(--text-dark))',
-      white: '#ffffff',
-      black: '#28272A',
-    },
     extend: {
+      textColor: {
+        light: 'rgb(var(--text-light))',
+        dark: 'rgb(var(--text-dark))',
+        DEFAULT: 'rgb(var(--text-dark))',
+        white: '#ffffff',
+        black: '#28272A',
+      },
       colors: {
         ...defaultColors,
         primary: {
