@@ -8,9 +8,9 @@ const CheckLoggedIn = ({ children }) => {
   if (location.pathname.startsWith('/dashboard')) {
     if (!token) return <Navigate to="/login" />;
   } else {
-    if (token) return <Navigate to="/dashboard" />;
+    // follow the same pattern for other routes
+    return children;
   }
-
   return children;
 };
 
