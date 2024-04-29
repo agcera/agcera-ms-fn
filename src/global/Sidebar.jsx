@@ -18,9 +18,9 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
     <MenuItem
       active={selected === title}
       style={{ color: colors.primary.main }}
-      className="text-red-500"
       onClick={() => setSelected(title)}
       icon={icon}
+      className="pr-2"
     >
       <Typography variant="body2">{title}</Typography>
       <Link to={to} />
@@ -52,6 +52,9 @@ const Sidebar = () => {
         '& .pro-menu-item.active': {
           color: '#6870fa !important',
         },
+        position: 'fixed',
+        zIndex: 100,
+        top: 0,
       }}
     >
       {/* USER  */}
@@ -61,10 +64,10 @@ const Sidebar = () => {
           {/* menu and logo item */}
           <MenuItem
             onClick={() => setIsCollapsed(!isCollapsed)}
-            icon={isCollapsed ? <IoMenuOutline /> : undefined}
+            icon={isCollapsed ? <IoMenuOutline className="text-lg" /> : undefined}
             style={{
               margin: '10px 0 20px 0',
-              color: colors.secondary,
+              color: colors.primary.main,
             }}
           >
             {!isCollapsed && (
