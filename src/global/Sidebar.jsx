@@ -1,16 +1,15 @@
-import { Box, IconButton, Typography, useTheme } from '@mui/material';
+import { Sidebar as ProSidebar, Menu, MenuItem } from 'react-pro-sidebar';
 import { useState } from 'react';
-import { Menu, MenuItem, Sidebar as ProSidebar } from 'react-pro-sidebar';
-import { tokens } from '../themeConfig';
-
-import { GrTransaction } from 'react-icons/gr';
-import { IoMenuOutline } from 'react-icons/io5';
-import { MdOutlineHome, MdOutlinePeopleAlt, MdOutlineProductionQuantityLimits, MdOutlineStore } from 'react-icons/md';
-import { RiExchangeDollarFill } from 'react-icons/ri';
-import flowers from '../assets/flowers.jpg';
-import logo1 from '../assets/logo1png.png';
+import { Box, IconButton, Typography, useTheme } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { tokens } from '../themeConfig';
+import { IoMenuOutline } from 'react-icons/io5';
+import { MdAnalytics, MdOutlineStore, MdOutlineProductionQuantityLimits, MdOutlinePeopleAlt } from 'react-icons/md';
+import { RiExchangeDollarFill } from 'react-icons/ri';
+import { GrTransaction } from 'react-icons/gr';
+import { logo, profile } from '../assets';
 
+/* eslint-disable */
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -18,11 +17,12 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
   return (
     <MenuItem
       active={selected === title}
-      style={{ color: colors.secondary }}
+      style={{ color: colors.primary.main }}
+      className="text-red-500"
       onClick={() => setSelected(title)}
       icon={icon}
     >
-      <Typography>{title}</Typography>
+      <Typography variant="body2">{title}</Typography>
       <Link to={to} />
     </MenuItem>
   );
@@ -61,7 +61,7 @@ const Sidebar = () => {
           {/* menu and logo item */}
           <MenuItem
             onClick={() => setIsCollapsed(!isCollapsed)}
-            icon={isCollapsed ? <IoMenuOutline linedIcon /> : undefined}
+            icon={isCollapsed ? <IoMenuOutline /> : undefined}
             style={{
               margin: '10px 0 20px 0',
               color: colors.secondary,
@@ -73,7 +73,7 @@ const Sidebar = () => {
                   <IoMenuOutline sx={{ fontSize: '30px' }} />
                 </IconButton>
 
-                <img src={logo1} width="50%" />
+                <img src={logo} width="50%" />
               </Box>
             )}
           </MenuItem>
@@ -81,18 +81,18 @@ const Sidebar = () => {
           {/* user proto and name */}
 
           {!isCollapsed && (
-            <Box mb="25px">
+            <Box className="mb-5">
               {/* the profile image for the user */}
               <Box display="flex" justifyContent="center" alignItems="center">
-                <img alt="profile-user" width="100px" height="100px" src={flowers} />
+                <img alt="profile-user" className="w-[70px] h-[70px] rounded-full" src={profile} />
               </Box>
 
               <Box textAlign="center">
-                <Typography className="text-primary" color={colors.secondary} fontWeight="bold" sx={{ mt: '10px' }}>
-                  User Name
+                <Typography className="text-dark text-sm/[16px] font-semibold" sx={{ mt: '10px' }}>
+                  Shema Alain
                 </Typography>
-                <Typography className="text-primary" color={colors.text_light}>
-                  Maputo 1k Shop
+                <Typography className="text-primary" sx={{ color: colors.primary.main }} variant="info1">
+                  Maputo 9P
                 </Typography>
               </Box>
             </Box>
@@ -100,7 +100,7 @@ const Sidebar = () => {
 
           {/* menu items  */}
           <Box paddingLeft={isCollapsed ? undefined : '10px'}>
-            <Item title="Dashboard" to="/" icon={<MdOutlineHome />} selected={selected} setSelected={setSelected} />
+            <Item title="Dashboard" to="/" icon={<MdAnalytics />} selected={selected} setSelected={setSelected} />
             <Item title="Stores" to="/stores" icon={<MdOutlineStore />} selected={selected} setSelected={setSelected} />
             <Item
               title="Products"
