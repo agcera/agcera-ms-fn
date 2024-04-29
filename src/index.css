@@ -27,23 +27,23 @@
 	 */
   :root {
     /* add your light color variables here */
-    --primary-main: #005ea2;
-    --primary-light: #008cc9;
-    --primary-dark: #183884;
+    --primary-main: 0 94 162;
+    --primary-light: 0 140 201;
+    --primary-dark: 24 56 132;
 
-    --secondary-main: #bf1723;
-    --secondary-light: #ff0d20;
-    --secondary-dark: #b41419;
+    --secondary-main: 191 23 35;
+    --secondary-light: 255 13 32;
+    --secondary-dark: 180 20 25;
 
-    --background: #fcfbfb;
+    --background: 252 251 251;
 
-    --highlight: #cfcfcf;
+    --highlight: 207 207 207;
 
-    --text-light: #ffffff;
-    --text-dark: #28272a;
+    --text-light: 255 255 255;
+    --text-dark: 40 39 42;
 
-    --success: #03d263;
-    --error: #ff0d20;
+    --success: 3 210 99;
+    --error: 255 13 32;
   }
 
   .dark {
