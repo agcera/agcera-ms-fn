@@ -22,6 +22,9 @@ export const tokens = (mode) => {
     background: {
       main: '#fcfbfb',
     },
+    blue: {
+      main: '#E6EEF5',
+    },
     highlight: {
       main: '#cfcfcf',
     },
