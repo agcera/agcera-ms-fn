@@ -2,6 +2,7 @@ import { createContext, useState, useMemo } from 'react';
 import { createTheme } from '@mui/material/styles';
 import defaultTheme from 'tailwindcss/defaultTheme';
 import { defaultColors } from '../tailwind.config';
+import { outlinedInputClasses } from '@mui/material';
 
 // color design tokens export
 export const tokens = (mode) => {
@@ -40,24 +41,20 @@ export const tokens = (mode) => {
     text_dark: {
       main: '#28272A',
     },
+    specialBlue: {
+      main: '#E6EEF5',
+    },
   };
 };
-
-createTheme({
-  components: {
-    MuiTypography: {
-      defaultProps: {
-        component: 'p',
-      },
-    },
-  },
-});
 
 // mui theme settings
 export const themeSettings = (mode) => {
   const colors = tokens(mode);
 
   return {
+    shape: {
+      borderRadius: 5,
+    },
     palette: {
       mode: mode,
       ...defaultColors,
@@ -65,6 +62,12 @@ export const themeSettings = (mode) => {
       common: {
         white: '#ffffff',
         black: '#28272A',
+      },
+      background: {
+        paper: colors.background.main,
+      },
+      action: {
+        disabled: defaultColors.gray[100],
       },
     },
     typography: {
@@ -103,20 +106,65 @@ export const themeSettings = (mode) => {
             marginX: 'auto',
           },
         },
-        styleOverrides: {
-          root: {
-            backgroundColor: colors.background.main,
-          },
-        },
       },
       MuiTypography: {
         defaultProps: {
           component: 'p',
         },
       },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            [`&:hover:not(.${outlinedInputClasses.disabled},.${outlinedInputClasses.error}) .${outlinedInputClasses.notchedOutline}`]:
+              {
+                borderColor: colors.primary.light,
+              },
+            [`&.${outlinedInputClasses.focused}:not(.${outlinedInputClasses.error}) .${outlinedInputClasses.notchedOutline}`]:
+              {
+                borderColor: colors.primary.light,
+              },
+          },
+          notchedOutline: {
+            borderColor: defaultColors.gray[600],
+          },
+        },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            boxShadow: 'none',
+          },
+        },
+        variants: [
+          {
+            boxShadow: 'none',
+            props: { variant: 'contained', color: 'specialBlue' },
+            style: {
+              fontWeight: '500',
+              fontSize: '1rem',
+              textTransform: 'capitalize',
+              padding: 10,
+              [`&:hover:not(&:active)`]: {
+                boxShadow: '0px 4px 10px 0px rgba(0, 0, 0, 0.14)',
+              },
+            },
+          },
+        ],
+      },
+      MuiTouchRipple: {
+        styleOverrides: {
+          root: {
+            color: colors.secondary.light,
+          },
+        },
+      },
     },
   };
 };
+
+createTheme({
+  components: {},
+});
 
 // context for color mode
 export const ColorModeContext = createContext({

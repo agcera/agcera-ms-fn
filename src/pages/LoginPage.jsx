@@ -31,7 +31,7 @@ const LoginPage = () => {
       </Box>
 
       <Box className="w-full sm:w-5/12 h-full overflow-y-auto flex">
-        <Box className="w-full m-auto">
+        <Box className="w-full m-auto p-4 sm:p-8">
           <Box className="w-full flex flex-col items-center mb-6">
             <Typography variant="header" className="text-center font-semibold text-dark mb-2">
               Login
