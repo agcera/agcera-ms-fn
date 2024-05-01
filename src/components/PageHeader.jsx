@@ -9,11 +9,7 @@ const PageHeader = ({ title, hasGenerateReport, hasCreate }) => {
   return (
     <Box className="flex mt-20 ml-20 md:ml-4 justify-between w-[100%] pr-2 md:pr-5">
       <Box>
-<<<<<<< HEAD
-        <Typography variant="header" className="text-center text-primary-light font-semibold">
-=======
-        <Typography variant="header" className="text-center text-primary font-semibold">
->>>>>>> 6cc2005 (dashboard correction)
+        <Typography variant="header" sx={{ color: colors.primary.light }} className="text-center font-semibold">
           {title}
         </Typography>
       </Box>

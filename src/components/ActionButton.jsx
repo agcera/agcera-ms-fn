@@ -7,7 +7,7 @@ function ActionButton({ content, bg, color, onclick }) {
       onClick={onclick}
       variant="contained"
       style={{ backgroundColor: bg, color: color }}
-      className="text-[10px] text-gray-600 max-h-8"
+      className="text-[12px] text-gray-600 max-h-8"
     >
       {content}
     </Button>

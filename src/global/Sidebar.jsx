@@ -53,13 +53,10 @@ const Sidebar = () => {
           color: 'red !important',
         },
         zIndex: 100,
-        scale: 1,
-        '@media (max-width:600px)': {
+        top: 0,
+        '@media (max-width:800px)': {
           position: 'fixed',
         },
-        position: 'fixed',
-        zIndex: 100,
-        top: 0,
       }}
     >
       {/* USER  */}
