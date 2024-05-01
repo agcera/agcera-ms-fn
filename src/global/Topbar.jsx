@@ -9,23 +9,25 @@ import {
   MdOutlinePersonOutline,
   MdOutlineSettingsSuggest,
 } from 'react-icons/md';
-import { ColorModeContext } from '../themeConfig';
+import { ColorModeContext, tokens } from '../themeConfig';
+import { logo } from '../assets';
 
 function Topbar() {
   const theme = useTheme();
-  // const colors = tokens(theme.palette.mode);
+  const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
 
   return (
     <Box display="flex" justifyContent="space-between" p={1} className="shadow-sm bg-background absolute w-[100%]">
       {/* SEARCH BAR  */}
-      {/* <Box className="ml-[230px]" display="flex" backgroundColor={colors.primary[400]} borderRadius="3px">
-        <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" />
+      <Box className=" ml-20 md:ml-[195px]" display="flex" backgroundColor={colors.primary[400]} borderRadius="3px">
+        <img src={logo} className="w-24" />
+        {/* <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" />
         <IconButton type="button" sx={{ p: 1 }}>
           {' '}
           <HiOutlineSearch />{' '}
-        </IconButton>
-      </Box> */}
+        </IconButton> */}
+      </Box>
 
       {/* icons  */}
       <Box display="flex">

@@ -50,11 +50,13 @@ const Sidebar = () => {
           color: 'red !important',
         },
         '& .pro-menu-item.active': {
-          color: '#6870fa !important',
+          color: 'red !important',
         },
-        position: 'fixed',
         zIndex: 100,
-        top: 0,
+        scale: 1,
+        '@media (max-width:600px)': {
+          position: 'fixed',
+        },
       }}
     >
       {/* USER  */}
