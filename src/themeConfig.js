@@ -158,12 +158,34 @@ export const themeSettings = (mode) => {
           },
         },
       },
+      MuiLinearProgress: {
+        styleOverrides: {
+          root: {
+            height: 4,
+            borderRadius: 15,
+          },
+          barColorPrimary: {
+            backgroundColor: colors.secondary.light,
+            opacity: 0.75,
+            borderRadius: 15,
+          },
+        },
+      },
     },
   };
 };
 
 createTheme({
-  components: {},
+  components: {
+    MuiLinearProgress: {
+      styleOverrides: {
+        root: {
+          height: 4,
+        },
+        barColorPrimary: {},
+      },
+    },
+  },
 });
 
 // context for color mode

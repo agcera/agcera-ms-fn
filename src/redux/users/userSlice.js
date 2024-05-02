@@ -11,6 +11,11 @@ export const loginAction = createAsyncThunk('user/login', async ({ phone, passwo
     throw new Error(error.response.data?.message || error.message);
   }
 });
+export const getUserAction = createAsyncThunk('user/getUser', async (id) => {
+  // Use 'me' as id to get the logged in user data
+  const response = await axiosInstance.get(`/users/${id}`);
+  return response.data;
+});
 
 export const getAllUsersAction = createAsyncThunk('user/getAllUsers', async () => {
   const response = await axiosInstance.get('/users');
@@ -18,22 +23,34 @@ export const getAllUsersAction = createAsyncThunk('user/getAllUsers', async () =
   return data;
 });
 
-export const { selectAll: getAllUsers, selectById: getUserById } = userAdapter.getSelectors((state) => state.user);
+const { selectAll, selectById } = userAdapter.getSelectors((state) => state.user);
 
 const userSlice = createSlice({
   name: 'user',
-  initialState: userAdapter.getInitialState(),
+  initialState: userAdapter.getInitialState({
+    loggedInUserId: null,
+  }),
   reducers: {
     // addUser: userAdapter.addOne,
     // removeUser: userAdapter.removeOne
   },
   extraReducers: (builder) => {
-    return builder.addCase(loginAction.fulfilled, (state, action) => {
-      userAdapter.setOne(state, action.payload.data);
-    });
+    return builder
+      .addCase(loginAction.fulfilled, (state, action) => {
+        userAdapter.setOne(state, action.payload.data);
+      })
+      .addCase(getUserAction.fulfilled, (state, action) => {
+        const user = action.payload.data;
+        if (action.meta.arg === 'me') state.loggedInUserId = user.id;
+        userAdapter.setOne(state, user);
+      });
   },
 });
 
 export const { addUser, removeUser } = userSlice.actions;
+
+export const selectUserId = (state) => state.user.loggedInUserId;
+export const selectUserById = (id) => (state) => selectById(state, id);
+export const selectAllUser = selectAll;
 
 export default userSlice;
