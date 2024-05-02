@@ -1,6 +1,5 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import typography from '@tailwindcss/typography';
-import forms from '@tailwindcss/forms';
 import aspect_ratio from '@tailwindcss/aspect-ratio';
 import container_queries from '@tailwindcss/container-queries';
 
@@ -25,16 +24,13 @@ export const defaultColors = {
   },
   gray: {
     50: '#FAFAFA',
-    100: '#F5F5F5',
-    200: '#EEEEEE',
-    300: '#E0E0E0',
-    400: '#BDBDBD',
-    500: '#9E9E9E',
-    DEFAULT: '#9E9E9E',
-    600: '#757575',
-    700: '#616161',
-    800: '#424242',
-    900: '#212121',
+    100: '#CFCFCF',
+    DEFAULT: '#CFCFCF',
+    200: '#A8A8A8',
+    300: '#777777',
+    400: '#565656',
+    500: '#333333',
+    600: '#28272A',
     A100: '#D5D5D5',
     A200: '#AAAAAA',
     A400: '#303030',
@@ -160,7 +156,7 @@ export const defaultColors = {
     A700: '#00BFA5',
   },
   blue: {
-    50: '#E3F2FD',
+    50: '#E6EEF5',
     100: '#BBDEFB',
     200: '#90CAF9',
     300: '#64B5F6',
@@ -350,7 +346,7 @@ export const defaultColors = {
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  important: '#root',
+  // important: '#root',
   darkMode: 'selector',
   corePlugins: {
     preflight: true,
@@ -401,5 +397,5 @@ export default {
       },
     },
   },
-  plugins: [typography, forms, aspect_ratio, container_queries],
+  plugins: [typography, aspect_ratio, container_queries],
 };
