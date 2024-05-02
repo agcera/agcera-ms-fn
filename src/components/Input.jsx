@@ -18,6 +18,8 @@ const Input = ({
       {label && (
         <Typography
           variant="body2"
+          component="label"
+          htmlFor={inputProps.name}
           disabled={disabled}
           className={clsx('font-medium', labelProps.className)}
           {...labelProps}
@@ -28,6 +30,7 @@ const Input = ({
       <TextField
         size="small"
         variant="outlined"
+        id={inputProps.name}
         placeholder={placeHolder}
         disabled={disabled}
         error={error}

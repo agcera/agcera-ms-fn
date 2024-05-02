@@ -1,10 +1,8 @@
 import axios from 'axios';
-import { clearCookie } from './utils/cookie.utils';
-
-const env = import.meta.env;
+import { BACKEND_API } from './constants';
 
 const axiosInstance = axios.create({
-  baseURL: env.BACKEND_API,
+  baseURL: BACKEND_API,
   withCredentials: true,
 });
 
@@ -15,7 +13,7 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response.status === 401) {
       // redirect to login page
-      clearCookie();
+      axiosInstance.post('/users/logout');
       window.location.href = '/login';
     }
     return Promise.reject(error);

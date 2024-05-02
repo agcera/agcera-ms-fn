@@ -7,10 +7,7 @@ const Users = () => {
   const dispatch = useDispatch();
   const users = useSelector(getAllUsers);
 
-  console.log(users);
-
   useEffect(() => {
-    console.log('dispatched');
     dispatch(getAllUsersAction());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

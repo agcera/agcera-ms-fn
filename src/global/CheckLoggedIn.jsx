@@ -3,13 +3,12 @@ import { Navigate, useLocation } from 'react-router-dom';
 const CheckLoggedIn = ({ children }) => {
   const location = useLocation();
 
-  const token = localStorage.getItem('token');
+  const loggedIn = document.cookie.includes('AuthTokenExists=true');
 
   if (location.pathname.startsWith('/dashboard')) {
-    if (!token) return <Navigate to="/login" />;
+    if (!loggedIn) return <Navigate to="/login" />;
   } else {
-    // follow the same pattern for other routes
-    return children;
+    if (loggedIn) return <Navigate to="/dashboard" />;
   }
   return children;
 };

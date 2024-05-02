@@ -3,8 +3,16 @@ import axiosInstance from '../../axios';
 
 const userAdapter = createEntityAdapter();
 
+export const loginAction = createAsyncThunk('user/login', async ({ phone, password }) => {
+  try {
+    const response = await axiosInstance.post('/users/login', { phone, password });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response.data?.message || error.message);
+  }
+});
+
 export const getAllUsersAction = createAsyncThunk('user/getAllUsers', async () => {
-  // const response = await fetch("https://jsonplaceholder.typicode.com/users")
   const response = await axiosInstance.get('/users');
   const data = await response.json();
   return data;
@@ -20,11 +28,9 @@ const userSlice = createSlice({
     // removeUser: userAdapter.removeOne
   },
   extraReducers: (builder) => {
-    return builder
-      .addCase(getAllUsersAction.pending, () => {
-        console.log('pending');
-      })
-      .addCase(getAllUsersAction.fulfilled, userAdapter.upsertMany);
+    return builder.addCase(loginAction.fulfilled, (state, action) => {
+      userAdapter.setOne(state, action.payload.data);
+    });
   },
 });
 
