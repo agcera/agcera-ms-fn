@@ -5,13 +5,15 @@ import { Outlet } from 'react-router-dom';
 
 const DashboardPage = () => {
   return (
-    <Container className="flex" maxWidth="xl">
+    <Box className="flex">
       <Sidebar />
-      <Box className="flex flex-col w-full h-full grow overflow-y-auto">
+      <Box className="flex flex-col w-full h-full grow ">
         <Topbar />
-        <Outlet />
+        <Container className="overflow-y-auto" maxWidth="xl">
+          <Outlet />
+        </Container>
       </Box>
-    </Container>
+    </Box>
   );
 };
 
