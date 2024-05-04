@@ -1,10 +1,10 @@
-import DashboardSetup from '../components/DashboardSetup';
+import PageHeader from '../components/PageHeader';
 
-function DashAnalyticsPage() {
+function AnalyticsPage() {
   return (
     <>
-      <DashboardSetup
-        title="ANALYTICS"
+      <PageHeader
+        title="Analytics"
         hasHeader={true}
         hasGenerateReport={() => {
           console.log('Generate Report from dashboard');
@@ -17,4 +17,4 @@ function DashAnalyticsPage() {
   );
 }
 
-export default DashAnalyticsPage;
+export default AnalyticsPage;

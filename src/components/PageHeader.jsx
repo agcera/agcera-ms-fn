@@ -7,14 +7,14 @@ const PageHeader = ({ title, hasGenerateReport, hasCreate }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   return (
-    <Box className="flex mt-20 ml-20 md:ml-4 justify-between w-[100%] pr-2 md:pr-5">
+    <Box className="flex justify-between items-center w-full p-4">
       <Box>
         <Typography variant="header" sx={{ color: colors.primary.light }} className="text-center font-semibold">
           {title}
         </Typography>
       </Box>
 
-      <Box className="flex gap-1 md:gap-10">
+      <Box className="flex gap-2">
         {/* button for generate report and create new record  */}
         {hasGenerateReport && (
           <ActionButton

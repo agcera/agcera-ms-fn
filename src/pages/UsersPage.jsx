@@ -1,12 +1,9 @@
-// import { Box } from '@mui/material'
-// import { DataGrid, GridToolbar } from '@mui/x-data-grid'
-// import { tokens } from '../themeConfig'
-import DashboardPage from '../components/DashboardSetup';
+import PageHeader from '../components/PageHeader';
 
 const UsersPage = () => {
   return (
     <>
-      <DashboardPage
+      <PageHeader
         title="USERS"
         hasGenerateReport={() => {
           console.log('Generate Report of users');
