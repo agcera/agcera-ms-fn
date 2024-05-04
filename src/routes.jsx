@@ -4,6 +4,8 @@ import ErrorPage from './global/ErrorPage';
 import DashAnalyticsPage from './pages/DashAnalyticsPage';
 import UsersPage from './pages/UsersPage';
 import LoginPage from './pages/LoginPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,6 +21,8 @@ const router = createBrowserRouter(
       <Route errorElement={<ErrorPage />}>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="login" element={<LoginPage />} />
+        <Route path="forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="dashboard" element={<DashAnalyticsPage />} />
         <Route path="users" element={<UsersPage />} />
         <Route path="*" element={<Navigate to="/" />} />

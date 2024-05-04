@@ -99,14 +99,6 @@ export const themeSettings = (mode) => {
       },
     },
     components: {
-      MuiPaper: {
-        defaultProps: {
-          sx: {
-            maxWidth: (theme) => theme.breakpoints.values.xl,
-            marginX: 'auto',
-          },
-        },
-      },
       MuiTypography: {
         defaultProps: {
           component: 'p',
@@ -133,21 +125,23 @@ export const themeSettings = (mode) => {
         styleOverrides: {
           root: {
             boxShadow: 'none',
+            padding: 10,
+            fontWeight: '500',
+            fontSize: '1rem',
+            textTransform: 'none',
+            [`&:hover:not(&:active)`]: {
+              boxShadow: '0px 4px 10px 0px rgba(0, 0, 0, 0.14)',
+            },
           },
         },
         variants: [
           {
-            boxShadow: 'none',
             props: { variant: 'contained', color: 'specialBlue' },
-            style: {
-              fontWeight: '500',
-              fontSize: '1rem',
-              textTransform: 'capitalize',
-              padding: 10,
-              [`&:hover:not(&:active)`]: {
-                boxShadow: '0px 4px 10px 0px rgba(0, 0, 0, 0.14)',
-              },
-            },
+            style: {},
+          },
+          {
+            props: { variant: 'contained', color: 'secondary' },
+            style: {},
           },
         ],
       },
@@ -171,21 +165,17 @@ export const themeSettings = (mode) => {
           },
         },
       },
+      MuiContainer: {
+        defaultProps: {
+          disableGutters: true,
+        },
+      },
     },
   };
 };
 
 createTheme({
-  components: {
-    MuiLinearProgress: {
-      styleOverrides: {
-        root: {
-          height: 4,
-        },
-        barColorPrimary: {},
-      },
-    },
-  },
+  components: {},
 });
 
 // context for color mode

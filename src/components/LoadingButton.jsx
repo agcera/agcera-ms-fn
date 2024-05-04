@@ -1,7 +1,17 @@
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
+import PropTypes from 'prop-types';
 
-const LoadingButton = ({ children, loading = false, ...props }) => {
-  return <Button {...props}>{loading ? 'Loading...' : children}</Button>;
+const LoadingButton = ({ loading = false, size = 20, children, ...props }) => {
+  return (
+    <Button disabled={loading} {...props}>
+      {loading ? <CircularProgress size={size} /> : children}
+    </Button>
+  );
+};
+
+LoadingButton.propsTypes = {
+  loading: PropTypes.bool,
+  size: PropTypes.number,
 };
 
 export default LoadingButton;
