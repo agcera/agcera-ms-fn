@@ -11,12 +11,13 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response.status === 401) {
+    console.log(error);
+    if (error.response?.status === 401) {
       // redirect to login page
       axiosInstance.post('/users/logout');
       window.location.href = '/login';
     }
-    return Promise.reject(error.response.data?.message || error.message);
+    return Promise.reject(error.response?.data?.message || error.message);
   }
 );
 

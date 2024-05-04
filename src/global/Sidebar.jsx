@@ -1,68 +1,49 @@
-import { Sidebar as ProSidebar, Menu, MenuItem } from 'react-pro-sidebar';
-import { useState } from 'react';
 import { Box, IconButton, Typography, useTheme } from '@mui/material';
-import { Link } from 'react-router-dom';
-import { tokens } from '../themeConfig';
-import { IoMenuOutline } from 'react-icons/io5';
-import { MdAnalytics, MdOutlineStore, MdOutlineProductionQuantityLimits, MdOutlinePeopleAlt } from 'react-icons/md';
-import { RiExchangeDollarFill } from 'react-icons/ri';
+import { useState } from 'react';
 import { GrTransaction } from 'react-icons/gr';
+import { IoMenuOutline } from 'react-icons/io5';
+import { MdAnalytics, MdOutlinePeopleAlt, MdOutlineProductionQuantityLimits, MdOutlineStore } from 'react-icons/md';
+import { RiExchangeDollarFill } from 'react-icons/ri';
+import { Menu, MenuItem, Sidebar as ProSidebar } from 'react-pro-sidebar';
 import { profile } from '../assets';
+import { tokens } from '../themeConfig';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 /* eslint-disable */
-const Item = ({ title, to, icon, selected, setSelected }) => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+const Item = ({ title, to, icon }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
-    <MenuItem
-      active={selected === title}
-      style={{ color: colors.primary.main }}
-      onClick={() => setSelected(title)}
-      icon={icon}
-      className="pr-2 text-sm"
-    >
+    <MenuItem active={location.pathname === to} onClick={() => navigate(to)} icon={icon} className="pr-2 text-sm">
       <Typography variant="body2">{title}</Typography>
-      <Link to={to} />
     </MenuItem>
   );
 };
 
 const Sidebar = () => {
+  const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [selected, setSelected] = useState('Dashboard');
 
   return (
-    <Box
-      sx={{
-        '& .pro-sidebar-inner': {
-          background: `red !important`,
-        },
-        '& .pro-icon-wrapper': {
-          backgroundColor: 'red !important',
-        },
-        '& .pro-inner-item': {
-          padding: '5px 35px 30px !important',
-        },
-        '& .pro-inner-item:hover': {
-          color: 'red !important',
-        },
-        '& .pro-menu-item.active': {
-          color: 'red !important',
-        },
-        zIndex: 100,
-        top: 0,
-        '@media (max-width:800px)': {
-          position: 'fixed',
-        },
-      }}
-    >
+    <Box>
       {/* USER  */}
-
       <ProSidebar collapsed={isCollapsed} style={{ height: '100vh' }}>
-        <Menu iconShape="square">
+        <Menu
+          iconShape="square"
+          menuItemStyles={{
+            button: {
+              color: colors.primary.main,
+              ['&.ps-active']: {
+                backgroundColor: colors.primary.light,
+                color: colors.text_light.main,
+              },
+            },
+          }}
+          className="mb-4"
+        >
           {/* menu and logo item */}
           <MenuItem
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -91,7 +72,7 @@ const Sidebar = () => {
             <Box className="mb-5">
               {/* the profile image for the user */}
               <Box display="flex" justifyContent="center" alignItems="center">
-                <img alt="profile-user" className="w-[70px] h-[70px] rounded-full" src={profile} />
+                <img alt="profile-user" className="w-[70px] h-[70px] rounded-full object-cover" src={profile} />
               </Box>
 
               <Box textAlign="center">
@@ -107,36 +88,12 @@ const Sidebar = () => {
 
           {/* menu items  */}
           <Box paddingLeft={isCollapsed ? undefined : '10px'}>
-            <Item title="Dashboard" to="/" icon={<MdAnalytics />} selected={selected} setSelected={setSelected} />
-            <Item title="Stores" to="/stores" icon={<MdOutlineStore />} selected={selected} setSelected={setSelected} />
-            <Item
-              title="Products"
-              to="/products"
-              icon={<MdOutlineProductionQuantityLimits />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Sales"
-              to="/sales"
-              icon={<RiExchangeDollarFill />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Transactions"
-              to="/transactions"
-              icon={<GrTransaction />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Users"
-              to="/users"
-              icon={<MdOutlinePeopleAlt />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+            <Item title="Analytics" to="/dashboard" icon={<MdAnalytics />} />
+            <Item title="Stores" to="/dashboard/stores" icon={<MdOutlineStore />} />
+            <Item title="Products" to="/dashboard/products" icon={<MdOutlineProductionQuantityLimits />} />
+            <Item title="Sales" to="/dashboard/sales" icon={<RiExchangeDollarFill />} />
+            <Item title="Transactions" to="/dashboard/transactions" icon={<GrTransaction />} />
+            <Item title="Users" to="/dashboard/users" icon={<MdOutlinePeopleAlt />} />
           </Box>
         </Menu>
       </ProSidebar>
