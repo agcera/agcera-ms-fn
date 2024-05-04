@@ -3,21 +3,25 @@ import axiosInstance from '../../axios';
 
 const userAdapter = createEntityAdapter();
 
-export const loginAction = createAsyncThunk('user/login', async ({ phone, password }) => {
-  try {
-    const response = await axiosInstance.post('/users/login', { phone, password });
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response.data?.message || error.message);
-  }
+export const loginAction = createAsyncThunk('user/loginAction', async ({ phone, password }) => {
+  const response = await axiosInstance.post('/users/login', { phone, password });
+  return response.data;
 });
-export const getUserAction = createAsyncThunk('user/getUser', async (id) => {
+export const getUserAction = createAsyncThunk('user/getUserAction', async (id) => {
   // Use 'me' as id to get the logged in user data
   const response = await axiosInstance.get(`/users/${id}`);
   return response.data;
 });
+export const forgotPasswordAction = createAsyncThunk('user/forgotPasswordAction', async ({ email }) => {
+  const response = await axiosInstance.post(`/users/forgot`, { email });
+  return response.data;
+});
+export const resetPasswordAction = createAsyncThunk('user/resetPasswordAction', async ({ password, token }) => {
+  const response = await axiosInstance.put(`/users/reset/${token}`, { password });
+  return response.data;
+});
 
-export const getAllUsersAction = createAsyncThunk('user/getAllUsers', async () => {
+export const getAllUsersAction = createAsyncThunk('user/getAllUsersAction', async () => {
   const response = await axiosInstance.get('/users');
   const data = await response.json();
   return data;

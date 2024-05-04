@@ -3,11 +3,12 @@ import { Box, Stack, Typography } from '@mui/material';
 import { Form, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { loginAction } from '../../redux/users/userSlice';
-import { loginFormSchema } from '../../validations/login.validation';
+import { loginFormSchema } from '../../validations/user.validation';
 import Input from '../Input';
 import LoadingButton from '../LoadingButton';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useState } from 'react';
 
 const StyledTextField = ({ ...props }) => {
   return <Input className="max-w-[450px]" {...props} />;
@@ -16,6 +17,7 @@ const StyledTextField = ({ ...props }) => {
 const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -31,7 +33,9 @@ const LoginForm = () => {
   });
 
   const onSubmit = (data) => {
+    setLoading(true);
     dispatch(loginAction(data)).then(({ payload, error }) => {
+      setLoading(false);
       if (payload) {
         navigate('/dashboard', { replace: true });
       } else {
@@ -48,6 +52,7 @@ const LoginForm = () => {
           placeHolder="Enter your phone number..."
           error={!!errors.phone}
           helperText={errors.phone?.message}
+          disabled={loading}
           inputProps={{ ...register('phone') }}
         />
         <StyledTextField
@@ -55,16 +60,29 @@ const LoginForm = () => {
           placeHolder="Enter Password..."
           error={!!errors.password}
           helperText={errors.password?.message}
+          disabled={loading}
           inputProps={{ ...register('password') }}
         />
 
         <Stack direction="row-reverse" className="max-w-[450px] w-full">
-          <Typography variant="info1" color="primary.light">
-            forgot password? click here
+          <Typography
+            component={Link}
+            to={!loading && '/forgot-password'}
+            variant="info1"
+            color="primary.light"
+            className="hover:text-primary"
+          >
+            forgot your password? click here
           </Typography>
         </Stack>
 
-        <LoadingButton variant="contained" color="specialBlue" className="max-w-[450px] w-full" type="submit">
+        <LoadingButton
+          variant="contained"
+          color="specialBlue"
+          className="max-w-[450px] w-full"
+          type="submit"
+          loading={loading}
+        >
           Login
         </LoadingButton>
       </Box>
