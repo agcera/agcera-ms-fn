@@ -9,6 +9,7 @@ import { Box } from '@mui/material';
 import StatusBadge from '../components/StatusBadge';
 import { tokens } from '../themeConfig';
 import { useTheme } from '@mui/material/styles';
+import MoreButton from '../components/MoreButton';
 
 const UsersPage = () => {
   /* eslint-disable no-unused-vars */
@@ -48,7 +49,7 @@ const UsersPage = () => {
       field: 'actions',
       headerName: 'Actions',
       flex: 1,
-      renderCell: (params) => <Box>action</Box>,
+      renderCell: (params) => <MoreButton id={params.id} model={'user'} />,
     },
   ];
 
