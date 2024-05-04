@@ -23,8 +23,7 @@ export const resetPasswordAction = createAsyncThunk('user/resetPasswordAction', 
 
 export const getAllUsersAction = createAsyncThunk('user/getAllUsersAction', async () => {
   const response = await axiosInstance.get('/users');
-  const data = await response.json();
-  return data;
+  return response.data;
 });
 
 const { selectAll, selectById } = userAdapter.getSelectors((state) => state.user);
@@ -47,6 +46,9 @@ const userSlice = createSlice({
         const user = action.payload.data;
         if (action.meta.arg === 'me') state.loggedInUserId = user.id;
         userAdapter.setOne(state, user);
+      })
+      .addCase(getAllUsersAction.fulfilled, (state, action) => {
+        userAdapter.setAll(state, action.payload.data.users);
       });
   },
 });
