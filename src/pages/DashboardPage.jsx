@@ -5,9 +5,9 @@ import { Outlet } from 'react-router-dom';
 
 const DashboardPage = () => {
   return (
-    <Box className="flex">
+    <Box className="flex relative">
       <Sidebar />
-      <Box className="flex flex-col w-full h-full grow ">
+      <Box className="flex flex-col w-full h-full grow overflow-auto ml-[79px] sm:ml-0">
         <Topbar />
         <Container className="overflow-y-auto" maxWidth="xl">
           <Outlet />
