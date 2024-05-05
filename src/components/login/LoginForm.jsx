@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Stack, Typography } from '@mui/material';
 import { Form, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { loginAction } from '../../redux/users/userSlice';
+import { loginAction } from '../../redux/usersSlice';
 import { loginFormSchema } from '../../validations/user.validation';
 import Input from '../Input';
 import LoadingButton from '../LoadingButton';

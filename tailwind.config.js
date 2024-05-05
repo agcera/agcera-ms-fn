@@ -1,7 +1,7 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import typography from '@tailwindcss/typography';
-import aspect_ratio from '@tailwindcss/aspect-ratio';
-import container_queries from '@tailwindcss/container-queries';
+// import aspect_ratio from '@tailwindcss/aspect-ratio';
+// import container_queries from '@tailwindcss/container-queries';
 
 // colors by name that don't depend on dark mode or light mode (shouldn't use these unless in places where the color doesn't change with modes)
 export const defaultColors = {
@@ -397,5 +397,5 @@ export default {
       },
     },
   },
-  plugins: [typography, aspect_ratio, container_queries],
+  plugins: [typography],
 };

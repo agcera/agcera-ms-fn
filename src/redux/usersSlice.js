@@ -1,5 +1,5 @@
 import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import axiosInstance from '../../axios';
+import axiosInstance from '../axios';
 
 const userAdapter = createEntityAdapter();
 
@@ -51,7 +51,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { addUser, removeUser } = userSlice.actions;
+// export const { addUser, removeUser } = userSlice.actions;
 
 export const selectUserId = (state) => state.user.loggedInUserId;
 export const selectUserById = (id) => (state) => selectById(state, id);

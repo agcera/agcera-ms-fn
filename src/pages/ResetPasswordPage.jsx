@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import Input from '../components/Input';
 import LoadingButton from '../components/LoadingButton';
 import HeaderUnderline from '../global/HeaderUnderline';
-import { resetPasswordAction } from '../redux/users/userSlice';
+import { resetPasswordAction } from '../redux/usersSlice';
 import { resetPasswordSchema } from '../validations/user.validation';
 
 const StyledTextField = ({ ...props }) => {
