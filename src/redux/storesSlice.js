@@ -9,6 +9,10 @@ export const getStoreAction = createAsyncThunk('stores/getStoreAction', async (i
   const response = await axiosInstance.get(`/stores/${id}`);
   return response.data;
 });
+export const registerStoreAction = createAsyncThunk('stores/registerStoreAction', async (store) => {
+  const response = await axiosInstance.post(`/stores`, store);
+  return response.data;
+});
 
 const storesAdapter = createEntityAdapter();
 
