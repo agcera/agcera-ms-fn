@@ -1,6 +1,6 @@
 import { Box, Container, Typography } from '@mui/material';
-import LoginForm from '../components/login/LoginForm';
-import HeaderUnderline from '../global/HeaderUnderline';
+import LoginForm from '../../components/login/LoginForm';
+import HeaderUnderline from '../../global/HeaderUnderline';
 
 const LoginPage = () => {
   return (

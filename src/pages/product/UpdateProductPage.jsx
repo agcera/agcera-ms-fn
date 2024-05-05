@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import Input from '../components/Input';
-import LoadingButton from '../components/LoadingButton';
-import PageHeader from '../components/PageHeader';
-import Variations from '../components/products/Variations';
-import { productUpdateSpecialSchema, productUpdateStandardSchema } from '../validations/products.validation';
-import { getProductAction, selectProductById, updateProductAction } from '../redux/productsSlice';
-import Loader from '../components/Loader';
+import Input from '../../components/Input';
+import LoadingButton from '../../components/LoadingButton';
+import PageHeader from '../../components/PageHeader';
+import Variations from '../../components/products/Variations';
+import { productUpdateSpecialSchema, productUpdateStandardSchema } from '../../validations/products.validation';
+import { getProductAction, selectProductById, updateProductAction } from '../../redux/productsSlice';
+import Loader from '../../components/Loader';
 import { toast } from 'react-toastify';
 
 const UpdateProductPage = () => {

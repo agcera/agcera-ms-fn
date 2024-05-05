@@ -1,17 +1,17 @@
 import { Box, Button, Grid, MenuItem, Stack, Typography } from '@mui/material';
-import PageHeader from '../components/PageHeader';
-import Input from '../components/Input';
-import Select from '../components/Select';
+import PageHeader from '../../components/PageHeader';
+import Input from '../../components/Input';
+import Select from '../../components/Select';
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
-import { productCreateSpecialSchema, productCreateStandardSchema } from '../validations/products.validation';
-import Variations from '../components/products/Variations';
-import { createProductAction } from '../redux/productsSlice';
+import { productCreateSpecialSchema, productCreateStandardSchema } from '../../validations/products.validation';
+import Variations from '../../components/products/Variations';
+import { createProductAction } from '../../redux/productsSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import LoadingButton from '../components/LoadingButton';
+import LoadingButton from '../../components/LoadingButton';
 import { PiUploadFill } from 'react-icons/pi';
 
 const CreateProductPage = () => {

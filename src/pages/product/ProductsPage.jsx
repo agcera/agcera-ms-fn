@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import PageHeader from '../components/PageHeader';
+import PageHeader from '../../components/PageHeader';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllProductsAction, selectAllProducts } from '../redux/productsSlice';
+import { getAllProductsAction, selectAllProducts } from '../../redux/productsSlice';
 import { useEffect } from 'react';
 
 const ProductsPage = () => {

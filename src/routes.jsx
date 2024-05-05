@@ -2,17 +2,19 @@ import { Outlet, Route, createBrowserRouter, createRoutesFromElements, Navigate 
 import CheckLoggedIn from './global/CheckLoggedIn';
 import ErrorPage from './global/ErrorPage';
 import AnalyticsPage from './pages/AnalyticsPage';
-import UsersPage from './pages/UsersPage';
-import LoginPage from './pages/LoginPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import StoresPage from './pages/StoresPage';
-import ProductsPage from './pages/ProductsPage';
-import SalesPage from './pages/SalesPage';
-import TransactionsPage from './pages/TransactionsPage';
+import UsersPage from './pages/user/UsersPage';
+import LoginPage from './pages/auth/LoginPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
+import StoresPage from './pages/store/StoresPage';
+import ProductsPage from './pages/product/ProductsPage';
+import SalesPage from './pages/sale/SalesPage';
+import TransactionsPage from './pages/transaction/TransactionsPage';
 import DashboardPage from './pages/DashboardPage';
-import CreateProductPage from './pages/CreateProductPage';
-import UpdateProductPage from './pages/UpdateProductPage';
+import CreateProductPage from './pages/product/CreateProductPage';
+import UpdateProductPage from './pages/product/UpdateProductPage';
+import CreateStorePage from './pages/store/CreateStorePage';
+import UpdateStorePage from './pages/store/UpdateStorePage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -33,7 +35,11 @@ const router = createBrowserRouter(
 
         <Route path="dashboard" element={<DashboardPage />}>
           <Route path="" element={<AnalyticsPage />} />
-          <Route path="stores" element={<StoresPage />} />
+          <Route path="stores" element={<Outlet />}>
+            <Route path="" element={<StoresPage />} />
+            <Route path="create" element={<CreateStorePage />} />
+            <Route path="update/:id" element={<UpdateStorePage />} />
+          </Route>
           <Route path="products" element={<Outlet />}>
             <Route path="" element={<ProductsPage />} />
             <Route path="create" element={<CreateProductPage />} />
