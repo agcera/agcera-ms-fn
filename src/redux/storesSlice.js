@@ -1,35 +1,30 @@
 import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
 
-const storeAdapter = createEntityAdapter();
-
-export const getStoreAction = createAsyncThunk('store/getStoreAction', async (id) => {
+export const getAllStoresAction = createAsyncThunk('stores/getAllStoresAction', async () => {
+  const response = await axiosInstance.get(`/stores`);
+  return response.data;
+});
+export const getStoreAction = createAsyncThunk('stores/getStoreAction', async (id) => {
   const response = await axiosInstance.get(`/stores/${id}`);
   return response.data;
 });
 
-export const getAllStoresAction = createAsyncThunk('store/getAllStoresAction', async () => {
-  const response = await axiosInstance.get('/stores');
-  return response.data;
-});
+const storesAdapter = createEntityAdapter();
 
-const { selectAll, selectById } = storeAdapter.getSelectors((state) => state.stores);
+const { selectAll, selectById } = storesAdapter.getSelectors((state) => state.stores);
 
 const storesSlice = createSlice({
   name: 'stores',
-  initialState: storeAdapter.getInitialState(),
-
+  initialState: storesAdapter.getInitialState(),
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // .addCase(getStoreAction.fulfilled, (state, action) => {
-      //   storeAdapter.setOne(state, action.payload.data);
-      // })
-
-      .addCase(getAllStoresAction.fulfilled, (state, action) => {
-        console.log('we are fullfilled');
-        console.log(action.payload);
-        storeAdapter.setAll(state, action.payload.data.stores);
+      .addCase(getAllStoresAction.fulfilled, (state, { payload }) => {
+        storesAdapter.upsertMany(state, payload.data.stores);
+      })
+      .addCase(getStoreAction.fulfilled, (state, { payload }) => {
+        storesAdapter.upsertOne(state, payload.data);
       });
   },
 });

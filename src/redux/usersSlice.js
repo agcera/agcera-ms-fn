@@ -1,7 +1,7 @@
 import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
 
-const userAdapter = createEntityAdapter();
+const usersAdapter = createEntityAdapter();
 
 export const loginAction = createAsyncThunk('user/loginAction', async ({ phone, password }) => {
   const response = await axiosInstance.post('/users/login', { phone, password });
@@ -27,37 +27,37 @@ export const getAllUsersAction = createAsyncThunk('user/getAllUsersAction', asyn
   return response.data;
 });
 
-const { selectAll, selectById } = userAdapter.getSelectors((state) => state.user);
+const { selectAll, selectById } = usersAdapter.getSelectors((state) => state.users);
 
-const userSlice = createSlice({
-  name: 'user',
-  initialState: userAdapter.getInitialState({
+const usersSlice = createSlice({
+  name: 'users',
+  initialState: usersAdapter.getInitialState({
     loggedInUserId: null,
   }),
   reducers: {
-    // addUser: userAdapter.addOne,
-    // removeUser: userAdapter.removeOne
+    // addUser: usersAdapter.addOne,
+    // removeUser: usersAdapter.removeOne
   },
   extraReducers: (builder) => {
     return builder
       .addCase(loginAction.fulfilled, (state, action) => {
-        userAdapter.setOne(state, action.payload.data);
+        usersAdapter.upsertOne(state, action.payload.data);
       })
       .addCase(getUserAction.fulfilled, (state, action) => {
         const user = action.payload.data;
         if (action.meta.arg === 'me') state.loggedInUserId = user.id;
-        userAdapter.setOne(state, user);
+        usersAdapter.upsertOne(state, user);
       })
       .addCase(getAllUsersAction.fulfilled, (state, action) => {
-        userAdapter.setAll(state, action.payload.data.users);
+        usersAdapter.upsertMany(state, action.payload.data.users);
       });
   },
 });
 
-// export const { addUser, removeUser } = userSlice.actions;
+// export const { addUser, removeUser } = usersSlice.actions;
 
-export const selectUserId = (state) => state.user.loggedInUserId;
+export const selectUserId = (state) => state.users.loggedInUserId;
 export const selectUserById = (id) => (state) => selectById(state, id);
 export const selectAllUser = selectAll;
 
-export default userSlice;
+export default usersSlice;

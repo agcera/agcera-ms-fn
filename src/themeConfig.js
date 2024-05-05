@@ -146,6 +146,16 @@ export const themeSettings = (mode) => {
         },
         variants: [
           {
+            props: { color: 'specialBlue', size: 'small' },
+            style: {
+              padding: 4,
+              paddingLeft: 10,
+              paddingRight: 10,
+              fontWeight: '400',
+              fontSize: '0.875rem',
+            },
+          },
+          {
             props: { variant: 'back', color: 'black' },
             style: {
               paddingTop: 4,
@@ -192,18 +202,7 @@ export const themeSettings = (mode) => {
 };
 
 createTheme({
-  components: {
-    MuiInputBase: {
-      styleOverrides: {
-        input: {
-          height: 'max-content',
-        },
-        root: {
-          height: 'max-content',
-        },
-      },
-    },
-  },
+  components: {},
 });
 
 // context for color mode
