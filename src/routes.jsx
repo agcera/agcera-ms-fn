@@ -12,6 +12,7 @@ import SalesPage from './pages/SalesPage';
 import TransactionsPage from './pages/TransactionsPage';
 import DashboardPage from './pages/DashboardPage';
 import CreateProductPage from './pages/CreateProductPage';
+import UpdateProductPage from './pages/UpdateProductPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -36,6 +37,7 @@ const router = createBrowserRouter(
           <Route path="products" element={<Outlet />}>
             <Route path="" element={<ProductsPage />} />
             <Route path="create" element={<CreateProductPage />} />
+            <Route path="update/:id" element={<UpdateProductPage />} />
           </Route>
           <Route path="sales" element={<SalesPage />} />
           <Route path="transactions" element={<TransactionsPage />} />

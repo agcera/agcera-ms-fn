@@ -1,28 +1,30 @@
-import { Box, Button, Grid, MenuItem, Stack, Typography } from '@mui/material';
-import PageHeader from '../components/PageHeader';
-import Input from '../components/Input';
-import Select from '../components/Select';
-import { Link, useNavigate } from 'react-router-dom';
-import { Form, FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useState } from 'react';
-import { productCreateSpecialSchema, productCreateStandardSchema } from '../validations/products.validation';
-import Variations from '../components/products/Variations';
-import { createProductAction } from '../redux/productsSlice';
-import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
+import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Form, FormProvider, useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import Input from '../components/Input';
 import LoadingButton from '../components/LoadingButton';
-import { PiUploadFill } from 'react-icons/pi';
+import PageHeader from '../components/PageHeader';
+import Variations from '../components/products/Variations';
+import { productUpdateSpecialSchema, productUpdateStandardSchema } from '../validations/products.validation';
+import { getProductAction, selectProductById, updateProductAction } from '../redux/productsSlice';
+import Loader from '../components/Loader';
+import { toast } from 'react-toastify';
 
-const CreateProductPage = () => {
+const UpdateProductPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const routeParams = useParams();
+  const product = useSelector(selectProductById(routeParams.id));
   const [type, setType] = useState('STANDARD');
   const [image, setImage] = useState(null);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const methods = useForm({
-    resolver: yupResolver(type === 'STANDARD' ? productCreateStandardSchema : productCreateSpecialSchema),
+    resolver: yupResolver(type === 'STANDARD' ? productUpdateStandardSchema : productUpdateSpecialSchema),
     defaultValues: {
       name: '',
       costPrice: 0,
@@ -31,20 +33,20 @@ const CreateProductPage = () => {
     },
   });
   const {
-    control,
-    register,
     watch,
+    control,
+    setValue,
+    register,
     handleSubmit,
     formState: { errors, isDirty },
   } = methods;
 
   const onSubmit = (data) => {
+    console.log('data: ', data);
     const productData = {};
-
     productData.name = data.name;
     productData.type = type;
     productData.image = image;
-
     if (type === 'STANDARD') {
       productData.variations = [
         {
@@ -57,9 +59,8 @@ const CreateProductPage = () => {
     } else {
       productData.variations = data.variations;
     }
-
     setLoading(true);
-    dispatch(createProductAction(productData)).then(({ payload, error }) => {
+    dispatch(updateProductAction({ id: routeParams.id, data: productData })).then(({ payload, error }) => {
       setLoading(false);
       if (payload) {
         navigate('/dashboard/products');
@@ -69,34 +70,73 @@ const CreateProductPage = () => {
     });
   };
 
-  return (
-    <Form action="" method="post" control={control} onSubmit={handleSubmit(onSubmit)}>
-      <Box className="w-full h-full">
+  useEffect(() => {
+    if (routeParams.id) {
+      dispatch(getProductAction(routeParams.id)).then(() => {
+        setInitialLoading(false);
+      });
+    }
+  }, [dispatch, routeParams.id]);
+  useEffect(() => {
+    if (product) {
+      const { name, type, variations } = product;
+
+      setType(type);
+      setValue('name', name);
+
+      if (type === 'STANDARD') {
+        const { costPrice, sellingPrice, description } = variations[0];
+        setValue('costPrice', costPrice);
+        setValue('sellingPrice', sellingPrice);
+        setValue('description', description || '');
+      } else {
+        variations.forEach((variation, index) => {
+          setValue(`variations[${index}].name`, variation.name);
+          setValue(`variations[${index}].costPrice`, variation.costPrice);
+          setValue(`variations[${index}].sellingPrice`, variation.sellingPrice);
+          setValue(`variations[${index}].description`, variation.description || '');
+        });
+      }
+    }
+  }, [setValue, product]);
+
+  if (!product && initialLoading) {
+    return (
+      <Box className="w-full h-full flex">
+        <Loader className="m-auto" />
+      </Box>
+    );
+  }
+
+  if (!product) {
+    return (
+      <Box className="w-full h-full flex flex-col">
         <PageHeader title="Create Product" hasBack={true} backTo="/dashboard/products" />
+        <Box className="w-full h-full flex grow">
+          <Typography variant="subHeader" className="text-center m-auto" color="secondary.light">
+            Product not found, check the product id
+          </Typography>
+        </Box>
+      </Box>
+    );
+  }
+
+  return (
+    <Form action="" method="patch" control={control} onSubmit={handleSubmit(onSubmit)}>
+      <Box className="w-full h-full">
+        <PageHeader title="Update Product" hasBack={true} backTo="/dashboard/products" />
 
         <Grid container rowSpacing={1} columnSpacing={2} className="px-4 mb-8">
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <Input
               label="Product Name"
               placeHolder="Enter product name..."
               disabled={loading}
+              required={false}
               error={!!errors.name}
               helperText={errors.name?.message}
               inputProps={{ ...register('name') }}
             />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Select
-              label="Type"
-              placeHolder="Select the product type"
-              disabled={loading}
-              error={!!errors.type}
-              helperText={errors.type?.message}
-              inputProps={{ value: type, onChange: (e) => setType(e.target.value) }}
-            >
-              <MenuItem value={'STANDARD'}>Standard</MenuItem>
-              <MenuItem value={'SPECIAL'}>Special</MenuItem>
-            </Select>
           </Grid>
           {type === 'STANDARD' && (
             <>
@@ -149,7 +189,7 @@ const CreateProductPage = () => {
 
         <Box className="flex flex-col px-4 mb-4 gap-2">
           <Typography variant="subHeader" component="label" htmlFor="image" className="font-medium">
-            Product Image <span className="text-secondary"> *</span>
+            Product Image
           </Typography>
           <Input
             disabled={loading}
@@ -164,24 +204,11 @@ const CreateProductPage = () => {
               inputProps: { accept: 'image/*' },
             }}
           />
-          {!image ? (
-            <Box
-              component="label"
-              htmlFor="image"
-              className="flex flex-col justify-center items-center border border-dashed rounded-md p-2 max-w-[500px] w-full h-full aspect-[2/1] cursor-pointer hover:bg-light-blue-50/50"
-            >
-              <PiUploadFill size={40} />
-              <Typography variant="subHeader" color="secondary.light" className="text-center font-medium">
-                Click to upload image
-              </Typography>
-            </Box>
-          ) : (
-            <img
-              src={URL.createObjectURL(image)}
-              alt="product"
-              className="max-w-[500px] w-full h-full aspect-[2/1] object-cover border border-dashed rounded-md p-2"
-            />
-          )}
+          <img
+            src={image ? URL.createObjectURL(image) : product.image}
+            alt="product"
+            className="max-w-[500px] w-full h-full aspect-[2/1] object-cover border border-dashed rounded-md p-2"
+          />
         </Box>
 
         <Stack direction="row-reverse" spacing={2} className="px-4 mb-4">
@@ -198,9 +225,9 @@ const CreateProductPage = () => {
             loading={loading}
             type="submit"
             className="max-w-[175px] w-full"
-            disabled={!isDirty || !image || loading}
+            disabled={!isDirty || loading}
           >
-            Add product
+            Update product
           </LoadingButton>
         </Stack>
       </Box>
@@ -208,4 +235,4 @@ const CreateProductPage = () => {
   );
 };
 
-export default CreateProductPage;
+export default UpdateProductPage;
