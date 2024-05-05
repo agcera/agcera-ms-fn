@@ -1,8 +1,8 @@
-import { Box, TextField, Typography } from '@mui/material';
+import { Box, FormHelperText, Select as MuiSelect, Typography } from '@mui/material';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
-const Input = ({
+const Select = ({
   label,
   placeHolder,
   className,
@@ -12,6 +12,7 @@ const Input = ({
   required = true,
   inputProps = {},
   labelProps = {},
+  children,
   ...otherProps
 }) => {
   return (
@@ -28,22 +29,24 @@ const Input = ({
           {label} {required && <span className="text-secondary"> *</span>}
         </Typography>
       )}
-      <TextField
+      <MuiSelect
         size="small"
         variant="outlined"
         id={inputProps.name}
         placeholder={placeHolder}
         disabled={disabled}
         error={error}
-        helperText={helperText}
         fullWidth
         {...inputProps}
-      />
+      >
+        {children}
+      </MuiSelect>
+      <FormHelperText error={error}>{helperText}</FormHelperText>
     </Box>
   );
 };
 
-Input.propTypes = {
+Select.propTypes = {
   className: PropTypes.string,
   disabled: PropTypes.bool,
   placeHolder: PropTypes.string,
@@ -54,4 +57,4 @@ Input.propTypes = {
   [PropTypes.string]: PropTypes.any,
 };
 
-export default Input;
+export default Select;

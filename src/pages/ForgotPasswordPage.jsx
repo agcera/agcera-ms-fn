@@ -7,7 +7,7 @@ import { forgotPasswordSchema } from '../validations/user.validation';
 import LoadingButton from '../components/LoadingButton';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { forgotPasswordAction } from '../redux/users/userSlice';
+import { forgotPasswordAction } from '../redux/usersSlice';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
 

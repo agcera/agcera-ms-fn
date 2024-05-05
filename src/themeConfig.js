@@ -104,6 +104,13 @@ export const themeSettings = (mode) => {
           component: 'p',
         },
       },
+      MuiInputBase: {
+        styleOverrides: {
+          input: {
+            height: 'max-content',
+          },
+        },
+      },
       MuiOutlinedInput: {
         styleOverrides: {
           root: {
@@ -122,6 +129,9 @@ export const themeSettings = (mode) => {
         },
       },
       MuiButton: {
+        defaultProps: {
+          variant: 'contained',
+        },
         styleOverrides: {
           root: {
             boxShadow: 'none',
@@ -136,12 +146,19 @@ export const themeSettings = (mode) => {
         },
         variants: [
           {
-            props: { variant: 'contained', color: 'specialBlue' },
-            style: {},
-          },
-          {
-            props: { variant: 'contained', color: 'secondary' },
-            style: {},
+            props: { variant: 'back', color: 'black' },
+            style: {
+              paddingTop: 4,
+              paddingBottom: 4,
+              paddingLeft: 20,
+              paddingRight: 20,
+              fontWeight: '400',
+              backgroundColor: defaultColors.gray[500],
+              color: colors.text_light.main,
+              '&:hover': {
+                backgroundColor: defaultColors.gray[600],
+              },
+            },
           },
         ],
       },
@@ -175,7 +192,18 @@ export const themeSettings = (mode) => {
 };
 
 createTheme({
-  components: {},
+  components: {
+    MuiInputBase: {
+      styleOverrides: {
+        input: {
+          height: 'max-content',
+        },
+        root: {
+          height: 'max-content',
+        },
+      },
+    },
+  },
 });
 
 // context for color mode

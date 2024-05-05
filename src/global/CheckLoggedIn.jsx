@@ -3,7 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import Loader from '../components/Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { getUserAction, selectUserById, selectUserId } from '../redux/users/userSlice';
+import { getUserAction, selectUserById, selectUserId } from '../redux/usersSlice';
 
 const CheckLoggedIn = ({ children }) => {
   const dispatch = useDispatch();
