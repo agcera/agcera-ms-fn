@@ -28,7 +28,7 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <Box>
+    <Box className="absolute sm:static z-50 bg-background">
       {/* USER  */}
       <ProSidebar collapsed={isCollapsed} style={{ height: '100vh' }}>
         <Menu

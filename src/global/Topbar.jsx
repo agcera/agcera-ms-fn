@@ -5,7 +5,7 @@ import {
   MdOutlineLightMode,
   MdOutlineNotificationsNone,
   MdOutlinePersonOutline,
-  MdOutlineSettingsSuggest,
+  // MdOutlineSettingsSuggest,
 } from 'react-icons/md';
 import { ColorModeContext } from '../themeConfig';
 import { logo } from '../assets';
@@ -29,9 +29,6 @@ function Topbar() {
         <IconButton>
           {' '}
           <MdOutlineNotificationsNone />{' '}
-        </IconButton>
-        <IconButton>
-          <MdOutlineSettingsSuggest />
         </IconButton>
         <IconButton>
           <MdOutlinePersonOutline />
