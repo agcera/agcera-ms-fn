@@ -20,7 +20,7 @@ function MoreButton({ id, model }) {
 
   return (
     <Box className="absolute">
-      <Button onClick={toggleActionGroup} className="text-gray-500 hover:text-gray-700">
+      <Button onClick={toggleActionGroup} variant="text" className="text-gray-500 hover:text-gray-700">
         <MoreHorizOutlinedIcon />
       </Button>
       <Box

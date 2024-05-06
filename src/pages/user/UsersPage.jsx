@@ -1,15 +1,13 @@
-import PageHeader from '../components/PageHeader';
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
-import { DataGrid, gridClasses } from '@mui/x-data-grid';
-// import {toast} from 'react-toastify';
-import { selectAllUser } from '../redux/users/userSlice';
-import { getAllUsersAction } from '../redux/users/userSlice';
 import { Box } from '@mui/material';
-import StatusBadge from '../components/StatusBadge';
-import { tokens } from '../themeConfig';
 import { useTheme } from '@mui/material/styles';
-import MoreButton from '../components/MoreButton';
+import { DataGrid, gridClasses } from '@mui/x-data-grid';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import MoreButton from '../../components/MoreButton';
+import PageHeader from '../../components/PageHeader';
+import StatusBadge from '../../components/StatusBadge';
+import { getAllUsersAction, selectAllUser } from '../../redux/usersSlice';
+import { tokens } from '../../themeConfig';
 
 const UsersPage = () => {
   /* eslint-disable no-unused-vars */
@@ -40,7 +38,7 @@ const UsersPage = () => {
       renderCell: (params) => (
         <StatusBadge
           status={params.value ? 'active' : 'inactive'}
-          bg={params.value ? 'green-500' : 'red-500'}
+          bg={params.value ? 'bg-green-500' : 'bg-red-500'}
           color={'white'}
         />
       ),
