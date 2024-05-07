@@ -1,4 +1,4 @@
-import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
+import { MdMoreHoriz } from 'react-icons/md';
 import { Box, Button, Typography } from '@mui/material';
 import { useRef, useState } from 'react';
 import { FaTrash } from 'react-icons/fa';
@@ -21,7 +21,7 @@ function MoreButton({ id, model }) {
   return (
     <Box className="absolute">
       <Button onClick={toggleActionGroup} variant="text" className="text-gray-500 hover:text-gray-700">
-        <MoreHorizOutlinedIcon />
+        <MdMoreHoriz />
       </Button>
       <Box
         ref={actionGroup}
