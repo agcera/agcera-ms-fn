@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { createStoreSchema } from '../../validations/stores.validation';
 import { useDispatch } from 'react-redux';
 import { registerStoreAction } from '../../redux/storesSlice';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
 import LoadingButton from '../../components/LoadingButton';
@@ -104,7 +104,13 @@ const CreateStorePage = () => {
           </Grid>
 
           <Stack direction="row-reverse" gap={2} className="mb-2">
-            <Button color="secondary" className="max-w-[175px] w-full" disabled={loading}>
+            <Button
+              LinkComponent={Link}
+              to="/dashboard/stores"
+              color="secondary"
+              className="max-w-[175px] w-full"
+              disabled={loading}
+            >
               Cancel
             </Button>
             <LoadingButton loading={loading} className="max-w-[175px] w-full" type="submit">
