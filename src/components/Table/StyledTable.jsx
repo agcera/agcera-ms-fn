@@ -1,9 +1,9 @@
 import { Box } from '@mui/material';
 import { DataGrid, gridClasses } from '@mui/x-data-grid';
-import { tokens } from '../themeConfig';
+import { tokens } from '../../themeConfig';
 import { useTheme } from '@mui/material/styles';
 
-function StyledTable({ users, columns }) {
+function StyledTable({ data, columns }) {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -30,11 +30,21 @@ function StyledTable({ users, columns }) {
           [`& .${gridClasses.iconSeparator}`]: {
             color: colors.text_light.main,
           },
+          // cell height
+          // Set autoHeight for dynamic row height
+          [`& .${gridClasses.row}`]: {
+            '&:hover': {
+              backgroundColor: colors.text_light.main,
+            },
+            [`&.${gridClasses.row}`]: {
+              minHeight: 'auto',
+            },
+          },
         }}
       >
         <DataGrid
           className="overflow-x-auto"
-          rows={users}
+          rows={data}
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5, 10, 20]}

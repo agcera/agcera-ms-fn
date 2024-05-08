@@ -59,7 +59,8 @@ const productsSlice = createSlice({
         productsAdapter.setOne(state, payload.data);
       })
       .addCase(getAllProductsAction.fulfilled, (state, { payload }) => {
-        productsAdapter.setAll(state, payload.data);
+        // console.log(payload.data.products, 'frm paylodddd   kkk')
+        productsAdapter.setAll(state, payload.data.products);
       })
       .addCase(getProductAction.fulfilled, (state, { payload }) => {
         productsAdapter.setOne(state, payload.data);
