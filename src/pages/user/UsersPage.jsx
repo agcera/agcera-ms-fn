@@ -1,13 +1,15 @@
 import { Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import MoreButton from '../../components/MoreButton';
+
 import PageHeader from '../../components/PageHeader';
-import StatusBadge from '../../components/StatusBadge';
+
 import { getAllUsersAction, selectAllUser } from '../../redux/usersSlice';
 import { tokens } from '../../themeConfig';
+import StyledTable from '../../components/Table/StyledTable';
+import MoreButton from '../../components/Table/MoreButton';
+import StatusBadge from '../../components/Table/StatusBadge';
 
 const UsersPage = () => {
   /* eslint-disable no-unused-vars */
@@ -54,7 +56,7 @@ const UsersPage = () => {
   return (
     <Box className="w-full h-full overflow-auto">
       <PageHeader
-        title="USERS"
+        title="Users"
         hasGenerateReport={() => {
           console.log('Generate Report of users');
         }}
@@ -63,39 +65,7 @@ const UsersPage = () => {
         }}
       />
 
-      <Box
-        className="mr-3 mt-5"
-        sx={{
-          [`& .${gridClasses.columnHeaders}`]: {
-            color: 'red',
-          },
-          [`& .${gridClasses.root}`]: {
-            border: 'none',
-          },
-          [`& .${gridClasses.footerContainer}`]: {
-            backgroundColor: colors.text_light.main,
-          },
-          // table header row
-          [`& .${gridClasses.columnHeader}`]: {
-            background: colors.highlight.main,
-            color: colors.text_light,
-          },
-          // header icons
-          [`& .${gridClasses.iconSeparator}`]: {
-            color: colors.text_light.main,
-          },
-        }}
-      >
-        <DataGrid
-          className="overflow-x-auto"
-          rows={users}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5, 10, 20]}
-          disableRowSelectionOnClick
-          isRowSelectable={() => false}
-        />
-      </Box>
+      <StyledTable columns={columns} data={users} />
     </Box>
   );
 };
