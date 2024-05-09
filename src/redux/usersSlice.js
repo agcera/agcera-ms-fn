@@ -5,6 +5,7 @@ const userAdapter = createEntityAdapter();
 
 export const loginAction = createAsyncThunk('user/loginAction', async ({ phone, password }) => {
   const response = await axiosInstance.post('/users/login', { phone, password });
+  localStorage.setItem('AuthTokenExists', true);
   return response.data;
 });
 export const getUserAction = createAsyncThunk('user/getUserAction', async (id) => {

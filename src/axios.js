@@ -14,6 +14,7 @@ axiosInstance.interceptors.response.use(
     console.log(error);
     if (error.response?.status === 401) {
       // redirect to login page
+      localStorage.removeItem('AuthTokenExists');
       axiosInstance.post('/users/logout');
       window.location.href = '/login';
     }

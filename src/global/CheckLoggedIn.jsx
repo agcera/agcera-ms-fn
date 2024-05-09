@@ -11,7 +11,7 @@ const CheckLoggedIn = ({ children }) => {
   const userId = useSelector(selectUserId);
   const user = useSelector(selectUserById(userId));
 
-  const loggedIn = document.cookie.includes('AuthTokenExists=true');
+  const loggedIn = localStorage.getItem('AuthTokenExists');
 
   useEffect(() => {
     if (loggedIn && !user) {
