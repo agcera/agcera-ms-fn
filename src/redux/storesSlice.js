@@ -13,14 +13,15 @@ export const registerStoreAction = createAsyncThunk('stores/registerStoreAction'
   const response = await axiosInstance.post(`/stores`, store);
   return response.data;
 });
-export const updateStoreAction = createAsyncThunk('stores/registerStoreAction', async ({ id, data }) => {
+export const updateStoreAction = createAsyncThunk('stores/updateStoreAction', async ({ id, data }) => {
   const store = {};
-  const { name, phone, location, isActive = null } = data;
+  const { name, phone, location, keepers, isActive = null } = data;
 
   name && (store.name = name);
   phone && (store.phone = phone);
   location && (store.location = location);
   isActive !== null && (store.isActive = isActive);
+  keepers?.length > 0 && (store.keepers = keepers);
 
   const response = await axiosInstance.patch(`/stores/${id}`, store);
   return response.data;
@@ -41,6 +42,12 @@ const storesSlice = createSlice({
       })
       .addCase(getStoreAction.fulfilled, (state, { payload }) => {
         storesAdapter.upsertOne(state, payload.data);
+      })
+      .addCase(registerStoreAction.fulfilled, (state, { payload }) => {
+        storesAdapter.setOne(state, payload.data);
+      })
+      .addCase(updateStoreAction.fulfilled, (state, { payload }) => {
+        storesAdapter.upsertOne(state, payload.data.store);
       });
   },
 });

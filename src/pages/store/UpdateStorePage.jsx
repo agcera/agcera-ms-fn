@@ -1,23 +1,26 @@
-import { Box, Button, Grid, MenuItem, Stack, Typography } from '@mui/material';
-import PageHeader from '../../components/PageHeader';
-import Input from '../../components/Input';
-import Select from '../../components/Select';
-import { Controller, Form, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { createStoreSchema } from '../../validations/stores.validation';
+import { Box, Button, Grid, MenuItem, Stack, Typography } from '@mui/material';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { Controller, Form, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { getStoreAction, selectStoreById, updateStoreAction } from '../../redux/storesSlice';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useEffect, useState } from 'react';
-import LoadingButton from '../../components/LoadingButton';
+import Input from '../../components/Input';
 import Loader from '../../components/Loader';
+import LoadingButton from '../../components/LoadingButton';
+import MultiSelect from '../../components/MultiSelect';
+import PageHeader from '../../components/PageHeader';
+import Select from '../../components/Select';
+import { getStoreAction, selectStoreById, updateStoreAction } from '../../redux/storesSlice';
+import { getAllUsersAction, selectAllUsersByRole } from '../../redux/usersSlice';
+import { updateStoreSchema } from '../../validations/stores.validation';
 
 const UpdateStorePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const routeParams = useParams();
   const store = useSelector(selectStoreById(routeParams.id));
+  const keepers = useSelector(selectAllUsersByRole(['keeper']));
   const [loading, setLoading] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
 
@@ -25,17 +28,19 @@ const UpdateStorePage = () => {
     control,
     register,
     setValue,
+    getValues,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(createStoreSchema),
-    defaultValues: {
-      name: '',
-      location: '',
-      phone: '',
-      isActive: true,
-    },
+    resolver: yupResolver(updateStoreSchema),
   });
+
+  const storeKeepers = useMemo(() => {
+    const storeKeepers = keepers?.filter((u) => u.storeId === store?.id);
+    if (storeKeepers?.length > 0) return storeKeepers;
+    return null;
+  }, [keepers, store]);
+  const isMainStore = store?.name === 'main';
 
   const onSubmit = (data) => {
     setLoading(true);
@@ -50,23 +55,34 @@ const UpdateStorePage = () => {
   };
 
   useEffect(() => {
-    dispatch(getStoreAction(routeParams.id)).then(({ error }) => {
-      setInitLoading(false);
-      if (error) {
-        toast.error(error.message);
+    Promise.all([dispatch(getStoreAction(routeParams.id)), dispatch(getAllUsersAction({ role: ['keeper'] }))]).then(
+      (resp) => {
+        setInitLoading(false);
+        resp.forEach(({ error }) => {
+          if (error) toast.error(error.message);
+        });
       }
-    });
+    );
   }, [dispatch, routeParams.id]);
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const { name, location, phone, isActive = null, keepers } = getValues();
     if (store) {
-      setValue('name', store.name);
-      setValue('location', store.location);
-      setValue('phone', store.phone);
-      setValue('isActive', store.isActive || '');
+      !name && !isMainStore && setValue('name', store.name);
+      !location && setValue('location', store.location);
+      !phone && setValue('phone', store.phone);
+      isActive === null && setValue('isActive', store.isActive || false);
     }
-  }, [setValue, store]);
+    if (storeKeepers) {
+      !keepers &&
+        !isMainStore &&
+        setValue(
+          'keepers',
+          storeKeepers.map((u) => u.id)
+        );
+    }
+  }, [store, storeKeepers, isMainStore, setValue, getValues]);
 
-  if (!store && initLoading) {
+  if (!store || !keepers?.length || initLoading) {
     return (
       <Box className="w-full h-full flex">
         <Loader className="m-auto" />
@@ -93,17 +109,19 @@ const UpdateStorePage = () => {
         <PageHeader title={`Update ${store.name} details`} hasBack={true} backTo="/dashboard/stores" />
         <Box className="px-4 py-2">
           <Grid container rowSpacing={1} columnSpacing={2} className="mb-4">
-            <Grid item xs={12}>
-              <Input
-                label="Store name"
-                placeHolder="Enter store name..."
-                disabled={loading}
-                required={false}
-                error={!!errors.name}
-                helperText={errors.name?.message}
-                inputProps={{ ...register('name') }}
-              />
-            </Grid>
+            {!isMainStore && (
+              <Grid item xs={12}>
+                <Input
+                  label="Store name"
+                  placeHolder="Enter store name..."
+                  disabled={loading}
+                  required={false}
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                  inputProps={{ ...register('name') }}
+                />
+              </Grid>
+            )}
             <Grid item xs={12}>
               <Input
                 label="Location"
@@ -128,6 +146,7 @@ const UpdateStorePage = () => {
             </Grid>
             <Grid item xs={12}>
               <Controller
+                defaultValue={true}
                 disabled={loading}
                 control={control}
                 name="isActive"
@@ -137,7 +156,7 @@ const UpdateStorePage = () => {
                       label="Status"
                       required={false}
                       error={!!error}
-                      helperText={errors.message}
+                      helperText={error?.message}
                       inputProps={{ ...field }}
                     >
                       <MenuItem value={true}>Active</MenuItem>
@@ -147,6 +166,28 @@ const UpdateStorePage = () => {
                 }}
               />
             </Grid>
+            {!isMainStore && (
+              <Grid item xs={12}>
+                <Controller
+                  defaultValue={[]}
+                  disabled={loading}
+                  control={control}
+                  name="keepers"
+                  render={({ field, fieldState: { error } }) => {
+                    return (
+                      <MultiSelect
+                        options={keepers.map((u) => ({ value: u.id, name: u.name }))}
+                        label="Store keepers"
+                        required={false}
+                        error={!!error}
+                        helperText={error?.message}
+                        inputProps={{ ...field }}
+                      />
+                    );
+                  }}
+                />
+              </Grid>
+            )}
           </Grid>
 
           <Stack direction="row-reverse" gap={2} className="mb-2">

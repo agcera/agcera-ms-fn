@@ -1,29 +1,35 @@
-import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
+import { formatQuery } from '../utils/formatters';
+import { updateStoreAction } from './storesSlice';
 
 const usersAdapter = createEntityAdapter();
 
-export const loginAction = createAsyncThunk('user/loginAction', async ({ phone, password }) => {
+export const loginAction = createAsyncThunk('users/loginAction', async ({ phone, password }) => {
   const response = await axiosInstance.post('/users/login', { phone, password });
   localStorage.setItem('AuthTokenExists', true);
   return response.data;
 });
-export const getUserAction = createAsyncThunk('user/getUserAction', async (id) => {
+export const getUserAction = createAsyncThunk('users/getUserAction', async (id) => {
   // Use 'me' as id to get the logged in user data
   const response = await axiosInstance.get(`/users/${id}`);
   return response.data;
 });
-export const forgotPasswordAction = createAsyncThunk('user/forgotPasswordAction', async ({ email }) => {
+export const forgotPasswordAction = createAsyncThunk('users/forgotPasswordAction', async ({ email }) => {
   const response = await axiosInstance.post(`/users/forgot`, { email });
   return response.data;
 });
-export const resetPasswordAction = createAsyncThunk('user/resetPasswordAction', async ({ password, token }) => {
+export const resetPasswordAction = createAsyncThunk('users/resetPasswordAction', async ({ password, token }) => {
   const response = await axiosInstance.put(`/users/reset/${token}`, { password });
   return response.data;
 });
+export const getAllUsersAction = createAsyncThunk('users/getAllUsersAction', async (query) => {
+  const response = await axiosInstance.get(`/users?${formatQuery(query)}`);
+  return response.data;
+});
 
-export const getAllUsersAction = createAsyncThunk('user/getAllUsersAction', async () => {
-  const response = await axiosInstance.get('/users');
+export const getAllStoreUsersAction = createAsyncThunk('stores/getAllStoreUsersAction', async ({ storeId, query }) => {
+  const response = await axiosInstance.get(`/stores/${storeId}/users?${formatQuery(query)}`);
   return response.data;
 });
 
@@ -39,7 +45,7 @@ const usersSlice = createSlice({
     // removeUser: usersAdapter.removeOne
   },
   extraReducers: (builder) => {
-    return builder
+    builder
       .addCase(loginAction.fulfilled, (state, action) => {
         usersAdapter.upsertOne(state, action.payload.data);
       })
@@ -50,7 +56,17 @@ const usersSlice = createSlice({
       })
       .addCase(getAllUsersAction.fulfilled, (state, action) => {
         usersAdapter.upsertMany(state, action.payload.data.users);
+      })
+      .addCase(getAllStoreUsersAction.fulfilled, (state, action) => {
+        usersAdapter.upsertMany(state, action.payload.data.users);
       });
+
+    // Add other reducers not from the usersSlice
+    builder.addCase(updateStoreAction.fulfilled, (state, { payload }) => {
+      usersAdapter.upsertMany(state, payload.data.updatedUsers);
+    });
+
+    return builder;
   },
 });
 
@@ -59,5 +75,13 @@ const usersSlice = createSlice({
 export const selectUserId = (state) => state.users.loggedInUserId;
 export const selectUserById = (id) => (state) => selectById(state, id);
 export const selectAllUser = selectAll;
+export const selectAllUsersByRole = (role) => {
+  return createSelector([selectAll], (users) => {
+    if (Array.isArray(role)) {
+      return users.filter((user) => role.includes(user.role));
+    }
+    return users.filter((user) => user.role === role);
+  });
+};
 
 export default usersSlice;

@@ -7,6 +7,19 @@ import { FaEye } from 'react-icons/fa';
 import { useTheme } from '@mui/material';
 import { tokens } from '../../themeConfig';
 
+const CustomTypography = ({ children, onClick, ...props }) => (
+  <Typography
+    className="w-full text-left flex hover:bg-white p-1 justify-start rounded-sm cursor-pointer mb-1 text-[12px] font-semibold text-gray-500"
+    onClick={(e) => {
+      e.stopPropagation();
+      onClick(e);
+    }}
+    {...props}
+  >
+    {children}
+  </Typography>
+);
+
 function MoreButton({ id, model }) {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -14,7 +27,8 @@ function MoreButton({ id, model }) {
   const [isActionGroupVisible, setIsActionGroupVisible] = useState(false);
   const actionGroup = useRef();
 
-  const toggleActionGroup = () => {
+  const toggleActionGroup = (e) => {
+    e.stopPropagation();
     setIsActionGroupVisible(!isActionGroupVisible);
   };
 
@@ -28,34 +42,31 @@ function MoreButton({ id, model }) {
         className={`absolute ${isActionGroupVisible ? 'block' : 'hidden'} shadow-md p-2 z-50 rounded-md top-0 left-16 flex-col`}
         sx={{ bgcolor: colors.highlight.main }}
       >
-        <Typography
-          className="w-full text-left flex hover:bg-white p-1 justify-start rounded-sm cursor-pointer mb-1 text-[12px] font-semibold text-gray-500"
+        <CustomTypography
           onClick={() => {
             console.log('view ' + id + ' in ' + model);
           }}
         >
           <FaEye />
           <span className="bg-none pr-1 ml-1 align-center">Profile </span>
-        </Typography>
+        </CustomTypography>
 
-        <Typography
-          className="w-full text-left flex hover:bg-white p-1 justify-start rounded-sm cursor-pointer mb-1 text-[12px] font-semibold text-gray-500"
+        <CustomTypography
           onClick={() => {
             console.log('edit ' + id + ' in ' + model);
           }}
         >
           <AiFillEdit />
           <span className="bg-none pr-1 ml-1 align-center">Edit </span>
-        </Typography>
-        <Typography
-          className="w-full text-left flex hover:bg-white p-1 justify-start rounded-sm cursor-pointer mb-1 text-[12px] font-semibold text-gray-500"
+        </CustomTypography>
+        <CustomTypography
           onClick={() => {
             console.log('delete ' + id + ' in ' + model);
           }}
         >
           <FaTrash />
           <span className="bg-none pr-1 ml-1 align-center">Delete </span>
-        </Typography>
+        </CustomTypography>
       </Box>
     </Box>
   );

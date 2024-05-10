@@ -3,11 +3,13 @@ import { format } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 import { IoAddOutline } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
 import PageHeader from '../../components/PageHeader';
 import { getStoreAction, selectStoreById } from '../../redux/storesSlice';
+import { getAllStoreUsersAction, selectAllUsersByRole } from '../../redux/usersSlice';
+import StatusBadge from '../../components/Table/StatusBadge';
 
 const StoreKey = ({ children, ...props }) => {
   return (
@@ -29,25 +31,31 @@ const StoreValue = ({ children, ...props }) => {
 };
 
 const ViewStorePage = () => {
-  const dispatch = useDispatch();
   const routeParams = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const store = useSelector(selectStoreById(routeParams.id));
+  const keepers = useSelector(selectAllUsersByRole(['admin', 'keeper']));
+
   const [initLoading, setInitLoading] = useState(true);
 
-  console.log('store: ', store);
-
   const storeKeepers = useMemo(() => {
-    if (!store) return [];
-    return store.users.filter((u) => ['admin', 'keeper'].includes(u.role));
-  }, [store]);
+    const storeKeepers = keepers?.filter((u) => u.storeId === store?.id);
+    if (storeKeepers?.length > 0) return storeKeepers;
+    return null;
+  }, [store, keepers]);
 
   useEffect(() => {
-    dispatch(getStoreAction(routeParams.id)).then(({ error }) => {
-      setInitLoading(false);
-      if (error) {
-        toast.error(error.message);
-      }
-    });
+    Promise.all([
+      dispatch(getStoreAction(routeParams.id)),
+      dispatch(getAllStoreUsersAction({ storeId: routeParams.id, role: ['keeper'] })),
+    ])
+      .then((resp) => {
+        resp.forEach(({ error }) => {
+          if (error) toast.error(error.message);
+        });
+      })
+      .finally(() => setInitLoading(false));
   }, [dispatch, routeParams.id]);
 
   if (!store && initLoading) {
@@ -73,7 +81,13 @@ const ViewStorePage = () => {
 
   return (
     <Box className="w-full h-full">
-      <PageHeader title={`${capitalize(store.name)} store`} hasBack={true} backTo="/dashboard/stores" />
+      <PageHeader
+        title={`${capitalize(store.name)} store`}
+        hasBack={true}
+        backTo="/dashboard/stores"
+        hasUpdate={() => navigate(`/dashboard/stores/${store.id}/update`)}
+        hasDelete={() => console.log('delete store')}
+      />
       <Box className="w-full px-8 py-2">
         <Typography variant="subHeader" className="font-semibold" color="primary.light">
           Store details
@@ -86,7 +100,7 @@ const ViewStorePage = () => {
             </TableRow>
             <TableRow>
               <StoreKey>Store keepers:</StoreKey>
-              <StoreValue>{storeKeepers.map((u) => u.name).join(', ')}</StoreValue>
+              <StoreValue>{storeKeepers?.map((u) => u.name).join(', ') || 'This store has no keepers'}</StoreValue>
             </TableRow>
             <TableRow>
               <StoreKey>Telephone number:</StoreKey>
@@ -99,6 +113,16 @@ const ViewStorePage = () => {
             <TableRow>
               <StoreKey>Opening Date:</StoreKey>
               <StoreValue>{format(new Date(store.createdAt), 'do MMM yyyy')}</StoreValue>
+            </TableRow>
+            <TableRow>
+              <StoreKey>Status:</StoreKey>
+              <StoreValue>
+                <StatusBadge
+                  status={store.isActive ? 'Active' : 'Inactive'}
+                  bg={store.isActive ? 'bg-green-500' : 'bg-red-500'}
+                  color={'white'}
+                />
+              </StoreValue>
             </TableRow>
           </TableBody>
         </Table>

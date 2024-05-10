@@ -196,13 +196,29 @@ export const themeSettings = (mode) => {
         defaultProps: {
           disableGutters: true,
         },
+        styleOverrides: {
+          root: {
+            height: '100%',
+          },
+        },
       },
     },
   };
 };
 
 createTheme({
-  components: {},
+  components: {
+    MuiContainer: {
+      defaultProps: {
+        disableGutters: true,
+      },
+      styleOverrides: {
+        root: {
+          height: '100%',
+        },
+      },
+    },
+  },
 });
 
 // context for color mode

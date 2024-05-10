@@ -3,7 +3,7 @@ import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { tokens } from '../../themeConfig';
 import { useTheme } from '@mui/material/styles';
 
-function StyledTable({ data, columns }) {
+function StyledTable({ data, columns, onRowClick }) {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -35,6 +35,7 @@ function StyledTable({ data, columns }) {
           [`& .${gridClasses.row}`]: {
             '&:hover': {
               backgroundColor: colors.text_light.main,
+              cursor: onRowClick ? 'pointer' : 'default',
             },
             [`&.${gridClasses.row}`]: {
               minHeight: 'auto',
@@ -48,8 +49,9 @@ function StyledTable({ data, columns }) {
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5, 10, 20]}
-          disableRowSelectionOnClick
-          isRowSelectable={() => false}
+          disableRowSelectionOnClick={!onRowClick}
+          onRowClick={onRowClick}
+          isRowSelectable={() => !!onRowClick}
           // scroll overflow for a cell
         />
       </Box>
