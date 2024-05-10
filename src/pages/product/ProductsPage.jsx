@@ -150,7 +150,7 @@ const ProductsPage = () => {
               ? `scale(1.5) translate(-${cursorPosition.x * 50}%, -${cursorPosition.y * 50}%)`
               : 'scale(1)',
           }}
-          alt="Logo"
+          alt="productImage"
         />
       </div>
     );
