@@ -3,7 +3,7 @@ import { DataGrid, gridClasses } from '@mui/x-data-grid';
 import { tokens } from '../../themeConfig';
 import { useTheme } from '@mui/material/styles';
 
-function StyledTable({ data, columns, onRowClick }) {
+function StyledTable({ data, columns, onRowClick, rowheight }) {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -31,14 +31,15 @@ function StyledTable({ data, columns, onRowClick }) {
             color: colors.text_light.main,
           },
           // cell height
-          // Set autoHeight for dynamic row height
+          [`& .${gridClasses.cell}`]: {
+            whiteSpace: 'normal',
+            wordWrap: 'break-word',
+            minHeight: 'auto',
+          },
           [`& .${gridClasses.row}`]: {
             '&:hover': {
               backgroundColor: colors.text_light.main,
               cursor: onRowClick ? 'pointer' : 'default',
-            },
-            [`&.${gridClasses.row}`]: {
-              minHeight: 'auto',
             },
           },
         }}
@@ -52,7 +53,7 @@ function StyledTable({ data, columns, onRowClick }) {
           disableRowSelectionOnClick={!onRowClick}
           onRowClick={onRowClick}
           isRowSelectable={() => !!onRowClick}
-          // scroll overflow for a cell
+          getRowHeight={() => rowheight}
         />
       </Box>
     </Box>
