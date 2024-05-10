@@ -42,7 +42,6 @@ const UpdateProductPage = () => {
   } = methods;
 
   const onSubmit = (data) => {
-    console.log('data: ', data);
     const productData = {};
     productData.name = data.name;
     productData.type = type;

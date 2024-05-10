@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom';
 
 const DashboardPage = () => {
   return (
-    <Box className="flex relative">
+    <Box className="flex relative h-full">
       <Sidebar />
       <Box className="flex flex-col w-full h-full grow overflow-auto ml-[79px] sm:ml-0">
         <Topbar />

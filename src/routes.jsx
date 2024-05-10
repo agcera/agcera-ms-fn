@@ -15,19 +15,21 @@ import CreateProductPage from './pages/product/CreateProductPage';
 import UpdateProductPage from './pages/product/UpdateProductPage';
 import CreateStorePage from './pages/store/CreateStorePage';
 import UpdateStorePage from './pages/store/UpdateStorePage';
+import ViewStorePage from './pages/store/ViewStorePage';
+import StoreAddProductPage from './pages/store/StoreAddProductPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route
-      path="/"
-      element={
-        <CheckLoggedIn>
-          {/* Add  here all other validation or action to be taken before the children routes loads. */}
-          <Outlet />
-        </CheckLoggedIn>
-      }
-    >
-      <Route errorElement={<ErrorPage />}>
+    <Route errorElement={<ErrorPage />}>
+      <Route
+        path="/"
+        element={
+          <CheckLoggedIn>
+            {/* Add  here all other validation or action to be taken before the children routes loads. */}
+            <Outlet />
+          </CheckLoggedIn>
+        }
+      >
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
@@ -37,13 +39,15 @@ const router = createBrowserRouter(
           <Route path="" element={<AnalyticsPage />} />
           <Route path="stores" element={<Outlet />}>
             <Route path="" element={<StoresPage />} />
+            <Route path=":id" element={<ViewStorePage />} />
+            <Route path=":id/add-product" element={<StoreAddProductPage />} />
+            <Route path=":id/update" element={<UpdateStorePage />} />
             <Route path="create" element={<CreateStorePage />} />
-            <Route path="update/:id" element={<UpdateStorePage />} />
           </Route>
           <Route path="products" element={<Outlet />}>
             <Route path="" element={<ProductsPage />} />
+            <Route path=":id/update" element={<UpdateProductPage />} />
             <Route path="create" element={<CreateProductPage />} />
-            <Route path="update/:id" element={<UpdateProductPage />} />
           </Route>
           <Route path="sales" element={<SalesPage />} />
           <Route path="transactions" element={<TransactionsPage />} />

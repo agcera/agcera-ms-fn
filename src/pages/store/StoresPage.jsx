@@ -7,11 +7,12 @@ import MoreButton from '../../components/Table/MoreButton';
 
 import { useEffect } from 'react';
 import { Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const StoresPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const stores = useSelector(selectAllStores);
-  // console.log(stores, '  storessssss');
 
   useEffect(() => {
     dispatch(getAllStoresAction({}));
@@ -34,6 +35,7 @@ const StoresPage = () => {
       ),
     },
     {
+      field: 'action',
       headerName: 'Action',
       flex: 1,
       renderCell: (params) => <MoreButton id={params.id} model={'store'} />,
@@ -48,11 +50,17 @@ const StoresPage = () => {
           console.log('Generate Report of stores');
         }}
         hasCreate={() => {
-          console.log('Create stores');
+          navigate('/dashboard/stores/create');
         }}
       />
 
-      <StyledTable columns={columns} data={stores} />
+      <StyledTable
+        columns={columns}
+        data={stores}
+        onRowClick={(row) => {
+          navigate(`/dashboard/stores/${row.id}`);
+        }}
+      />
     </Box>
   );
 };

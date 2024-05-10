@@ -1,5 +1,5 @@
 import { Box, IconButton, Typography, useTheme } from '@mui/material';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { GrTransaction } from 'react-icons/gr';
 import { IoMenuOutline } from 'react-icons/io5';
 import { MdAnalytics, MdOutlinePeopleAlt, MdOutlineProductionQuantityLimits, MdOutlineStore } from 'react-icons/md';
@@ -14,8 +14,13 @@ const Item = ({ title, to, icon }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const active = useMemo(() => {
+    if (to === '/dashboard') return location.pathname === to;
+    return location.pathname.startsWith(to);
+  }, [to, location.pathname]);
+
   return (
-    <MenuItem active={location.pathname === to} onClick={() => navigate(to)} icon={icon} className="pr-2 text-sm">
+    <MenuItem active={active} onClick={() => navigate(to)} icon={icon} className="pr-2 text-sm">
       <Typography variant="body2">{title}</Typography>
     </MenuItem>
   );

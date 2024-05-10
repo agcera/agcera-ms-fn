@@ -5,7 +5,7 @@ import ActionButton from './ActionButton';
 import { Link } from 'react-router-dom';
 import { PiSkipBackLight } from 'react-icons/pi';
 
-const PageHeader = ({ title, hasGenerateReport, hasCreate, hasBack, backTo }) => {
+const PageHeader = ({ title, hasGenerateReport, hasCreate, hasUpdate, hasDelete, hasBack, backTo }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   return (
@@ -40,6 +40,17 @@ const PageHeader = ({ title, hasGenerateReport, hasCreate, hasBack, backTo }) =>
 
           {hasCreate && (
             <ActionButton content="Create" onclick={hasCreate} bg={colors.blue.main} color={colors.text_dark.main} />
+          )}
+          {hasUpdate && (
+            <ActionButton content="Update" onclick={hasUpdate} bg={colors.blue.main} color={colors.text_dark.main} />
+          )}
+          {hasDelete && (
+            <ActionButton
+              content="Delete"
+              onclick={hasDelete}
+              bg={colors.secondary.main}
+              color={colors.text_light.main}
+            />
           )}
         </Box>
       </Box>

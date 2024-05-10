@@ -1,4 +1,4 @@
-import * as yup from 'yup';
+import yup from '.';
 
 export const loginFormSchema = yup.object({
   phone: yup

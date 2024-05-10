@@ -146,6 +146,16 @@ export const themeSettings = (mode) => {
         },
         variants: [
           {
+            props: { color: 'specialBlue', size: 'small' },
+            style: {
+              padding: 4,
+              paddingLeft: 10,
+              paddingRight: 10,
+              fontWeight: '400',
+              fontSize: '0.875rem',
+            },
+          },
+          {
             props: { variant: 'back', color: 'black' },
             style: {
               paddingTop: 4,
@@ -186,6 +196,11 @@ export const themeSettings = (mode) => {
         defaultProps: {
           disableGutters: true,
         },
+        styleOverrides: {
+          root: {
+            height: '100%',
+          },
+        },
       },
     },
   };
@@ -193,13 +208,13 @@ export const themeSettings = (mode) => {
 
 createTheme({
   components: {
-    MuiInputBase: {
+    MuiContainer: {
+      defaultProps: {
+        disableGutters: true,
+      },
       styleOverrides: {
-        input: {
-          height: 'max-content',
-        },
         root: {
-          height: 'max-content',
+          height: '100%',
         },
       },
     },

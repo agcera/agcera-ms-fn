@@ -22,8 +22,6 @@ const UsersPage = () => {
 
   const users = useSelector(selectAllUser);
 
-  console.log(users, '_______________________________');
-
   useEffect(() => {
     dispatch(getAllUsersAction({}));
   }, [dispatch]);
