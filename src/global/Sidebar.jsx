@@ -1,26 +1,34 @@
 import { Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
+import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 import { GrTransaction } from 'react-icons/gr';
 import { IoMenuOutline } from 'react-icons/io5';
 import { MdAnalytics, MdOutlinePeopleAlt, MdOutlineProductionQuantityLimits, MdOutlineStore } from 'react-icons/md';
 import { RiExchangeDollarFill } from 'react-icons/ri';
 import { Menu, MenuItem, Sidebar as ProSidebar } from 'react-pro-sidebar';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { profile } from '../assets';
 import { tokens } from '../themeConfig';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 /* eslint-disable */
-const Item = ({ title, to, icon }) => {
+const Item = ({ title, to, icon, className, ...props }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const active = useMemo(() => {
     if (to === '/dashboard') return location.pathname === to;
+    if (location.pathname === '/dashboard/sales/create') return location.pathname === to;
     return location.pathname.startsWith(to);
   }, [to, location.pathname]);
 
   return (
-    <MenuItem active={active} onClick={() => navigate(to)} icon={icon} className="pr-2 text-sm">
+    <MenuItem
+      active={active}
+      onClick={() => navigate(to)}
+      icon={icon}
+      className={clsx('pr-2 text-sm', className)}
+      {...props}
+    >
       <Typography variant="body2">{title}</Typography>
     </MenuItem>
   );
@@ -34,7 +42,18 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(isMobile);
 
   return (
-    <Box className="absolute sm:static z-50 bg-background">
+    <Box
+      className="absolute h-full sm:static z-50 bg-background"
+      sx={{
+        ['& ul']: {
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          paddingBottom: '10px',
+          overflowY: 'auto',
+        },
+      }}
+    >
       {/* USER  */}
       <ProSidebar collapsed={isCollapsed} style={{ height: '100vh' }}>
         <Menu
@@ -48,29 +67,31 @@ const Sidebar = () => {
               },
             },
           }}
-          className="mb-4"
+          className="h-full"
         >
           {/* menu and logo item */}
-          <MenuItem
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            icon={isCollapsed ? <IoMenuOutline className="text-lg" /> : undefined}
-            style={{
-              margin: '10px 0 20px 0',
-              color: colors.primary.main,
-              // borderBottom: `1px solid ${colors.primary.main}`,
-              shadow: '20px 20px red',
-            }}
-          >
-            {!isCollapsed && (
-              <Box display="flex" justifyContent="space-between" alignItems="center" ml="15px">
-                <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
-                  <IoMenuOutline sx={{ fontSize: '30px' }} />
-                </IconButton>
+          <Box className="inline-flex">
+            <MenuItem
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              icon={isCollapsed ? <IoMenuOutline className="text-lg" /> : undefined}
+              style={{
+                margin: '10px 0 20px 0',
+                color: colors.primary.main,
+                // borderBottom: `1px solid ${colors.primary.main}`,
+                shadow: '20px 20px red',
+              }}
+            >
+              {!isCollapsed && (
+                <Box display="flex" justifyContent="space-between" alignItems="center" ml="15px">
+                  <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
+                    <IoMenuOutline sx={{ fontSize: '30px' }} />
+                  </IconButton>
 
-                {/* <img src={logo} width="50%" /> */}
-              </Box>
-            )}
-          </MenuItem>
+                  {/* <img src={logo} width="50%" /> */}
+                </Box>
+              )}
+            </MenuItem>
+          </Box>
 
           {/* user proto and name */}
 
@@ -100,6 +121,17 @@ const Sidebar = () => {
             <Item title="Sales" to="/dashboard/sales" icon={<RiExchangeDollarFill />} />
             <Item title="Transactions" to="/dashboard/transactions" icon={<GrTransaction />} />
             <Item title="Users" to="/dashboard/users" icon={<MdOutlinePeopleAlt />} />
+          </Box>
+          <Box
+            paddingLeft={isCollapsed ? undefined : '10px'}
+            sx={{
+              mt: 'auto',
+              ['& .ps-menu-button']: {
+                bgcolor: colors.specialBlue.main,
+              },
+            }}
+          >
+            <Item title="Sell" to="/dashboard/sales/create" icon={<RiExchangeDollarFill />} />
           </Box>
         </Menu>
       </ProSidebar>
