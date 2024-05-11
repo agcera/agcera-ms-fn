@@ -1,4 +1,4 @@
-import { Box, IconButton, Typography, useTheme } from '@mui/material';
+import { Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { GrTransaction } from 'react-icons/gr';
 import { IoMenuOutline } from 'react-icons/io5';
@@ -30,7 +30,8 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [isCollapsed, setIsCollapsed] = useState(isMobile);
 
   return (
     <Box className="absolute sm:static z-50 bg-background">

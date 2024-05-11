@@ -34,7 +34,7 @@ const UsersPage = () => {
     {
       field: 'isActive',
       headerName: 'Status',
-      flex: 1,
+      flex: 0,
       renderCell: (params) => (
         <StatusBadge
           status={params.value ? 'active' : 'inactive'}
@@ -46,13 +46,13 @@ const UsersPage = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      flex: 1,
+      flex: 0,
       renderCell: (params) => <MoreButton id={params.id} model={'user'} />,
     },
   ];
 
   return (
-    <Box className="w-full h-full overflow-auto">
+    <Box className="size-full flex flex-col">
       <PageHeader
         title="Users"
         hasGenerateReport={() => {

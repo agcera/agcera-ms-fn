@@ -26,7 +26,6 @@ const salesSlice = createSlice({
         salesAdapter.setOne(state, payload.data);
       })
       .addCase(getAllSalesAction.fulfilled, (state, { payload }) => {
-        console.log(payload.message.sales, 'this is the payloda');
         salesAdapter.setAll(state, payload.message.sales);
       });
   },

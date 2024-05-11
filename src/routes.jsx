@@ -17,6 +17,8 @@ import CreateStorePage from './pages/store/CreateStorePage';
 import UpdateStorePage from './pages/store/UpdateStorePage';
 import ViewStorePage from './pages/store/ViewStorePage';
 import StoreAddProductPage from './pages/store/StoreAddProductPage';
+import ViewSalePage from './pages/sale/ViewSalePage';
+import CreateSalePage from './pages/sale/CreateSalePage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -49,7 +51,11 @@ const router = createBrowserRouter(
             <Route path=":id/update" element={<UpdateProductPage />} />
             <Route path="create" element={<CreateProductPage />} />
           </Route>
-          <Route path="sales" element={<SalesPage />} />
+          <Route path="sales" element={<Outlet />}>
+            <Route path="" element={<SalesPage />} />
+            <Route path=":id" element={<ViewSalePage />} />
+            <Route path="create" element={<CreateSalePage />} />
+          </Route>
           <Route path="transactions" element={<TransactionsPage />} />
           <Route path="users" element={<UsersPage />} />
         </Route>

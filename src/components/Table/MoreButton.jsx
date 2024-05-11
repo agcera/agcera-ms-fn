@@ -6,6 +6,7 @@ import { AiFillEdit } from 'react-icons/ai';
 import { FaEye } from 'react-icons/fa';
 import { useTheme } from '@mui/material';
 import { tokens } from '../../themeConfig';
+import clsx from 'clsx';
 
 const CustomTypography = ({ children, onClick, ...props }) => (
   <Typography
@@ -20,7 +21,7 @@ const CustomTypography = ({ children, onClick, ...props }) => (
   </Typography>
 );
 
-function MoreButton({ id, model }) {
+function MoreButton({ id, model, ...props }) {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -33,7 +34,7 @@ function MoreButton({ id, model }) {
   };
 
   return (
-    <Box className="absolute">
+    <Box className={clsx('relative', props.className)} {...props}>
       <Button onClick={toggleActionGroup} variant="text" className="text-gray-500 hover:text-gray-700">
         <MdMoreHoriz />
       </Button>

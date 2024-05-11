@@ -11,7 +11,6 @@ const SalesPage = () => {
 
   const sales = useSelector(selectAllSales);
 
-  console.log(sales, 'salesssss ');
   useEffect(() => {
     dispatch(getAllSalesAction({}));
   }, [dispatch]);
@@ -69,12 +68,17 @@ const SalesPage = () => {
         return <Box>{formattedDate}</Box>;
       },
     },
-    { field: 'paymentMethod', headerName: 'Payment', flex: 0.5 },
-    { headerName: 'Action', flex: 1, renderCell: (params) => <MoreButton id={params.id} model={'sale'} /> },
+    { field: 'paymentMethod', headerName: 'Payment', flex: 0 },
+    {
+      field: 'action',
+      headerName: 'Action',
+      flex: 0,
+      renderCell: (params) => <MoreButton id={params.id} model={'sale'} className="my-2" />,
+    },
   ];
 
   return (
-    <Box>
+    <Box className="size-full flex flex-col">
       <PageHeader
         title="Sales"
         hasGenerateReport={() => {

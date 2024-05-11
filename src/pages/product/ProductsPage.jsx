@@ -46,7 +46,7 @@ const ProductsPage = () => {
     {
       field: 'image',
       headerName: 'Image',
-      flex: 1,
+      flex: 0,
 
       // in the params there will go the dedicated image for the products
       // eslint-disable-next-line
@@ -94,11 +94,11 @@ const ProductsPage = () => {
     {
       field: 'type',
       headerName: 'Type',
-      flex: 1,
+      flex: 0,
       renderCell: (params) => {
         return (
           <Typography
-            className={`rounded-2xl text-white w-[40%] mt-3 text-center px-1 py-1 h-6 text-[12px] overflow-hidden ${params.value === 'STANDARD' ? 'bg-green-500' : 'bg-red-500'}`}
+            className={`rounded-2xl text-white mt-3 text-center px-3 py-1 h-6 text-[12px] overflow-hidden ${params.value === 'STANDARD' ? 'bg-green-500' : 'bg-red-500'}`}
           >
             {params.value.toLowerCase()}
           </Typography>
@@ -108,7 +108,7 @@ const ProductsPage = () => {
     {
       field: 'action',
       headerName: 'Action',
-      flex: 1,
+      flex: 0,
       renderCell: (params) => {
         return <MoreButton id={params.id} model={'products'} />;
       },
@@ -157,7 +157,7 @@ const ProductsPage = () => {
   };
 
   return (
-    <Box>
+    <Box className="size-full flex flex-col">
       <PageHeader
         title="Products"
         hasGenerateReport={() => {
