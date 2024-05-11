@@ -16,6 +16,7 @@ function StyledTable({ data, columns, onRowClick, rowheight }) {
         },
         [`& .${gridClasses.root}`]: {
           minWidth: '700px',
+          minHeight: '200px',
           border: 'none',
         },
         [`& .${gridClasses.footerContainer}`]: {
@@ -52,7 +53,8 @@ function StyledTable({ data, columns, onRowClick, rowheight }) {
         className="overflow-x-auto"
         rows={data}
         columns={columns}
-        autoPageSize={true}
+        pageSize={5}
+        rowsPerPageOptions={[5, 10, 20]}
         disableRowSelectionOnClick={!onRowClick}
         onRowClick={onRowClick}
         isRowSelectable={() => !!onRowClick}

@@ -5,9 +5,12 @@ import { useEffect } from 'react';
 import { Box } from '@mui/material';
 import StyledTable from '../../components/Table/StyledTable';
 import MoreButton from '../../components/Table/MoreButton';
+import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
 
 const SalesPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const sales = useSelector(selectAllSales);
 
@@ -17,8 +20,8 @@ const SalesPage = () => {
 
   const calculateTotal = (sale) => {
     let total = 0;
-    sale.products.forEach((product) => {
-      total += product.quantity * product.variation.sellingPrice;
+    sale.variations.forEach((variation) => {
+      total += variation.quantity * variation.variation.sellingPrice;
     });
     return total;
   };
@@ -31,7 +34,7 @@ const SalesPage = () => {
       renderCell: (params) => <Box>{params.value.name}</Box>,
     },
     {
-      field: 'products',
+      field: 'variations',
       headerName: 'Products',
       flex: 3,
       renderCell: (params) => (
@@ -56,16 +59,14 @@ const SalesPage = () => {
       field: 'total',
       headerName: 'Total',
       flex: 1,
-      renderCell: (params) => <Box>{calculateTotal(params.row)}</Box>,
+      renderCell: (params) => <Box>{calculateTotal(params.row)} Rwf</Box>,
     },
     {
       field: 'createdAt',
       headerName: 'Date',
       flex: 1,
       renderCell: (params) => {
-        const date = new Date(params.value);
-        const formattedDate = date.toISOString().split('T')[0];
-        return <Box>{formattedDate}</Box>;
+        return <Box>{format(new Date(params.value), 'do MMM yyyy')}</Box>;
       },
     },
     { field: 'paymentMethod', headerName: 'Payment', flex: 0 },
@@ -88,7 +89,12 @@ const SalesPage = () => {
           console.log('Create sales');
         }}
       />
-      <StyledTable data={sales} columns={columns} rowheight={'auto'} />
+      <StyledTable
+        data={sales}
+        columns={columns}
+        onRowClick={(sale) => navigate(`/dashboard/sales/${sale.id}`)}
+        rowheight={'auto'}
+      />
     </Box>
   );
 };

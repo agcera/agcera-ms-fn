@@ -13,19 +13,15 @@ import StatusBadge from '../../components/Table/StatusBadge';
 
 const StoreKey = ({ children, ...props }) => {
   return (
-    <TableCell className="border-none pl-0" {...props}>
-      <Typography variant="body2" className="font-semibold ">
-        {children}
-      </Typography>
+    <TableCell className="border-none pl-0 font-semibold text-sm" {...props}>
+      {children}
     </TableCell>
   );
 };
 const StoreValue = ({ children, ...props }) => {
   return (
-    <TableCell className="border-none pl-0" {...props}>
-      <Typography variant="body2" className="">
-        {children}
-      </Typography>
+    <TableCell className="border-none pl-0 text-sm" {...props}>
+      {children}
     </TableCell>
   );
 };

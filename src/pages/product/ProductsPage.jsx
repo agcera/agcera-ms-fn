@@ -13,11 +13,44 @@ const ProductsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const products = useSelector(selectAllProducts);
+  const [initLoading, setInitLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(getAllProductsAction());
+    setInitLoading(false);
+    dispatch(getAllProductsAction()).then(({ error }) => {
+      setInitLoading(false);
+      if (error) console.log(error);
+    });
   }, [dispatch]);
 
+  if (!(products?.length > 0) && initLoading) {
+    return (
+      <Box className="w-full h-full flex">
+        <Loader className="m-auto" />
+      </Box>
+    );
+  }
+
+  return (
+    <Box className="size-full flex flex-col">
+      <PageHeader
+        title="Products"
+        hasGenerateReport={() => {
+          console.log('Generate Report of users');
+        }}
+        hasCreate={() => {
+          navigate('/dashboard/products/create');
+        }}
+      />
+
+      <ProductsTable products={products} />
+    </Box>
+  );
+};
+
+export default ProductsPage;
+
+export const ProductsTable = ({ products }) => {
   const [variationMap, setVariationMap] = useState({}); // State to hold selected variation for each row
 
   const handleChange = (e, id) => {
@@ -115,14 +148,6 @@ const ProductsPage = () => {
     },
   ];
 
-  if (!(products?.length > 0)) {
-    return (
-      <Box className="w-full h-full flex">
-        <Loader className="m-auto" />
-      </Box>
-    );
-  }
-
   // zoomable image
   const ZoomableImage = ({ image }) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -156,21 +181,5 @@ const ProductsPage = () => {
     );
   };
 
-  return (
-    <Box className="size-full flex flex-col">
-      <PageHeader
-        title="Products"
-        hasGenerateReport={() => {
-          console.log('Generate Report of users');
-        }}
-        hasCreate={() => {
-          navigate('/dashboard/products/create');
-        }}
-      />
-
-      <StyledTable columns={columns} data={products} />
-    </Box>
-  );
+  return <StyledTable columns={columns} data={products} />;
 };
-
-export default ProductsPage;

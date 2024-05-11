@@ -36,7 +36,7 @@ function MoreButton({ id, model, ...props }) {
         </Button>
       </Box>
 
-      <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={handleCloseMenu} anchorPosition={{ bottom: 0 }}>
+      <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={handleCloseMenu}>
         <MenuItem onClick={handleDetails}>
           <FaEye className="mr-2" />
           Details

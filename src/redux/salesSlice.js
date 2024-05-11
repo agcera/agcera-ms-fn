@@ -26,12 +26,12 @@ const salesSlice = createSlice({
         salesAdapter.setOne(state, payload.data);
       })
       .addCase(getAllSalesAction.fulfilled, (state, { payload }) => {
-        salesAdapter.setAll(state, payload.message.sales);
+        salesAdapter.setAll(state, payload.data.sales);
       });
   },
 });
 
 export const selectAllSales = selectAll;
-export const selectStoreById = (id) => (state) => selectById(state, id);
+export const selectSaleById = (id) => (state) => selectById(state, id);
 
 export default salesSlice;
