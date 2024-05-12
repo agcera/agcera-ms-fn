@@ -10,6 +10,11 @@ export const loginAction = createAsyncThunk('users/loginAction', async ({ phone,
   localStorage.setItem('AuthTokenExists', true);
   return response.data;
 });
+export const logoutAction = createAsyncThunk('users/logoutAction', async () => {
+  const response = await axiosInstance.post('/users/logout');
+  localStorage.removeItem('AuthTokenExists');
+  return response.data;
+});
 export const getUserAction = createAsyncThunk('users/getUserAction', async (id) => {
   // Use 'me' as id to get the logged in user data
   const response = await axiosInstance.get(`/users/${id}`);
@@ -49,6 +54,10 @@ const usersSlice = createSlice({
       .addCase(loginAction.fulfilled, (state, action) => {
         usersAdapter.upsertOne(state, action.payload.data);
       })
+      .addCase(logoutAction.fulfilled, (state) => {
+        usersAdapter.removeOne(state, state.loggedInUserId);
+        state.loggedInUserId = null;
+      })
       .addCase(getUserAction.fulfilled, (state, action) => {
         const user = action.payload.data;
         if (action.meta.arg === 'me') state.loggedInUserId = user.id;
@@ -74,13 +83,14 @@ const usersSlice = createSlice({
 
 export const selectUserId = (state) => state.users.loggedInUserId;
 export const selectUserById = (id) => (state) => selectById(state, id);
+export const selectLoggedInUser = (state) => selectById(state, selectUserId(state));
 export const selectAllUser = selectAll;
 export const selectAllUsersByRole = (role) => {
   return createSelector([selectAll], (users) => {
     if (Array.isArray(role)) {
-      return users.filter((user) => role.includes(user.role));
+      return users.filter((user) => role.map((r) => r.toLowerCase()).includes(user.role));
     }
-    return users.filter((user) => user.role === role);
+    return users.filter((user) => user.role === role.toLowerCase());
   });
 };
 

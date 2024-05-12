@@ -13,11 +13,44 @@ const ProductsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const products = useSelector(selectAllProducts);
+  const [initLoading, setInitLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(getAllProductsAction());
+    setInitLoading(false);
+    dispatch(getAllProductsAction()).then(({ error }) => {
+      setInitLoading(false);
+      if (error) console.log(error);
+    });
   }, [dispatch]);
 
+  if (!(products?.length > 0) && initLoading) {
+    return (
+      <Box className="w-full h-full flex">
+        <Loader className="m-auto" />
+      </Box>
+    );
+  }
+
+  return (
+    <Box className="size-full flex flex-col">
+      <PageHeader
+        title="Products"
+        hasGenerateReport={() => {
+          console.log('Generate Report of users');
+        }}
+        hasCreate={() => {
+          navigate('/dashboard/products/create');
+        }}
+      />
+
+      <ProductsTable products={products} />
+    </Box>
+  );
+};
+
+export default ProductsPage;
+
+export const ProductsTable = ({ products }) => {
   const [variationMap, setVariationMap] = useState({}); // State to hold selected variation for each row
 
   const handleChange = (e, id) => {
@@ -46,7 +79,7 @@ const ProductsPage = () => {
     {
       field: 'image',
       headerName: 'Image',
-      flex: 1,
+      flex: 0,
 
       // in the params there will go the dedicated image for the products
       // eslint-disable-next-line
@@ -94,11 +127,11 @@ const ProductsPage = () => {
     {
       field: 'type',
       headerName: 'Type',
-      flex: 1,
+      flex: 0,
       renderCell: (params) => {
         return (
           <Typography
-            className={`rounded-2xl text-white w-[40%] mt-3 text-center px-1 py-1 h-6 text-[12px] overflow-hidden ${params.value === 'STANDARD' ? 'bg-green-500' : 'bg-red-500'}`}
+            className={`rounded-2xl text-white mt-3 text-center px-3 py-1 h-6 text-[12px] overflow-hidden ${params.value === 'STANDARD' ? 'bg-green-500' : 'bg-red-500'}`}
           >
             {params.value.toLowerCase()}
           </Typography>
@@ -108,20 +141,12 @@ const ProductsPage = () => {
     {
       field: 'action',
       headerName: 'Action',
-      flex: 1,
+      flex: 0,
       renderCell: (params) => {
         return <MoreButton id={params.id} model={'products'} />;
       },
     },
   ];
-
-  if (!(products?.length > 0)) {
-    return (
-      <Box className="w-full h-full flex">
-        <Loader className="m-auto" />
-      </Box>
-    );
-  }
 
   // zoomable image
   const ZoomableImage = ({ image }) => {
@@ -156,21 +181,5 @@ const ProductsPage = () => {
     );
   };
 
-  return (
-    <Box>
-      <PageHeader
-        title="Products"
-        hasGenerateReport={() => {
-          console.log('Generate Report of users');
-        }}
-        hasCreate={() => {
-          navigate('/dashboard/products/create');
-        }}
-      />
-
-      <StyledTable columns={columns} data={products} />
-    </Box>
-  );
+  return <StyledTable columns={columns} data={products} />;
 };
-
-export default ProductsPage;

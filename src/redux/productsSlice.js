@@ -1,5 +1,6 @@
-import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
+import { formatQuery } from '../utils/formatters';
 
 export const createProductAction = createAsyncThunk(
   'products/createProductAction',
@@ -44,6 +45,13 @@ export const getProductAction = createAsyncThunk('products/getOneProductAction',
   const response = await axiosInstance.get(`/products/${id}`);
   return response.data;
 });
+export const getAllStoreProductsAction = createAsyncThunk(
+  'products/getAllStoreProductsAction',
+  async ({ storeId, query }) => {
+    const response = await axiosInstance.get(`/stores/${storeId}/products?${formatQuery(query)}`);
+    return response.data;
+  }
+);
 
 const productsAdapter = createEntityAdapter();
 
@@ -63,11 +71,19 @@ const productsSlice = createSlice({
       })
       .addCase(getProductAction.fulfilled, (state, { payload }) => {
         productsAdapter.upsertOne(state, payload.data);
+      })
+      .addCase(getAllStoreProductsAction.fulfilled, (state, { payload }) => {
+        productsAdapter.upsertMany(state, payload.data.products);
       });
   },
 });
 
 export const selectAllProducts = selectAll;
 export const selectProductById = (id) => (state) => selectById(state, id);
+export const selectAllProductsBystoreId = (storeId) => {
+  return createSelector([selectAllProducts], (products) => {
+    return products.filter((product) => product.stores?.find((store) => store.storeId === storeId));
+  });
+};
 
 export default productsSlice;

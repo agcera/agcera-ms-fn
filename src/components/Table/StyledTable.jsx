@@ -8,54 +8,58 @@ function StyledTable({ data, columns, onRowClick, rowheight }) {
   const colors = tokens(theme.palette.mode);
 
   return (
-    <Box>
-      <Box
-        className="mr-3 mt-5"
-        sx={{
-          [`& .${gridClasses.columnHeaders}`]: {
-            color: 'red',
-          },
-          [`& .${gridClasses.root}`]: {
-            border: 'none',
-          },
-          [`& .${gridClasses.footerContainer}`]: {
+    <Box
+      className="px-3 pt-5 w-full h-full overflow-x-auto"
+      sx={{
+        [`& .${gridClasses.columnHeaders}`]: {
+          color: 'red',
+        },
+        [`& .${gridClasses.root}`]: {
+          minWidth: '700px',
+          minHeight: '200px',
+          border: 'none',
+        },
+        [`& .${gridClasses.footerContainer}`]: {
+          backgroundColor: colors.text_light.main,
+        },
+        // table header row
+        [`& .${gridClasses.columnHeader}`]: {
+          background: colors.highlight.main,
+          color: colors.text_light,
+        },
+        // header icons
+        [`& .${gridClasses.iconSeparator}`]: {
+          color: colors.text_light.main,
+        },
+        // cell height
+        [`& .${gridClasses.cell}`]: {
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+          minHeight: 'auto',
+          display: 'flex',
+          alignItems: 'center',
+          minWidth: 'max-content',
+          width: '100%',
+        },
+        [`& .${gridClasses.row}`]: {
+          '&:hover': {
             backgroundColor: colors.text_light.main,
+            cursor: onRowClick ? 'pointer' : 'default',
           },
-          // table header row
-          [`& .${gridClasses.columnHeader}`]: {
-            background: colors.highlight.main,
-            color: colors.text_light,
-          },
-          // header icons
-          [`& .${gridClasses.iconSeparator}`]: {
-            color: colors.text_light.main,
-          },
-          // cell height
-          [`& .${gridClasses.cell}`]: {
-            whiteSpace: 'normal',
-            wordWrap: 'break-word',
-            minHeight: 'auto',
-          },
-          [`& .${gridClasses.row}`]: {
-            '&:hover': {
-              backgroundColor: colors.text_light.main,
-              cursor: onRowClick ? 'pointer' : 'default',
-            },
-          },
-        }}
-      >
-        <DataGrid
-          className="overflow-x-auto"
-          rows={data}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5, 10, 20]}
-          disableRowSelectionOnClick={!onRowClick}
-          onRowClick={onRowClick}
-          isRowSelectable={() => !!onRowClick}
-          getRowHeight={() => rowheight}
-        />
-      </Box>
+        },
+      }}
+    >
+      <DataGrid
+        className="overflow-x-auto"
+        rows={data}
+        columns={columns}
+        pageSize={5}
+        rowsPerPageOptions={[5, 10, 20]}
+        disableRowSelectionOnClick={!onRowClick}
+        onRowClick={onRowClick}
+        isRowSelectable={() => !!onRowClick}
+        getRowHeight={() => rowheight}
+      />
     </Box>
   );
 }

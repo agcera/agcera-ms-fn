@@ -25,7 +25,7 @@ const StoresPage = () => {
     {
       field: 'isActive',
       headerName: 'Status',
-      flex: 1,
+      flex: 0,
       renderCell: (params) => (
         <StatusBadge
           status={params.value ? 'active' : 'inactive'}
@@ -37,13 +37,13 @@ const StoresPage = () => {
     {
       field: 'action',
       headerName: 'Action',
-      flex: 1,
+      flex: 0,
       renderCell: (params) => <MoreButton id={params.id} model={'store'} />,
     },
   ];
 
   return (
-    <Box>
+    <Box className="size-full flex flex-col">
       <PageHeader
         title="Stores"
         hasGenerateReport={() => {
