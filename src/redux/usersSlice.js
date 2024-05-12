@@ -74,13 +74,14 @@ const usersSlice = createSlice({
 
 export const selectUserId = (state) => state.users.loggedInUserId;
 export const selectUserById = (id) => (state) => selectById(state, id);
+export const selectLoggedInUser = (state) => selectById(state, selectUserId(state));
 export const selectAllUser = selectAll;
 export const selectAllUsersByRole = (role) => {
   return createSelector([selectAll], (users) => {
     if (Array.isArray(role)) {
-      return users.filter((user) => role.includes(user.role));
+      return users.filter((user) => role.map((r) => r.toLowerCase()).includes(user.role));
     }
-    return users.filter((user) => user.role === role);
+    return users.filter((user) => user.role === role.toLowerCase());
   });
 };
 

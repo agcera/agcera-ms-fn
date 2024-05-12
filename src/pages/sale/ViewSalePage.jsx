@@ -32,6 +32,14 @@ const ViewSalePage = () => {
   const client = useSelector(selectUserById(sale?.clientId));
   const [initLoading, setInitLoading] = useState(true);
 
+  const calculateTotal = (sale) => {
+    let total = 0;
+    sale.variations.forEach((variation) => {
+      total += variation.quantity * variation.variation.number * variation.variation.sellingPrice;
+    });
+    return total;
+  };
+
   const clientDetails = useMemo(() => {
     if (!sale) return 'Fetching details ....';
     if (sale.clientType === 'USER') {
@@ -55,8 +63,6 @@ const ViewSalePage = () => {
       return acc;
     }, []);
   }, [sale?.variations]);
-
-  console.log('soldProducts ', soldProducts);
 
   useEffect(() => {
     dispatch(getSaleAction(saleId)).then(({ error }) => {
@@ -128,6 +134,10 @@ const ViewSalePage = () => {
             <TableRow>
               <StoreKey>Store :</StoreKey>
               <StoreValue>{sale.store.name}</StoreValue>
+            </TableRow>
+            <TableRow>
+              <StoreKey>Purchase total :</StoreKey>
+              <StoreValue>{calculateTotal(sale)} MZN</StoreValue>
             </TableRow>
             <TableRow>
               <StoreKey>Purchased On :</StoreKey>

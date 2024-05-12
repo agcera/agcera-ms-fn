@@ -13,6 +13,11 @@ export const getAllSalesAction = createAsyncThunk('sale/getAllSalesAction', asyn
   return response.data;
 });
 
+export const createSaleAction = createAsyncThunk('sale/createSaleAction', async (data) => {
+  const response = await axiosInstance.post('/sales', data);
+  return response.data;
+});
+
 const { selectAll, selectById } = salesAdapter.getSelectors((state) => state.sales);
 
 const salesSlice = createSlice({
@@ -23,10 +28,10 @@ const salesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getSaleAction.fulfilled, (state, { payload }) => {
-        salesAdapter.setOne(state, payload.data);
+        salesAdapter.upsertOne(state, payload.data);
       })
       .addCase(getAllSalesAction.fulfilled, (state, { payload }) => {
-        salesAdapter.setAll(state, payload.data.sales);
+        salesAdapter.upsertMany(state, payload.data.sales);
       });
   },
 });

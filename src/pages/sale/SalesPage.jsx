@@ -21,7 +21,7 @@ const SalesPage = () => {
   const calculateTotal = (sale) => {
     let total = 0;
     sale.variations.forEach((variation) => {
-      total += variation.quantity * variation.variation.sellingPrice;
+      total += variation.quantity * variation.variation.number * variation.variation.sellingPrice;
     });
     return total;
   };
@@ -39,17 +39,19 @@ const SalesPage = () => {
       flex: 3,
       renderCell: (params) => (
         <Box className="">
-          {params.value.map((product, index) => (
+          {params.value.map((variations, index) => (
             <Box
               className={`flex mb-2 mt-1 ${index % 2 === 0 ? 'bg-[#E6EEF5]' : 'bg-[#CFCFCF]'}`} // Apply background color dynamically based on index
-              key={product.variation.id}
+              key={variations.variation.id}
             >
-              <Box className="mr-1">{product.variation.product.name};</Box>
+              <Box className="mr-1">{variations.variation.product.name};</Box>
               <Box className="mr-1">
-                <span className="font-semibold">Var:</span> {product.variation.name};
+                <span className="font-semibold">Var:</span> {variations.variation.name};
               </Box>
-              <Box className="mr-1"> {product.quantity} pcs;</Box>
-              <Box className="mr-1"> {product.quantity * product.variation.sellingPrice} MZN</Box>
+              <Box className="mr-1"> {variations.quantity} pcs;</Box>
+              <Box className="mr-1">
+                {variations.quantity * variations.variation.number * variations.variation.sellingPrice} MZN
+              </Box>
             </Box>
           ))}
         </Box>
@@ -59,7 +61,7 @@ const SalesPage = () => {
       field: 'total',
       headerName: 'Total',
       flex: 1,
-      renderCell: (params) => <Box>{calculateTotal(params.row)} Rwf</Box>,
+      renderCell: (params) => <Box>{calculateTotal(params.row)} MZN</Box>,
     },
     {
       field: 'createdAt',
@@ -86,7 +88,7 @@ const SalesPage = () => {
           console.log('Generate Report of sales');
         }}
         hasCreate={() => {
-          console.log('Create sales');
+          navigate('/dashboard/sales/create');
         }}
       />
       <StyledTable
