@@ -1,4 +1,4 @@
-import { Box, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, IconButton, Typography, capitalize, useMediaQuery, useTheme } from '@mui/material';
 import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 import { GrTransaction } from 'react-icons/gr';
@@ -9,6 +9,8 @@ import { Menu, MenuItem, Sidebar as ProSidebar } from 'react-pro-sidebar';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { profile } from '../assets';
 import { tokens } from '../themeConfig';
+import { useSelector } from 'react-redux';
+import { selectLoggedInUser } from '../redux/usersSlice';
 
 /* eslint-disable */
 const Item = ({ title, to, icon, className, ...props }) => {
@@ -35,10 +37,10 @@ const Item = ({ title, to, icon, className, ...props }) => {
 };
 
 const Sidebar = () => {
-  const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const user = useSelector(selectLoggedInUser);
   const [isCollapsed, setIsCollapsed] = useState(isMobile);
 
   return (
@@ -104,10 +106,13 @@ const Sidebar = () => {
 
               <Box textAlign="center">
                 <Typography className="text-dark text-sm/[16px] font-semibold" sx={{ mt: '10px' }}>
-                  Shema Alain
+                  {capitalize(user.name)}
                 </Typography>
                 <Typography className="text-primary" sx={{ color: colors.primary.main }} variant="info1">
-                  Maputo 9P
+                  Role: {capitalize(user.role)}
+                </Typography>
+                <Typography className="text-primary" sx={{ color: colors.primary.main }} variant="info1">
+                  Store: {capitalize(user.store.name)}
                 </Typography>
               </Box>
             </Box>
