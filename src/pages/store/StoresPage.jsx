@@ -8,6 +8,7 @@ import MoreButton from '../../components/Table/MoreButton';
 import { useEffect } from 'react';
 import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
 
 const StoresPage = () => {
   const dispatch = useDispatch();
@@ -35,10 +36,21 @@ const StoresPage = () => {
       ),
     },
     {
+      field: 'createdAt',
+      headerName: 'Created',
+      flex: 1,
+      renderCell: (params) => format(new Date(params.value), 'do MMM yyyy'),
+    },
+    {
       field: 'action',
       headerName: 'Action',
       flex: 0,
-      renderCell: (params) => <MoreButton id={params.id} model={'store'} />,
+      renderCell: (params) => {
+        console.log(params);
+        let hasDelete = true;
+        if (['main', 'expired'].includes(params.row.name.toLowerCase())) hasDelete = false;
+        return <MoreButton id={params.id} model={'stores'} hasDelete={hasDelete} />;
+      },
     },
   ];
 
