@@ -7,7 +7,8 @@ export const productCreateSpecialSchema = yup.object({
     .of(
       yup.object({
         name: yup.string().required('name is a required field'),
-        description: yup.string(),
+        // description: yup.string(),
+        number: yup.number().min(1).required(),
         costPrice: yup
           .number()
           .typeError('cost price must be a number')
@@ -20,13 +21,15 @@ export const productCreateSpecialSchema = yup.object({
           .required('selling price is a required field'),
       })
     )
+    .uniqueField('number', 'No two or more variations can have the same number of products')
     .min(1)
     .required(),
 });
 
 export const productCreateStandardSchema = yup.object({
   name: yup.string().required(),
-  description: yup.string(),
+  // description: yup.string(),
+  number: yup.number().min(1).required(),
   costPrice: yup
     .number()
     .typeError('cost price must be a number')
@@ -46,7 +49,8 @@ export const productUpdateSpecialSchema = yup.object({
     .of(
       yup.object({
         name: yup.string().required('name is a required field'),
-        description: yup.string(),
+        // description: yup.string(),
+        number: yup.number().min(1).required(),
         costPrice: yup
           .number()
           .typeError('cost price must be a number')
@@ -59,12 +63,14 @@ export const productUpdateSpecialSchema = yup.object({
           .required('selling price is a required field'),
       })
     )
+    .uniqueField('number', 'No two or more variations can have the same number of products')
     .min(1),
 });
 
 export const productUpdateStandardSchema = yup.object({
   name: yup.string(),
-  description: yup.string(),
+  // description: yup.string(),
+  number: yup.number().min(1).required(),
   costPrice: yup
     .number()
     .typeError('cost price must be a number')

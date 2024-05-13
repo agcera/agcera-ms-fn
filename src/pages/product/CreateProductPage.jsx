@@ -25,6 +25,7 @@ const CreateProductPage = () => {
     resolver: yupResolver(type === 'STANDARD' ? productCreateStandardSchema : productCreateSpecialSchema),
     defaultValues: {
       name: '',
+      number: 1,
       costPrice: 0,
       sellingPrice: 0,
       variations: [],
@@ -49,7 +50,8 @@ const CreateProductPage = () => {
       productData.variations = [
         {
           name: 'Default',
-          description: data.description,
+          number: 1,
+          // description: data.description,
           costPrice: data.costPrice,
           sellingPrice: data.sellingPrice,
         },
@@ -124,7 +126,7 @@ const CreateProductPage = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Input
                   label="Description"
                   placeHolder="Enter product description..."
@@ -134,7 +136,7 @@ const CreateProductPage = () => {
                   helperText={errors.description?.message}
                   inputProps={{ multiline: true, minRows: 2, ...register('description') }}
                 />
-              </Grid>
+              </Grid> */}
             </>
           )}
         </Grid>

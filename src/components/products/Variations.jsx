@@ -1,4 +1,4 @@
-import { Box, Button, Grid, IconButton, Stack, Typography } from '@mui/material';
+import { Box, Button, FormHelperText, Grid, IconButton, Stack, Typography } from '@mui/material';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 import Input from '../Input';
 import { MdDelete } from 'react-icons/md';
@@ -10,6 +10,7 @@ const Variations = ({ loading }) => {
   const addNewOption = () => {
     append({
       name: '',
+      number: 1,
       description: '',
       costPrice: 0,
       sellingPrice: 0,
@@ -26,7 +27,6 @@ const Variations = ({ loading }) => {
           Add new options
         </Button>
       </Stack>
-
       <Box className="w-full flex flex-col gap-2">
         {fields.length === 0 && (
           <Typography variant="body1" color="secondary.light" className="text-center">
@@ -37,7 +37,7 @@ const Variations = ({ loading }) => {
           return (
             <Box key={field.id} className="w-full flex gap-4 border border-dashed rounded-md p-4">
               <Grid rowSpacing={0.5} columnSpacing={1} container>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} sm={6} md={12}>
                   <Controller
                     disabled={loading}
                     control={control}
@@ -47,7 +47,26 @@ const Variations = ({ loading }) => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Controller
+                    disabled={loading}
+                    control={control}
+                    name={`variations.${index}.number`}
+                    render={({ field, fieldState: { error } }) => (
+                      <Input
+                        label="Number of products"
+                        error={!!error}
+                        helperText={error?.message}
+                        inputProps={{
+                          type: 'number',
+                          ...field,
+                          inputProps: { min: 1 },
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
                   <Controller
                     disabled={loading}
                     control={control}
@@ -62,7 +81,7 @@ const Variations = ({ loading }) => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Controller
                     disabled={loading}
                     control={control}
@@ -81,7 +100,7 @@ const Variations = ({ loading }) => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <Controller
                     disabled={loading}
                     control={control}
@@ -96,7 +115,7 @@ const Variations = ({ loading }) => {
                       />
                     )}
                   />
-                </Grid>
+                </Grid> */}
               </Grid>
 
               <Box className="mt-5">
@@ -108,8 +127,25 @@ const Variations = ({ loading }) => {
           );
         })}
       </Box>
+      <Box className="px-4 py-1">
+        <VariationsError />
+      </Box>
     </Box>
   );
 };
 
 export default Variations;
+
+export const VariationsError = () => {
+  const {
+    formState: { errors },
+  } = useFormContext();
+
+  if (errors.variations?.root?.message) {
+    return (
+      <FormHelperText className="text-sm" error={true}>
+        {errors.variations?.root?.message}
+      </FormHelperText>
+    );
+  }
+};

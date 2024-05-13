@@ -11,8 +11,9 @@ export const createProductAction = createAsyncThunk(
     formData.append('type', type);
     formData.append('image', image, image.name);
 
-    variations.forEach(({ name, description, costPrice, sellingPrice }, index) => {
+    variations.forEach(({ name, number, description, costPrice, sellingPrice }, index) => {
       formData.append(`variations[${index}][name]`, name);
+      formData.append(`variations[${index}][number]`, number);
       formData.append(`variations[${index}][costPrice]`, costPrice);
       formData.append(`variations[${index}][sellingPrice]`, sellingPrice);
       description && formData.append(`variations[${index}][description]`, description);
@@ -28,8 +29,9 @@ export const updateProductAction = createAsyncThunk('products/updateProductActio
   name && formData.append('name', name);
   image && formData.append('image', image, image.name);
 
-  variations?.forEach(({ name, description, costPrice = null, sellingPrice = null }, index) => {
+  variations?.forEach(({ name, number, description, costPrice = null, sellingPrice = null }, index) => {
     name && formData.append(`variations[${index}][name]`, name);
+    number !== null && formData.append(`variations[${index}][number]`, number);
     costPrice !== null && formData.append(`variations[${index}][costPrice]`, costPrice);
     sellingPrice !== null && formData.append(`variations[${index}][sellingPrice]`, sellingPrice);
     description && formData.append(`variations[${index}][description]`, description);
