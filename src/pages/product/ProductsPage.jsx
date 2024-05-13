@@ -165,7 +165,7 @@ export const ProductsTable = ({ products }) => {
       headerName: 'Action',
       flex: 0,
       renderCell: (params) => {
-        return <MoreButton id={params.id} model={'products'} />;
+        return <MoreButton id={params.id} model={'products'} hasDetails={false} hasDelete={true} />;
       },
     },
   ].filter((b) => b);
