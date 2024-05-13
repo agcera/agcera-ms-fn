@@ -2,12 +2,18 @@ import { Typography, Box, Stack, Button } from '@mui/material';
 import { tokens } from '../themeConfig';
 import { useTheme } from '@mui/system';
 import ActionButton from './ActionButton';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PiSkipBackLight } from 'react-icons/pi';
 
-const PageHeader = ({ title, hasGenerateReport, hasCreate, hasUpdate, hasDelete, hasBack, backTo }) => {
+const PageHeader = ({ title, hasGenerateReport, hasCreate, hasUpdate, hasDelete, hasBack, backTo, otherActions }) => {
+  const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const handleGenerateReport = () => {
+    navigate('/dashboard/report');
+  };
+
   return (
     <Box className="w-full p-4">
       {hasBack && (
@@ -32,7 +38,7 @@ const PageHeader = ({ title, hasGenerateReport, hasCreate, hasUpdate, hasDelete,
           {hasGenerateReport && (
             <ActionButton
               content="Generate Report"
-              onclick={hasGenerateReport}
+              onclick={handleGenerateReport}
               bg={colors.blue.main}
               color={colors.text_dark.main}
             />
@@ -52,6 +58,7 @@ const PageHeader = ({ title, hasGenerateReport, hasCreate, hasUpdate, hasDelete,
               color={colors.text_light.main}
             />
           )}
+          {otherActions}
         </Box>
       </Box>
     </Box>
