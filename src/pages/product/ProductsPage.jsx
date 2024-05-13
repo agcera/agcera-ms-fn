@@ -7,7 +7,8 @@ import PageHeader from '../../components/PageHeader';
 import StyledTable from '../../components/Table/StyledTable';
 import Loader from '../../components/Loader';
 import MoreButton from '../../components/Table/MoreButton';
-import { beauty } from '../../assets';
+import { format } from 'date-fns';
+import { selectLoggedInUser } from '../../redux/usersSlice';
 
 const ProductsPage = () => {
   const dispatch = useDispatch();
@@ -51,6 +52,7 @@ const ProductsPage = () => {
 export default ProductsPage;
 
 export const ProductsTable = ({ products }) => {
+  const user = useSelector(selectLoggedInUser);
   const [variationMap, setVariationMap] = useState({}); // State to hold selected variation for each row
 
   const handleChange = (e, id) => {
@@ -61,9 +63,13 @@ export const ProductsTable = ({ products }) => {
     }));
   };
 
-  const getPriceForVariation = (variations, selectedVariation) => {
+  const getSellingPriceForVariation = (variations, selectedVariation) => {
     const variation = variations.find((variation) => variation.name === selectedVariation);
     return variation ? variation.sellingPrice : '';
+  };
+  const getCostPriceForVariation = (variations, selectedVariation) => {
+    const variation = variations.find((variation) => variation.name === selectedVariation);
+    return variation ? variation.costPrice : '';
   };
 
   useEffect(() => {
@@ -84,13 +90,27 @@ export const ProductsTable = ({ products }) => {
       // in the params there will go the dedicated image for the products
       // eslint-disable-next-line
       renderCell: (params) => {
-        return <ZoomableImage image={beauty} />;
+        return <ZoomableImage image={params.value} />;
       },
     },
     {
       field: 'name',
       headerName: 'Name',
       flex: 1,
+    },
+    {
+      field: 'type',
+      headerName: 'Type',
+      flex: 0,
+      renderCell: (params) => {
+        return (
+          <Typography
+            className={`rounded-2xl text-white mt-3 text-center px-3 py-1 h-6 text-[12px] overflow-hidden ${params.value === 'STANDARD' ? 'bg-green-500' : 'bg-red-500'}`}
+          >
+            {params.value.toLowerCase()}
+          </Typography>
+        );
+      },
     },
     {
       field: 'variations',
@@ -115,28 +135,30 @@ export const ProductsTable = ({ products }) => {
       },
     },
     {
-      field: 'price',
-      headerName: 'Price',
+      field: 'sellingPrice',
+      headerName: 'Selling Price',
       flex: 1,
       renderCell: (params) => {
         const selectedVariation = variationMap[params.row.id] || '';
-        const price = getPriceForVariation(params.row.variations, selectedVariation);
+        const price = getSellingPriceForVariation(params.row.variations, selectedVariation);
+        return <Typography className="py-1 mt-4 h-6 text-[14px]">{price} MZN</Typography>;
+      },
+    },
+    user.role === 'admin' && {
+      field: 'costPrice',
+      headerName: 'Cost Price',
+      flex: 1,
+      renderCell: (params) => {
+        const selectedVariation = variationMap[params.row.id] || '';
+        const price = getCostPriceForVariation(params.row.variations, selectedVariation);
         return <Typography className="py-1 mt-4 h-6 text-[14px]">{price} MZN</Typography>;
       },
     },
     {
-      field: 'type',
-      headerName: 'Type',
-      flex: 0,
-      renderCell: (params) => {
-        return (
-          <Typography
-            className={`rounded-2xl text-white mt-3 text-center px-3 py-1 h-6 text-[12px] overflow-hidden ${params.value === 'STANDARD' ? 'bg-green-500' : 'bg-red-500'}`}
-          >
-            {params.value.toLowerCase()}
-          </Typography>
-        );
-      },
+      field: 'createdAt',
+      headerName: 'Created',
+      flex: 1,
+      renderCell: (params) => format(new Date(params.value), 'do MMM yyyy'),
     },
     {
       field: 'action',
@@ -146,7 +168,7 @@ export const ProductsTable = ({ products }) => {
         return <MoreButton id={params.id} model={'products'} />;
       },
     },
-  ];
+  ].filter((b) => b);
 
   // zoomable image
   const ZoomableImage = ({ image }) => {

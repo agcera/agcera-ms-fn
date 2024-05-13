@@ -41,8 +41,12 @@ export const getAllProductsAction = createAsyncThunk('products/getAllProductsAct
   const response = await axiosInstance.get(`/products`);
   return response.data;
 });
-export const getProductAction = createAsyncThunk('products/getOneProductAction', async (id) => {
+export const getProductAction = createAsyncThunk('products/getProductAction', async (id) => {
   const response = await axiosInstance.get(`/products/${id}`);
+  return response.data;
+});
+export const deleteProductAction = createAsyncThunk('products/deleteProductAction', async (id) => {
+  const response = await axiosInstance.delete(`/products/${id}`);
   return response.data;
 });
 export const getAllStoreProductsAction = createAsyncThunk(
@@ -71,6 +75,9 @@ const productsSlice = createSlice({
       })
       .addCase(getProductAction.fulfilled, (state, { payload }) => {
         productsAdapter.upsertOne(state, payload.data);
+      })
+      .addCase(deleteProductAction.fulfilled, (state, { meta }) => {
+        productsAdapter.removeOne(state, meta.arg);
       })
       .addCase(getAllStoreProductsAction.fulfilled, (state, { payload }) => {
         productsAdapter.upsertMany(state, payload.data.products);

@@ -3,9 +3,13 @@ import { useState } from 'react';
 import { AiFillEdit } from 'react-icons/ai';
 import { FaEye, FaTrash } from 'react-icons/fa';
 import { MdMoreHoriz } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
+import DeleteProductModal from '../products/DeleteProductModal';
 
 function MoreButton({ id, model, ...props }) {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const toggleActionGroup = (e) => {
     e.stopPropagation();
@@ -15,17 +19,21 @@ function MoreButton({ id, model, ...props }) {
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
-  const handleDetails = (e) => {
-    console.log(e, id, model);
+  const handleDetails = () => {
+    navigate(`/dashboard/${model}/${id}`);
     handleCloseMenu();
   };
-  const handleEdit = (e) => {
-    console.log(e, id, model);
+  const handleEdit = () => {
+    navigate(`/dashboard/${model}/${id}/update`);
     handleCloseMenu();
   };
-  const handleDelete = (e) => {
-    console.log(e, id, model);
+  const handleDelete = () => {
+    setDeleteOpen(true);
     handleCloseMenu();
+  };
+
+  const handleCloseDelete = () => {
+    setDeleteOpen(false);
   };
 
   return (
@@ -50,6 +58,8 @@ function MoreButton({ id, model, ...props }) {
           Delete
         </MenuItem>
       </Menu>
+
+      {model === 'products' && <DeleteProductModal id={id} open={deleteOpen} handleClose={handleCloseDelete} />}
     </>
   );
 }
