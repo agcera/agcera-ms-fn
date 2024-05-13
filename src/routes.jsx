@@ -22,6 +22,7 @@ import RegisterUserPage from './pages/user/RegisterUserPage';
 import UpdateUserPage from './pages/user/UpdateUserPage';
 import UsersPage from './pages/user/UsersPage';
 import ViewUserPage from './pages/user/ViewUserPage';
+import GenerateReportPage from './pages/report/GenerateReportPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -67,6 +68,7 @@ const router = createBrowserRouter(
             <Route path=":id/update" element={<UpdateUserPage />} />
             <Route path="create" element={<RegisterUserPage />} />
           </Route>
+          <Route path="report" element={<GenerateReportPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />
