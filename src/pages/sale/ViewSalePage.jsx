@@ -157,7 +157,7 @@ const ViewSalePage = () => {
           </Typography>
 
           {soldProducts?.length > 0 ? (
-            <ProductsTable products={soldProducts} />
+            <ProductsTable products={soldProducts} omit={['action', 'createdAt']} />
           ) : (
             <Typography color="secondary.light" className="text-center py-4">
               This sale has no products

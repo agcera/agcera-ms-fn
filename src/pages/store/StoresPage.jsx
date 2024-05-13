@@ -46,7 +46,6 @@ const StoresPage = () => {
       headerName: 'Action',
       flex: 0,
       renderCell: (params) => {
-        console.log(params);
         let hasDelete = true;
         if (['main', 'expired'].includes(params.row.name.toLowerCase())) hasDelete = false;
         return <MoreButton id={params.id} model={'stores'} hasDelete={hasDelete} />;
@@ -58,9 +57,7 @@ const StoresPage = () => {
     <Box className="size-full flex flex-col">
       <PageHeader
         title="Stores"
-        hasGenerateReport={() => {
-          console.log('Generate Report of stores');
-        }}
+        hasGenerateReport={true}
         hasCreate={() => {
           navigate('/dashboard/stores/create');
         }}

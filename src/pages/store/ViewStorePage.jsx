@@ -11,6 +11,8 @@ import { getStoreAction, selectStoreById } from '../../redux/storesSlice';
 import { getAllStoreUsersAction, selectAllUsersByRole } from '../../redux/usersSlice';
 import StatusBadge from '../../components/Table/StatusBadge';
 import DeleteStoreModal from '../../components/store/DeleteStoreModal';
+import { ProductsTable } from '../product/ProductsPage';
+import { getAllStoreProductsAction, selectAllProductsBystoreId } from '../../redux/productsSlice';
 
 const StoreKey = ({ children, ...props }) => {
   return (
@@ -32,6 +34,7 @@ const ViewStorePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const store = useSelector(selectStoreById(routeParams.id));
+  const products = useSelector(selectAllProductsBystoreId(routeParams.id));
   const keepers = useSelector(selectAllUsersByRole(['admin', 'keeper']));
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -51,6 +54,7 @@ const ViewStorePage = () => {
     Promise.all([
       dispatch(getStoreAction(routeParams.id)),
       dispatch(getAllStoreUsersAction({ storeId: routeParams.id, role: ['keeper'] })),
+      dispatch(getAllStoreProductsAction({ storeId: routeParams.id })),
     ])
       .then((resp) => {
         resp.forEach(({ error }) => {
@@ -142,9 +146,17 @@ const ViewStorePage = () => {
               size="small"
               endIcon={<IoAddOutline />}
             >
-              Add product
+              Add products
             </Button>
           </Stack>
+
+          {products?.length > 0 ? (
+            <ProductsTable products={products} omit={['action']} />
+          ) : (
+            <Typography color="secondary.light" className="text-center py-4">
+              This store has no products
+            </Typography>
+          )}
         </Box>
       </Box>
 
