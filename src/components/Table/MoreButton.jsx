@@ -3,9 +3,13 @@ import { useState } from 'react';
 import { AiFillEdit } from 'react-icons/ai';
 import { FaEye, FaTrash } from 'react-icons/fa';
 import { MdMoreHoriz } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
+import DeleteProductModal from '../products/DeleteProductModal';
 
-function MoreButton({ id, model, ...props }) {
+function MoreButton({ id, model, hasDelete = false, hasDetails = true, hasEdit = true, ...props }) {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const toggleActionGroup = (e) => {
     e.stopPropagation();
@@ -15,17 +19,21 @@ function MoreButton({ id, model, ...props }) {
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
-  const handleDetails = (e) => {
-    console.log(e, id, model);
+  const handleDetails = () => {
+    navigate(`/dashboard/${model}/${id}`);
     handleCloseMenu();
   };
-  const handleEdit = (e) => {
-    console.log(e, id, model);
+  const handleEdit = () => {
+    navigate(`/dashboard/${model}/${id}/update`);
     handleCloseMenu();
   };
-  const handleDelete = (e) => {
-    console.log(e, id, model);
+  const handleDelete = () => {
+    setDeleteOpen(true);
     handleCloseMenu();
+  };
+
+  const handleCloseDelete = () => {
+    setDeleteOpen(false);
   };
 
   return (
@@ -37,19 +45,31 @@ function MoreButton({ id, model, ...props }) {
       </Box>
 
       <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={handleCloseMenu}>
-        <MenuItem onClick={handleDetails}>
-          <FaEye className="mr-2" />
-          Details
-        </MenuItem>
-        <MenuItem onClick={handleEdit}>
-          <AiFillEdit className="mr-2" />
-          Edit
-        </MenuItem>
-        <MenuItem onClick={handleDelete}>
-          <FaTrash className="mr-2" />
-          Delete
-        </MenuItem>
+        {hasDetails && (
+          <MenuItem onClick={handleDetails}>
+            <FaEye className="mr-2" />
+            Details
+          </MenuItem>
+        )}
+        {hasEdit && (
+          <MenuItem onClick={handleEdit}>
+            <AiFillEdit className="mr-2" />
+            Edit
+          </MenuItem>
+        )}
+        {hasDelete && (
+          <MenuItem onClick={handleDelete}>
+            <FaTrash className="mr-2" />
+            Delete
+          </MenuItem>
+        )}
       </Menu>
+
+      {hasDelete && [
+        model === 'products' && (
+          <DeleteProductModal key={model} id={id} open={deleteOpen} handleClose={handleCloseDelete} />
+        ),
+      ]}
     </>
   );
 }

@@ -1,9 +1,9 @@
 import { Button, CircularProgress } from '@mui/material';
 import PropTypes from 'prop-types';
 
-const LoadingButton = ({ loading = false, size = 20, children, ...props }) => {
+const LoadingButton = ({ loading = false, disabled = false, size = 20, children, ...props }) => {
   return (
-    <Button disabled={loading} {...props}>
+    <Button disabled={loading || disabled} {...props}>
       {loading ? <CircularProgress size={size} /> : children}
     </Button>
   );

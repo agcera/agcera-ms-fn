@@ -27,6 +27,7 @@ const UpdateProductPage = () => {
     resolver: yupResolver(type === 'STANDARD' ? productUpdateStandardSchema : productUpdateSpecialSchema),
     defaultValues: {
       name: '',
+      number: 1,
       costPrice: 0,
       sellingPrice: 0,
       variations: [],
@@ -50,7 +51,8 @@ const UpdateProductPage = () => {
       productData.variations = [
         {
           name: 'Default',
-          description: data.description,
+          number: 1,
+          // description: data.description,
           costPrice: data.costPrice,
           sellingPrice: data.sellingPrice,
         },
@@ -84,13 +86,15 @@ const UpdateProductPage = () => {
       setValue('name', name);
 
       if (type === 'STANDARD') {
-        const { costPrice, sellingPrice, description } = variations[0];
+        const { costPrice, sellingPrice, description, number } = variations[0];
         setValue('costPrice', costPrice);
+        setValue('number', number);
         setValue('sellingPrice', sellingPrice);
         setValue('description', description || '');
       } else {
         variations.forEach((variation, index) => {
           setValue(`variations[${index}].name`, variation.name);
+          setValue(`variations[${index}].number`, variation.number);
           setValue(`variations[${index}].costPrice`, variation.costPrice);
           setValue(`variations[${index}].sellingPrice`, variation.sellingPrice);
           setValue(`variations[${index}].description`, variation.description || '');
@@ -163,7 +167,7 @@ const UpdateProductPage = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Input
                   label="Description"
                   placeHolder="Enter product description..."
@@ -173,7 +177,7 @@ const UpdateProductPage = () => {
                   helperText={errors.description?.message}
                   inputProps={{ multiline: true, minRows: 2, ...register('description') }}
                 />
-              </Grid>
+              </Grid> */}
             </>
           )}
         </Grid>

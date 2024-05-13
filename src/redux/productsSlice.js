@@ -11,8 +11,9 @@ export const createProductAction = createAsyncThunk(
     formData.append('type', type);
     formData.append('image', image, image.name);
 
-    variations.forEach(({ name, description, costPrice, sellingPrice }, index) => {
+    variations.forEach(({ name, number, description, costPrice, sellingPrice }, index) => {
       formData.append(`variations[${index}][name]`, name);
+      formData.append(`variations[${index}][number]`, number);
       formData.append(`variations[${index}][costPrice]`, costPrice);
       formData.append(`variations[${index}][sellingPrice]`, sellingPrice);
       description && formData.append(`variations[${index}][description]`, description);
@@ -28,8 +29,9 @@ export const updateProductAction = createAsyncThunk('products/updateProductActio
   name && formData.append('name', name);
   image && formData.append('image', image, image.name);
 
-  variations?.forEach(({ name, description, costPrice = null, sellingPrice = null }, index) => {
+  variations?.forEach(({ name, number, description, costPrice = null, sellingPrice = null }, index) => {
     name && formData.append(`variations[${index}][name]`, name);
+    number !== null && formData.append(`variations[${index}][number]`, number);
     costPrice !== null && formData.append(`variations[${index}][costPrice]`, costPrice);
     sellingPrice !== null && formData.append(`variations[${index}][sellingPrice]`, sellingPrice);
     description && formData.append(`variations[${index}][description]`, description);
@@ -41,8 +43,12 @@ export const getAllProductsAction = createAsyncThunk('products/getAllProductsAct
   const response = await axiosInstance.get(`/products`);
   return response.data;
 });
-export const getProductAction = createAsyncThunk('products/getOneProductAction', async (id) => {
+export const getProductAction = createAsyncThunk('products/getProductAction', async (id) => {
   const response = await axiosInstance.get(`/products/${id}`);
+  return response.data;
+});
+export const deleteProductAction = createAsyncThunk('products/deleteProductAction', async (id) => {
+  const response = await axiosInstance.delete(`/products/${id}`);
   return response.data;
 });
 export const getAllStoreProductsAction = createAsyncThunk(
@@ -71,6 +77,9 @@ const productsSlice = createSlice({
       })
       .addCase(getProductAction.fulfilled, (state, { payload }) => {
         productsAdapter.upsertOne(state, payload.data);
+      })
+      .addCase(deleteProductAction.fulfilled, (state, { meta }) => {
+        productsAdapter.removeOne(state, meta.arg);
       })
       .addCase(getAllStoreProductsAction.fulfilled, (state, { payload }) => {
         productsAdapter.upsertMany(state, payload.data.products);
