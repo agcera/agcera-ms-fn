@@ -1,25 +1,17 @@
 import { Box } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import PageHeader from '../../components/PageHeader';
-
-import { getAllUsersAction, selectAllUser } from '../../redux/usersSlice';
-import { tokens } from '../../themeConfig';
-import StyledTable from '../../components/Table/StyledTable';
 import MoreButton from '../../components/Table/MoreButton';
 import StatusBadge from '../../components/Table/StatusBadge';
+import StyledTable from '../../components/Table/StyledTable';
+import { getAllUsersAction, selectAllUser } from '../../redux/usersSlice';
+import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 const UsersPage = () => {
-  /* eslint-disable no-unused-vars */
-  const [loading, setLoading] = useState(false);
-
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const users = useSelector(selectAllUser);
 
   useEffect(() => {
@@ -27,8 +19,17 @@ const UsersPage = () => {
   }, [dispatch]);
 
   const columns = [
+    {
+      field: 'image',
+      headerName: 'Avatar',
+      flex: 0,
+      renderCell: (params) => (
+        <Box className="h-full aspect-square p-1">
+          <img src={params.value} alt="avatar" className="w-full h-full rounded-full object-cover bg-slate-300" />
+        </Box>
+      ),
+    },
     { field: 'name', headerName: 'Name', flex: 1 },
-
     { field: 'phone', headerName: 'Phone', flex: 1 },
     { field: 'role', headerName: 'Role', flex: 1 },
     {
@@ -44,10 +45,16 @@ const UsersPage = () => {
       ),
     },
     {
+      field: 'createdAt',
+      headerName: 'Created',
+      flex: 1,
+      renderCell: (params) => format(new Date(params.value), 'do MMM yyyy'),
+    },
+    {
       field: 'actions',
       headerName: 'Actions',
       flex: 0,
-      renderCell: (params) => <MoreButton id={params.id} model={'user'} />,
+      renderCell: (params) => <MoreButton id={params.id} model={'users'} hasDelete={true} />,
     },
   ];
 
@@ -57,11 +64,11 @@ const UsersPage = () => {
         title="Users"
         hasGenerateReport={true}
         hasCreate={() => {
-          console.log('Create user');
+          navigate('/dashboard/users/create');
         }}
       />
 
-      <StyledTable columns={columns} data={users} />
+      <StyledTable columns={columns} data={users} onRowClick={(user) => navigate(`/dashboard/users/${user.id}`)} />
     </Box>
   );
 };

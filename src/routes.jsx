@@ -26,6 +26,7 @@ import GenerateReportPage from './pages/report/GenerateReportPage';
 import CreateTransactionPage from './pages/transaction/CreateTransactionPage';
 import Redirect from './global/Redirect';
 import Protected from './components/route/Protected';
+import RegisterPage from './pages/auth/RegisterPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -41,6 +42,7 @@ const router = createBrowserRouter(
       >
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="login" element={<LoginPage />} />
+        <Route path="register" element={<RegisterPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
         <Route path="reset-password/:token" element={<ResetPasswordPage />} />
 
@@ -63,21 +65,25 @@ const router = createBrowserRouter(
             <Route path=":id/update" element={<Protected Component={UpdateProductPage} allowed={['admin']} />} />
             <Route path="create" element={<Protected Component={CreateProductPage} allowed={['admin']} />} />
           </Route>
+
           <Route path="sales" element={<Outlet />}>
             <Route path="" element={<SalesPage />} />
             <Route path=":id" element={<ViewSalePage />} />
             <Route path="create" element={<Protected Component={CreateSalePage} allowed={['keeper']} />} />
           </Route>
+
           <Route path="transactions" element={<Protected Component={Outlet} denied={['user']} />}>
             <Route path="" element={<TransactionsPage />} />
             <Route path="create" element={<CreateTransactionPage />} />
           </Route>
+
           <Route path="users" element={<Protected Component={Outlet} denied={['user']} />}>
             <Route path="" element={<UsersPage />} />
             <Route path=":id" element={<ViewUserPage />} />
             <Route path=":id/update" element={<Protected Component={UpdateUserPage} allowed={['admin']} />} />
             <Route path="create" element={<RegisterUserPage />} />
           </Route>
+
           <Route path="report" element={<Protected Component={GenerateReportPage} denied={['user']} />} />
         </Route>
 

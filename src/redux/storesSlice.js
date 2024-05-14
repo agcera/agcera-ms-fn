@@ -1,6 +1,10 @@
 import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
 
+export const getAllPartialStoresAction = createAsyncThunk('stores/getAllPartialStoresAction', async () => {
+  const response = await axiosInstance.get(`/stores/all`);
+  return response.data;
+});
 export const getAllStoresAction = createAsyncThunk('stores/getAllStoresAction', async () => {
   const response = await axiosInstance.get(`/stores`);
   return response.data;
@@ -45,6 +49,9 @@ const storesSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(getAllPartialStoresAction.fulfilled, (state, { payload }) => {
+        storesAdapter.upsertMany(state, payload.data);
+      })
       .addCase(getAllStoresAction.fulfilled, (state, { payload }) => {
         storesAdapter.upsertMany(state, payload.data.stores);
       })

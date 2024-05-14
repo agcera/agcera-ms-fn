@@ -7,7 +7,6 @@ import { MdAnalytics, MdOutlinePeopleAlt, MdOutlineProductionQuantityLimits, MdO
 import { RiExchangeDollarFill } from 'react-icons/ri';
 import { Menu, MenuItem, Sidebar as ProSidebar } from 'react-pro-sidebar';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { profile } from '../assets';
 import { tokens } from '../themeConfig';
 import { useSelector } from 'react-redux';
 import { selectLoggedInUser } from '../redux/usersSlice';
@@ -100,7 +99,11 @@ const Sidebar = () => {
             <Box className="mb-5">
               {/* the profile image for the user */}
               <Box display="flex" justifyContent="center" alignItems="center">
-                <img alt="profile-user" className="w-[70px] h-[70px] rounded-full object-cover" src={profile} />
+                <img
+                  alt="profile-user"
+                  className="w-[70px] h-[70px] bg-slate-300 rounded-full object-cover"
+                  src={user.image}
+                />
               </Box>
 
               <Box textAlign="center">

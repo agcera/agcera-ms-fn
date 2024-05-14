@@ -4,7 +4,6 @@ import { MdLogout, MdOutlinePersonOutline, MdPersonOutline } from 'react-icons/m
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { logo } from '../assets';
 import { logoutAction } from '../redux/usersSlice';
 
 function Topbar() {
@@ -39,7 +38,7 @@ function Topbar() {
       <Box p={1} className="flex justify-between items-center shadow-sm bg-background w-[100%]">
         {/* SEARCH BAR  */}
         <Box className="w-28 h-max shrink-0 pl-4">
-          <img src={logo} className="w-full" />
+          <img src="/images/logo_cropped.png" alt="logo" className="w-full" />
         </Box>
 
         {/* icons  */}
