@@ -88,7 +88,7 @@ const UpdateUserPage = () => {
 
   return (
     <Form control={control} method="post" action="" onSubmit={handleSubmit(onSubmit)}>
-      <PageHeader title={`Update ${capitalize(createUser.name)} details`} hasBack={true} backTo="/dashboard/users" />
+      <PageHeader title={`Update ${capitalize(createUser.name)} details`} hasBack={true} backTo={-1} />
       <Grid container className="px-4 py-2" rowSpacing={0.5} columnSpacing={2}>
         <Grid item xs={12} sm={6}>
           <Input

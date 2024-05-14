@@ -68,7 +68,7 @@ const UsersPage = () => {
         }}
       />
 
-      <StyledTable columns={columns} data={users} />
+      <StyledTable columns={columns} data={users} onRowClick={(user) => navigate(`/dashboard/users/${user.id}`)} />
     </Box>
   );
 };
