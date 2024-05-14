@@ -30,6 +30,10 @@ export const updateStoreAction = createAsyncThunk('stores/updateStoreAction', as
   const response = await axiosInstance.patch(`/stores/${id}`, store);
   return response.data;
 });
+export const storeAddMoveProductAction = createAsyncThunk('stores/storeAddMoveProductAction', async (data) => {
+  const response = await axiosInstance.post(`/stores/addProduct`, data);
+  return response.data;
+});
 
 const storesAdapter = createEntityAdapter();
 

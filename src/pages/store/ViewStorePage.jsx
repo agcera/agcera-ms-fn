@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import Loader from '../../components/Loader';
 import PageHeader from '../../components/PageHeader';
 import { getStoreAction, selectStoreById } from '../../redux/storesSlice';
-import { getAllStoreUsersAction, selectAllUsersByRole } from '../../redux/usersSlice';
+import { getAllStoreUsersAction, selectAllUsersByRole, selectLoggedInUser } from '../../redux/usersSlice';
 import StatusBadge from '../../components/Table/StatusBadge';
 import DeleteStoreModal from '../../components/store/DeleteStoreModal';
 import { ProductsTable } from '../product/ProductsPage';
@@ -33,6 +33,7 @@ const ViewStorePage = () => {
   const routeParams = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector(selectLoggedInUser);
   const store = useSelector(selectStoreById(routeParams.id));
   const products = useSelector(selectAllProductsBystoreId(routeParams.id));
   const keepers = useSelector(selectAllUsersByRole(['admin', 'keeper']));
@@ -139,15 +140,17 @@ const ViewStorePage = () => {
             <Typography variant="subHeader" className="font-semibold" color="primary.light">
               Products in store
             </Typography>
-            <Button
-              LinkComponent={Link}
-              to={`/dashboard/stores/${store.id}/add-product`}
-              color="specialBlue"
-              size="small"
-              endIcon={<IoAddOutline />}
-            >
-              Add products
-            </Button>
+            {user.role === 'admin' && (
+              <Button
+                LinkComponent={Link}
+                to={`/dashboard/stores/${store.id}/add-product`}
+                color="specialBlue"
+                size="small"
+                endIcon={<IoAddOutline />}
+              >
+                Add products
+              </Button>
+            )}
           </Stack>
 
           {products?.length > 0 ? (

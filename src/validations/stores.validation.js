@@ -20,3 +20,13 @@ export const updateStoreSchema = yup.object({
   isActive: yup.boolean().typeError('status should be a boolean type'),
   // keepers: yup.array().of(yup.string()).unique('Keepers must be unique').min(1),
 });
+
+export const storeAddMoveProductSchema = yup.object({
+  from: yup.string().nullable(),
+  to: yup
+    .string()
+    .not([yup.ref('from')])
+    .required(),
+  productId: yup.string().required(),
+  quantity: yup.number().integer().min(1).max(yup.ref('fromQuantity')).required(),
+});
