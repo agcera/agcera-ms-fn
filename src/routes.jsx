@@ -23,6 +23,7 @@ import UpdateUserPage from './pages/user/UpdateUserPage';
 import UsersPage from './pages/user/UsersPage';
 import ViewUserPage from './pages/user/ViewUserPage';
 import GenerateReportPage from './pages/report/GenerateReportPage';
+import CreateTransactionPage from './pages/transaction/CreateTransactionPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -62,7 +63,10 @@ const router = createBrowserRouter(
             <Route path=":id" element={<ViewSalePage />} />
             <Route path="create" element={<CreateSalePage />} />
           </Route>
-          <Route path="transactions" element={<TransactionsPage />} />
+          <Route path="transactions" element={<Outlet />}>
+            <Route path="" element={<TransactionsPage />} />
+            <Route path="create" element={<CreateTransactionPage />} />
+          </Route>
           <Route path="users" element={<Outlet />}>
             <Route path="" element={<UsersPage />} />
             <Route path=":id" element={<ViewUserPage />} />

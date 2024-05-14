@@ -9,6 +9,7 @@ import Loader from '../../components/Loader';
 import MoreButton from '../../components/Table/MoreButton';
 import { format } from 'date-fns';
 import { selectLoggedInUser } from '../../redux/usersSlice';
+import StatusBadge from '../../components/Table/StatusBadge';
 
 const ProductsPage = () => {
   const dispatch = useDispatch();
@@ -102,11 +103,12 @@ export const ProductsTable = ({ products, omit = [], storeId }) => {
       flex: 0,
       renderCell: (params) => {
         return (
-          <Typography
-            className={`rounded-2xl text-white mt-3 text-center px-3 py-1 h-6 text-[12px] overflow-hidden ${params.value === 'STANDARD' ? 'bg-green-500' : 'bg-red-500'}`}
-          >
-            {params.value.toLowerCase()}
-          </Typography>
+          <StatusBadge
+            className="min-w-[80px]"
+            status={params.value.toLowerCase()}
+            bg={params.value === 'STANDARD' ? 'bg-green-500' : 'bg-red-500'}
+            color={'white'}
+          />
         );
       },
     },
