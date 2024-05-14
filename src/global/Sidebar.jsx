@@ -18,7 +18,6 @@ const Item = ({ title, to, icon, className, ...props }) => {
   const location = useLocation();
 
   const active = useMemo(() => {
-    if (to === '/dashboard') return location.pathname === to;
     if (location.pathname === '/dashboard/sales/create') return location.pathname === to;
     return location.pathname.startsWith(to);
   }, [to, location.pathname]);
@@ -120,7 +119,7 @@ const Sidebar = () => {
 
           {/* menu items  */}
           <Box paddingLeft={isCollapsed ? undefined : '10px'}>
-            <Item title="Analytics" to="/dashboard" icon={<MdAnalytics />} />
+            <Item title="Analytics" to="/dashboard/analytics" icon={<MdAnalytics />} />
             <Item title="Stores" to="/dashboard/stores" icon={<MdOutlineStore />} />
             <Item title="Products" to="/dashboard/products" icon={<MdOutlineProductionQuantityLimits />} />
             <Item title="Sales" to="/dashboard/sales" icon={<RiExchangeDollarFill />} />

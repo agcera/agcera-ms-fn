@@ -24,6 +24,8 @@ import UsersPage from './pages/user/UsersPage';
 import ViewUserPage from './pages/user/ViewUserPage';
 import GenerateReportPage from './pages/report/GenerateReportPage';
 import CreateTransactionPage from './pages/transaction/CreateTransactionPage';
+import Redirect from './global/Redirect';
+import Protected from './components/route/Protected';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -43,37 +45,40 @@ const router = createBrowserRouter(
         <Route path="reset-password/:token" element={<ResetPasswordPage />} />
 
         <Route path="dashboard" element={<DashboardPage />}>
-          <Route path="" element={<AnalyticsPage />} />
+          <Route path="" element={<Redirect />} />
+          <Route path="analytics" element={<Protected Component={AnalyticsPage} denied={['user']} />} />
           <Route path="profile" element={<ViewUserPage />} />
+
           <Route path="stores" element={<Outlet />}>
             <Route path="" element={<StoresPage />} />
-            <Route path=":id" element={<ViewStorePage />} />
-            <Route path=":id/add-product" element={<StoreAddProductPage />} />
-            <Route path=":id/update" element={<UpdateStorePage />} />
-            <Route path="create" element={<CreateStorePage />} />
-            <Route path="add-product" element={<StoreAddProductPage />} />
+            <Route path=":id" element={<Protected Component={ViewStorePage} denied={['user']} />} />
+            <Route path=":id/add-product" element={<Protected Component={StoreAddProductPage} denied={['user']} />} />
+            <Route path=":id/update" element={<Protected Component={UpdateStorePage} denied={['user']} />} />
+            <Route path="create" element={<Protected Component={CreateStorePage} allowed={['admin']} />} />
+            <Route path="add-product" element={<Protected Component={StoreAddProductPage} allowed={['admin']} />} />
           </Route>
+
           <Route path="products" element={<Outlet />}>
             <Route path="" element={<ProductsPage />} />
-            <Route path=":id/update" element={<UpdateProductPage />} />
-            <Route path="create" element={<CreateProductPage />} />
+            <Route path=":id/update" element={<Protected Component={UpdateProductPage} allowed={['admin']} />} />
+            <Route path="create" element={<Protected Component={CreateProductPage} allowed={['admin']} />} />
           </Route>
           <Route path="sales" element={<Outlet />}>
             <Route path="" element={<SalesPage />} />
             <Route path=":id" element={<ViewSalePage />} />
-            <Route path="create" element={<CreateSalePage />} />
+            <Route path="create" element={<Protected Component={CreateSalePage} allowed={['keeper']} />} />
           </Route>
-          <Route path="transactions" element={<Outlet />}>
+          <Route path="transactions" element={<Protected Component={Outlet} denied={['user']} />}>
             <Route path="" element={<TransactionsPage />} />
             <Route path="create" element={<CreateTransactionPage />} />
           </Route>
-          <Route path="users" element={<Outlet />}>
+          <Route path="users" element={<Protected Component={Outlet} denied={['user']} />}>
             <Route path="" element={<UsersPage />} />
             <Route path=":id" element={<ViewUserPage />} />
-            <Route path=":id/update" element={<UpdateUserPage />} />
+            <Route path=":id/update" element={<Protected Component={UpdateUserPage} allowed={['admin']} />} />
             <Route path="create" element={<RegisterUserPage />} />
           </Route>
-          <Route path="report" element={<GenerateReportPage />} />
+          <Route path="report" element={<Protected Component={GenerateReportPage} denied={['user']} />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />
