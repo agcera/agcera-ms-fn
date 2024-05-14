@@ -108,7 +108,7 @@ const Sidebar = () => {
                 <Typography className="text-dark text-sm/[16px] font-semibold" sx={{ mt: '10px' }}>
                   {capitalize(user.name)}
                 </Typography>
-                <Typography className="text-primary" sx={{ color: colors.primary.main }} variant="info1">
+                <Typography className="text-primary font-medium" sx={{ color: colors.primary.main }} variant="info1">
                   Role: {capitalize(user.role)}
                 </Typography>
                 <Typography className="text-primary" sx={{ color: colors.primary.main }} variant="info1">
