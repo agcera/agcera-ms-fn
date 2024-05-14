@@ -154,7 +154,7 @@ const ViewStorePage = () => {
           </Stack>
 
           {products?.length > 0 ? (
-            <ProductsTable products={products} omit={['action']} />
+            <ProductsTable products={products} omit={['action']} storeId={routeParams.id} />
           ) : (
             <Typography color="secondary.light" className="text-center py-4">
               This store has no products

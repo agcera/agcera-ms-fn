@@ -49,7 +49,7 @@ const ProductsPage = () => {
 
 export default ProductsPage;
 
-export const ProductsTable = ({ products, omit = [] }) => {
+export const ProductsTable = ({ products, omit = [], storeId }) => {
   const user = useSelector(selectLoggedInUser);
   const [variationMap, setVariationMap] = useState({}); // State to hold selected variation for each row
 
@@ -111,6 +111,13 @@ export const ProductsTable = ({ products, omit = [] }) => {
       },
     },
     {
+      field: 'stores',
+      headerName: 'In store',
+      flex: 0,
+      align: 'center',
+      renderCell: (params) => params.value?.find((s) => s.storeId === storeId).quantity,
+    },
+    {
       field: 'variations',
       headerName: 'Variations',
       flex: 1,
@@ -166,7 +173,7 @@ export const ProductsTable = ({ products, omit = [] }) => {
         return <MoreButton id={params.id} model={'products'} hasDetails={false} hasDelete={true} />;
       },
     },
-  ].filter((b) => b && !omit.includes(b.field));
+  ].filter((b) => b && !omit.includes(b.field) && !(!storeId && b.field === 'stores'));
 
   // zoomable image
   const ZoomableImage = ({ image }) => {
