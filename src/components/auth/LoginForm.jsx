@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import { Form, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { loginAction } from '../../redux/usersSlice';
@@ -85,6 +85,15 @@ const LoginForm = () => {
         >
           Login
         </LoadingButton>
+        <Button
+          LinkComponent={Link}
+          to="/register"
+          color="secondary"
+          className="max-w-[450px] w-full"
+          disabled={loading}
+        >
+          Go to register
+        </Button>
       </Box>
     </Form>
   );

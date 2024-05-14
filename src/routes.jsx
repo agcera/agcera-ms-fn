@@ -26,6 +26,7 @@ import GenerateReportPage from './pages/report/GenerateReportPage';
 import CreateTransactionPage from './pages/transaction/CreateTransactionPage';
 import Redirect from './global/Redirect';
 import Protected from './components/route/Protected';
+import RegisterPage from './pages/auth/RegisterPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -41,6 +42,7 @@ const router = createBrowserRouter(
       >
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="login" element={<LoginPage />} />
+        <Route path="register" element={<RegisterPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
         <Route path="reset-password/:token" element={<ResetPasswordPage />} />
 

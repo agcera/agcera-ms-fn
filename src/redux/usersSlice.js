@@ -5,6 +5,17 @@ import { updateStoreAction } from './storesSlice';
 
 const usersAdapter = createEntityAdapter();
 
+export const registerAction = createAsyncThunk('users/registerAction', async (data) => {
+  const formData = new FormData();
+
+  Object.keys(data).map((key) => {
+    const value = data[key];
+    formData.append(key, value);
+  });
+
+  const response = await axiosInstance.post('/users/register', formData);
+  return response.data;
+});
 export const loginAction = createAsyncThunk('users/loginAction', async ({ phone, password }) => {
   const response = await axiosInstance.post('/users/login', { phone, password });
   localStorage.setItem('AuthTokenExists', true);
@@ -51,6 +62,9 @@ const usersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(registerAction.fulfilled, (state, action) => {
+        usersAdapter.upsertOne(state, action.payload.data);
+      })
       .addCase(loginAction.fulfilled, (state, action) => {
         usersAdapter.upsertOne(state, action.payload.data);
       })

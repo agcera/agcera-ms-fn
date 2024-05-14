@@ -1,8 +1,8 @@
 import { Box, Container, Typography } from '@mui/material';
-import LoginForm from '../../components/auth/LoginForm';
 import HeaderUnderline from '../../global/HeaderUnderline';
+import RegisterForm from '../../components/auth/RegisterForm';
 
-const LoginPage = () => {
+const RegisterPage = () => {
   return (
     <Container className="w-full h-full flex" maxWidth="xl">
       <Box
@@ -37,15 +37,15 @@ const LoginPage = () => {
           </Box>
           <Box className="w-full flex flex-col items-center mb-6">
             <Typography variant="header" className="text-center font-semibold text-dark mb-2">
-              Login
+              Register
             </Typography>
             <HeaderUnderline className="m-auto" />
           </Box>
-          <LoginForm />
+          <RegisterForm />
         </Box>
       </Box>
     </Container>
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
