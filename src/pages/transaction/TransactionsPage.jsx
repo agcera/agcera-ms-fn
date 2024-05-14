@@ -2,15 +2,17 @@ import { Box, capitalize } from '@mui/material';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import MoreButton from '../../components/Table/MoreButton';
 import StatusBadge from '../../components/Table/StatusBadge';
 import StyledTable from '../../components/Table/StyledTable';
-import { getAllTransactions, selectAllTransactions } from '../../redux/transactionsSlice';
 import DetailsTransactionModal from '../../components/transaction/DetailsTransactionModal';
+import { getAllTransactionsAction, selectAllTransactions } from '../../redux/transactionsSlice';
 
 const TransactionsPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const transactions = useSelector(selectAllTransactions);
   const [transactionId, setTransactionId] = useState(null);
 
@@ -66,7 +68,7 @@ const TransactionsPage = () => {
   };
 
   useEffect(() => {
-    dispatch(getAllTransactions({}));
+    dispatch(getAllTransactionsAction({}));
   }, [dispatch]);
 
   return (
@@ -75,9 +77,7 @@ const TransactionsPage = () => {
         <PageHeader
           title="Transactions"
           hasGenerateReport={true}
-          hasCreate={() => {
-            console.log('Create transactions');
-          }}
+          hasCreate={() => navigate('/dashboard/transactions/create')}
         />
 
         <StyledTable columns={columns} data={transactions} />

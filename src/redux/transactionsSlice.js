@@ -2,7 +2,7 @@ import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/too
 import axiosInstance from '../axios';
 import { formatQuery } from '../utils/formatters';
 
-export const getAllTransactions = createAsyncThunk('transactions/getAllTransactions', async (query) => {
+export const getAllTransactionsAction = createAsyncThunk('transactions/getAllTransactionsAction', async (query) => {
   const response = await axiosInstance.get(`/transactions/${formatQuery(query)}`);
   const data = response.data;
   return {
@@ -13,6 +13,10 @@ export const getAllTransactions = createAsyncThunk('transactions/getAllTransacti
     },
   };
 });
+export const createTransactionAction = createAsyncThunk('transactions/createTransactionAction', async (data) => {
+  const response = await axiosInstance.post(`/transactions`, data);
+  return response.data;
+});
 
 const transactionsAdapter = createEntityAdapter();
 
@@ -22,9 +26,13 @@ const transactionsSlice = createSlice({
   name: 'transactions',
   initialState: transactionsAdapter.getInitialState(),
   extraReducers: (builder) => {
-    builder.addCase(getAllTransactions.fulfilled, (state, { payload }) => {
-      transactionsAdapter.upsertMany(state, payload.data.transactions);
-    });
+    builder
+      .addCase(getAllTransactionsAction.fulfilled, (state, { payload }) => {
+        transactionsAdapter.upsertMany(state, payload.data.transactions);
+      })
+      .addCase(createTransactionAction.fulfilled, (state, { payload }) => {
+        transactionsAdapter.upsertOne(state, payload.data);
+      });
   },
 });
 
