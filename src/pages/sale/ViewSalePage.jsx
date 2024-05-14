@@ -9,6 +9,7 @@ import { getUserAction, selectUserById } from '../../redux/usersSlice';
 import { toast } from 'react-toastify';
 import { format } from 'date-fns';
 import { ProductsTable } from '../product/ProductsPage';
+import DeleteSaleModal from '../../components/sale/DeleteSaleModal';
 
 const StoreKey = ({ children, ...props }) => {
   return (
@@ -30,7 +31,12 @@ const ViewSalePage = () => {
   const { id: saleId } = useParams();
   const sale = useSelector(selectSaleById(saleId));
   const client = useSelector(selectUserById(sale?.clientId));
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
+
+  const handleDeleteClose = () => {
+    setDeleteOpen(false);
+  };
 
   const calculateTotal = (sale) => {
     let total = 0;
@@ -100,72 +106,74 @@ const ViewSalePage = () => {
   }
 
   return (
-    <Box>
-      <PageHeader
-        title={`View Sale details`}
-        hasBack={true}
-        backTo="/dashboard/sales"
-        hasDelete={() => {
-          console.log('delete sale');
-        }}
-      />
-      <Box className="w-full px-8 py-2">
-        <Typography variant="subHeader" className="font-semibold" color="primary.light">
-          Sale details
-        </Typography>
-        <Table className="w-max my-2" size="small">
-          <TableBody>
-            <TableRow>
-              <StoreKey>Sale ID :</StoreKey>
-              <StoreValue>{sale.id}</StoreValue>
-            </TableRow>
-            <TableRow>
-              <StoreKey>Payment method :</StoreKey>
-              <StoreValue>{sale.paymentMethod}</StoreValue>
-            </TableRow>
-            <TableRow>
-              <StoreKey>Client Type :</StoreKey>
-              <StoreValue>{sale.clientType === 'USER' ? 'Member' : 'Guest'}</StoreValue>
-            </TableRow>
-            <TableRow>
-              <StoreKey>Client details :</StoreKey>
-              <StoreValue>{clientDetails}</StoreValue>
-            </TableRow>
-            <TableRow>
-              <StoreKey>Store :</StoreKey>
-              <StoreValue>{sale.store.name}</StoreValue>
-            </TableRow>
-            <TableRow>
-              <StoreKey>Purchase total :</StoreKey>
-              <StoreValue>{calculateTotal(sale)} MZN</StoreValue>
-            </TableRow>
-            <TableRow>
-              <StoreKey>Purchased On :</StoreKey>
-              <StoreValue>{format(new Date(sale.createdAt), 'do MMM yyyy')}</StoreValue>
-            </TableRow>
-            {sale.deletedAt && (
-              <TableRow>
-                <StoreKey>Cancelled On :</StoreKey>
-                <StoreValue>{format(new Date(sale.deletedAt), 'd0 MMM yyyy')}</StoreValue>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        <Box className="w-full py-2">
+    <>
+      <Box>
+        <PageHeader
+          title={`View Sale details`}
+          hasBack={true}
+          backTo="/dashboard/sales"
+          hasDelete={() => setDeleteOpen(true)}
+        />
+        <Box className="w-full px-8 py-2">
           <Typography variant="subHeader" className="font-semibold" color="primary.light">
-            Products purchased
+            Sale details
           </Typography>
-
-          {soldProducts?.length > 0 ? (
-            <ProductsTable products={soldProducts} omit={['action', 'createdAt']} />
-          ) : (
-            <Typography color="secondary.light" className="text-center py-4">
-              This sale has no products
+          <Table className="w-max my-2" size="small">
+            <TableBody>
+              <TableRow>
+                <StoreKey>Sale ID :</StoreKey>
+                <StoreValue>{sale.id}</StoreValue>
+              </TableRow>
+              <TableRow>
+                <StoreKey>Payment method :</StoreKey>
+                <StoreValue>{sale.paymentMethod}</StoreValue>
+              </TableRow>
+              <TableRow>
+                <StoreKey>Client Type :</StoreKey>
+                <StoreValue>{sale.clientType === 'USER' ? 'Member' : 'Guest'}</StoreValue>
+              </TableRow>
+              <TableRow>
+                <StoreKey>Client details :</StoreKey>
+                <StoreValue>{clientDetails}</StoreValue>
+              </TableRow>
+              <TableRow>
+                <StoreKey>Store :</StoreKey>
+                <StoreValue>{sale.store.name}</StoreValue>
+              </TableRow>
+              <TableRow>
+                <StoreKey>Purchase total :</StoreKey>
+                <StoreValue>{calculateTotal(sale)} MZN</StoreValue>
+              </TableRow>
+              <TableRow>
+                <StoreKey>Purchased On :</StoreKey>
+                <StoreValue>{format(new Date(sale.createdAt), 'do MMM yyyy')}</StoreValue>
+              </TableRow>
+              {sale.deletedAt && (
+                <TableRow>
+                  <StoreKey>Cancelled On :</StoreKey>
+                  <StoreValue>{format(new Date(sale.deletedAt), 'd0 MMM yyyy')}</StoreValue>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          <Box className="w-full py-2">
+            <Typography variant="subHeader" className="font-semibold" color="primary.light">
+              Products purchased
             </Typography>
-          )}
+
+            {soldProducts?.length > 0 ? (
+              <ProductsTable products={soldProducts} omit={['action', 'createdAt']} />
+            ) : (
+              <Typography color="secondary.light" className="text-center py-4">
+                This sale has no products
+              </Typography>
+            )}
+          </Box>
         </Box>
       </Box>
-    </Box>
+
+      <DeleteSaleModal id={saleId} open={deleteOpen} handleClose={handleDeleteClose} />
+    </>
   );
 };
 

@@ -6,6 +6,7 @@ import { MdMoreHoriz } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import DeleteProductModal from '../products/DeleteProductModal';
 import DeleteStoreModal from '../store/DeleteStoreModal';
+import DeleteSaleModal from '../sale/DeleteSaleModal';
 
 function MoreButton({ id, model, hasDelete = false, hasDetails = true, hasEdit = true, ...props }) {
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ function MoreButton({ id, model, hasDelete = false, hasDetails = true, hasEdit =
         model === 'stores' && (
           <DeleteStoreModal key={model} id={id} open={deleteOpen} handleClose={handleCloseDelete} />
         ),
+        model === 'sales' && <DeleteSaleModal key={model} id={id} open={deleteOpen} handleClose={handleCloseDelete} />,
       ]}
     </>
   );

@@ -3,18 +3,23 @@ import axiosInstance from '../axios';
 
 const salesAdapter = createEntityAdapter();
 
-export const getSaleAction = createAsyncThunk('sale/getSaleAction', async (id) => {
+export const getSaleAction = createAsyncThunk('sales/getSaleAction', async (id) => {
   const response = await axiosInstance.get(`/sales/${id}`);
   return response.data;
 });
 
-export const getAllSalesAction = createAsyncThunk('sale/getAllSalesAction', async () => {
+export const getAllSalesAction = createAsyncThunk('sales/getAllSalesAction', async () => {
   const response = await axiosInstance.get('/sales');
   return response.data;
 });
 
-export const createSaleAction = createAsyncThunk('sale/createSaleAction', async (data) => {
+export const createSaleAction = createAsyncThunk('sales/createSaleAction', async (data) => {
   const response = await axiosInstance.post('/sales', data);
+  return response.data;
+});
+
+export const deleteSaleAction = createAsyncThunk('sales/deleteSaleAction', async (id) => {
+  const response = await axiosInstance.delete(`/sales/${id}`);
   return response.data;
 });
 
@@ -32,6 +37,9 @@ const salesSlice = createSlice({
       })
       .addCase(getAllSalesAction.fulfilled, (state, { payload }) => {
         salesAdapter.upsertMany(state, payload.data.sales);
+      })
+      .addCase(deleteSaleAction.fulfilled, (state, { meta }) => {
+        salesAdapter.removeOne(state, meta.arg);
       });
   },
 });

@@ -76,7 +76,9 @@ const SalesPage = () => {
       field: 'action',
       headerName: 'Action',
       flex: 0,
-      renderCell: (params) => <MoreButton id={params.id} model={'sale'} className="my-2" />,
+      renderCell: (params) => (
+        <MoreButton id={params.id} model={'sales'} className="my-2" hasEdit={false} hasDelete={true} />
+      ),
     },
   ];
 

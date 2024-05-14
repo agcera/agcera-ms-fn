@@ -198,7 +198,12 @@ const CreateSalePage = () => {
               </Grid>
 
               <Stack direction="row" spacing={2} className="justify-end mt-4">
-                <LoadingButton loading={loading} variant="contained" type="submit">
+                <LoadingButton
+                  loading={loading}
+                  variant="contained"
+                  type="submit"
+                  disabled={Object.keys(watch('variations') || {}).length <= 0}
+                >
                   Confirm Payment
                 </LoadingButton>
                 <Button LinkComponent={Link} to={-1} disabled={loading} variant="contained" color="secondary">
