@@ -13,6 +13,10 @@ export const registerStoreAction = createAsyncThunk('stores/registerStoreAction'
   const response = await axiosInstance.post(`/stores`, store);
   return response.data;
 });
+export const deleteStoreAction = createAsyncThunk('stores/deleteStoreAction', async (id) => {
+  const response = await axiosInstance.delete(`/stores/${id}`);
+  return response.data;
+});
 export const updateStoreAction = createAsyncThunk('stores/updateStoreAction', async ({ id, data }) => {
   const store = {};
   const { name, phone, location, keepers, isActive = null } = data;
@@ -24,6 +28,10 @@ export const updateStoreAction = createAsyncThunk('stores/updateStoreAction', as
   keepers?.length > 0 && (store.keepers = keepers);
 
   const response = await axiosInstance.patch(`/stores/${id}`, store);
+  return response.data;
+});
+export const storeAddMoveProductAction = createAsyncThunk('stores/storeAddMoveProductAction', async (data) => {
+  const response = await axiosInstance.post(`/stores/addProduct`, data);
   return response.data;
 });
 
@@ -42,6 +50,9 @@ const storesSlice = createSlice({
       })
       .addCase(getStoreAction.fulfilled, (state, { payload }) => {
         storesAdapter.upsertOne(state, payload.data);
+      })
+      .addCase(deleteStoreAction.fulfilled, (state, { meta }) => {
+        storesAdapter.removeOne(state, meta.arg);
       })
       .addCase(registerStoreAction.fulfilled, (state, { payload }) => {
         storesAdapter.setOne(state, payload.data);

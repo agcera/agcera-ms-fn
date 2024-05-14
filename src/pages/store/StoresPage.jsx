@@ -1,18 +1,26 @@
 import { useDispatch, useSelector } from 'react-redux';
 import PageHeader from '../../components/PageHeader';
-import { getAllStoresAction, selectAllStores } from '../../redux/storesSlice';
-import StyledTable from '../../components/Table/StyledTable';
-import StatusBadge from '../../components/Table/StatusBadge';
 import MoreButton from '../../components/Table/MoreButton';
+import StatusBadge from '../../components/Table/StatusBadge';
+import StyledTable from '../../components/Table/StyledTable';
+import { getAllStoresAction, selectAllStores } from '../../redux/storesSlice';
 
+import { Box, useTheme } from '@mui/material';
+import { format } from 'date-fns';
 import { useEffect } from 'react';
-import { Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import ActionButton from '../../components/ActionButton';
+import { tokens } from '../../themeConfig';
+import { selectLoggedInUser } from '../../redux/usersSlice';
 
 const StoresPage = () => {
+  const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector(selectLoggedInUser);
   const stores = useSelector(selectAllStores);
+
+  const colors = tokens(theme.palette.mode);
 
   useEffect(() => {
     dispatch(getAllStoresAction({}));
@@ -35,10 +43,20 @@ const StoresPage = () => {
       ),
     },
     {
+      field: 'createdAt',
+      headerName: 'Created',
+      flex: 1,
+      renderCell: (params) => format(new Date(params.value), 'do MMM yyyy'),
+    },
+    {
       field: 'action',
       headerName: 'Action',
       flex: 0,
-      renderCell: (params) => <MoreButton id={params.id} model={'store'} />,
+      renderCell: (params) => {
+        let hasDelete = true;
+        if (['main', 'expired'].includes(params.row.name.toLowerCase())) hasDelete = false;
+        return <MoreButton id={params.id} model={'stores'} hasDelete={hasDelete} />;
+      },
     },
   ];
 
@@ -46,12 +64,22 @@ const StoresPage = () => {
     <Box className="size-full flex flex-col">
       <PageHeader
         title="Stores"
-        hasGenerateReport={() => {
-          console.log('Generate Report of stores');
-        }}
+        hasGenerateReport={true}
         hasCreate={() => {
           navigate('/dashboard/stores/create');
         }}
+        otherActions={
+          user.role === 'admin' && [
+            <ActionButton
+              key="0"
+              LinkComponent={Link}
+              to="/dashboard/stores/add-product"
+              bg={colors.blue.main}
+              color={colors.text_dark.main}
+              content="Add/Move products"
+            />,
+          ]
+        }
       />
 
       <StyledTable

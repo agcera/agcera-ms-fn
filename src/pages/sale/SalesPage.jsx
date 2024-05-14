@@ -84,9 +84,7 @@ const SalesPage = () => {
     <Box className="size-full flex flex-col">
       <PageHeader
         title="Sales"
-        hasGenerateReport={() => {
-          console.log('Generate Report of sales');
-        }}
+        hasGenerateReport={true}
         hasCreate={() => {
           navigate('/dashboard/sales/create');
         }}

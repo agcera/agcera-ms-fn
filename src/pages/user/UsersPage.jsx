@@ -55,9 +55,7 @@ const UsersPage = () => {
     <Box className="size-full flex flex-col">
       <PageHeader
         title="Users"
-        hasGenerateReport={() => {
-          console.log('Generate Report of users');
-        }}
+        hasGenerateReport={true}
         hasCreate={() => {
           console.log('Create user');
         }}

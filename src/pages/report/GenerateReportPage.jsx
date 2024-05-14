@@ -1,26 +1,33 @@
+import { useTheme } from '@emotion/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, Grid, Stack } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, Form, FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { GrDocumentDownload } from 'react-icons/gr';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../axios';
+import ActionButton from '../../components/ActionButton';
 import AutoCompleteInput from '../../components/AutoCompleteInput';
 import Input from '../../components/Input';
 import Loader from '../../components/Loader';
 import LoadingButton from '../../components/LoadingButton';
 import PageHeader from '../../components/PageHeader';
 import { getAllStoresAction, selectAllStores } from '../../redux/storesSlice';
+import { tokens } from '../../themeConfig';
 import { formatQuery } from '../../utils/formatters';
 import { generateReportSchema } from '../../validations/reports.validation';
 
 const GenerateReportPage = () => {
   const dispatch = useDispatch();
+  const theme = useTheme();
   const [loading, setLoading] = useState(false);
   const [initLoading, setinitLoading] = useState(true);
   const stores = useSelector(selectAllStores);
   const [url, setUrl] = useState(null);
+
+  const colors = tokens(theme.palette.mode);
 
   const methods = useForm({
     resolver: yupResolver(generateReportSchema),
@@ -72,12 +79,26 @@ const GenerateReportPage = () => {
             hasBack={true}
             otherActions={
               url && [
-                <Button LinkComponent="a" key="0" href={url} download="report.pdf">
-                  Download
-                </Button>,
-                <Button key="1" color="secondary" onClick={() => setUrl(null)}>
-                  Re-generate
-                </Button>,
+                <ActionButton
+                  bg={colors.blue.main}
+                  color={colors.text_dark.main}
+                  LinkComponent="a"
+                  key="0"
+                  href={url}
+                  download="report.pdf"
+                  content={
+                    <div className="flex gap-2 items-center">
+                      <GrDocumentDownload /> Download
+                    </div>
+                  }
+                />,
+                <ActionButton
+                  bg={colors.blue.main}
+                  color={colors.text_dark.main}
+                  key="1"
+                  onClick={() => setUrl(null)}
+                  content="Re-generate"
+                />,
               ]
             }
           />

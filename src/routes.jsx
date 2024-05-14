@@ -50,6 +50,7 @@ const router = createBrowserRouter(
             <Route path=":id/add-product" element={<StoreAddProductPage />} />
             <Route path=":id/update" element={<UpdateStorePage />} />
             <Route path="create" element={<CreateStorePage />} />
+            <Route path="add-product" element={<StoreAddProductPage />} />
           </Route>
           <Route path="products" element={<Outlet />}>
             <Route path="" element={<ProductsPage />} />

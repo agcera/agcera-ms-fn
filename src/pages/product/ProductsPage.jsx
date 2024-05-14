@@ -36,9 +36,7 @@ const ProductsPage = () => {
     <Box className="size-full flex flex-col">
       <PageHeader
         title="Products"
-        hasGenerateReport={() => {
-          console.log('Generate Report of users');
-        }}
+        hasGenerateReport={true}
         hasCreate={() => {
           navigate('/dashboard/products/create');
         }}
@@ -51,7 +49,7 @@ const ProductsPage = () => {
 
 export default ProductsPage;
 
-export const ProductsTable = ({ products }) => {
+export const ProductsTable = ({ products, omit = [], storeId }) => {
   const user = useSelector(selectLoggedInUser);
   const [variationMap, setVariationMap] = useState({}); // State to hold selected variation for each row
 
@@ -113,6 +111,13 @@ export const ProductsTable = ({ products }) => {
       },
     },
     {
+      field: 'stores',
+      headerName: 'In store',
+      flex: 0,
+      align: 'center',
+      renderCell: (params) => params.value?.find((s) => s.storeId === storeId).quantity,
+    },
+    {
       field: 'variations',
       headerName: 'Variations',
       flex: 1,
@@ -158,7 +163,7 @@ export const ProductsTable = ({ products }) => {
       field: 'createdAt',
       headerName: 'Created',
       flex: 1,
-      renderCell: (params) => format(new Date(params.value), 'do MMM yyyy'),
+      renderCell: (params) => (params.value ? format(new Date(params.value), 'do MMM yyyy') : 'N/a'),
     },
     {
       field: 'action',
@@ -168,7 +173,7 @@ export const ProductsTable = ({ products }) => {
         return <MoreButton id={params.id} model={'products'} hasDetails={false} hasDelete={true} />;
       },
     },
-  ].filter((b) => b);
+  ].filter((b) => b && !omit.includes(b.field) && !(!storeId && b.field === 'stores'));
 
   // zoomable image
   const ZoomableImage = ({ image }) => {

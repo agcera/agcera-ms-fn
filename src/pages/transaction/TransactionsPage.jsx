@@ -4,9 +4,7 @@ const TransactionsPage = () => {
   return (
     <PageHeader
       title="Transactions"
-      hasGenerateReport={() => {
-        console.log('Generate Report of transactions');
-      }}
+      hasGenerateReport={true}
       hasCreate={() => {
         console.log('Create transactions');
       }}
