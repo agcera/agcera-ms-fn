@@ -21,12 +21,20 @@ function MoreButton({ id, model, hasDelete = false, hasDetails = true, hasEdit =
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
-  const handleDetails = () => {
-    navigate(`/dashboard/${model}/${id}`);
+  const handleDetails = (e) => {
+    if (typeof hasDetails === 'function') {
+      hasDetails(e);
+    } else {
+      navigate(`/dashboard/${model}/${id}`);
+    }
     handleCloseMenu();
   };
-  const handleEdit = () => {
-    navigate(`/dashboard/${model}/${id}/update`);
+  const handleEdit = (e) => {
+    if (typeof hasEdit === 'function') {
+      hasEdit(e);
+    } else {
+      navigate(`/dashboard/${model}/${id}/update`);
+    }
     handleCloseMenu();
   };
   const handleDelete = () => {
