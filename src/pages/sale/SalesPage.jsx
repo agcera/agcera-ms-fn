@@ -7,10 +7,12 @@ import StyledTable from '../../components/Table/StyledTable';
 import MoreButton from '../../components/Table/MoreButton';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+import { selectLoggedInUser } from '../../redux/usersSlice';
 
 const SalesPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector(selectLoggedInUser);
 
   const sales = useSelector(selectAllSales);
 
@@ -77,7 +79,7 @@ const SalesPage = () => {
       headerName: 'Action',
       flex: 0,
       renderCell: (params) => (
-        <MoreButton id={params.id} model={'sales'} className="my-2" hasEdit={false} hasDelete={true} />
+        <MoreButton id={params.id} model={'sales'} className="my-2" hasEdit={false} hasDelete={user.role !== 'user'} />
       ),
     },
   ];
@@ -87,9 +89,7 @@ const SalesPage = () => {
       <PageHeader
         title="Sales"
         hasGenerateReport={true}
-        hasCreate={() => {
-          navigate('/dashboard/sales/create');
-        }}
+        hasCreate={user.role === 'keeper' && (() => navigate('/dashboard/sales/create'))}
       />
       <StyledTable
         data={sales}

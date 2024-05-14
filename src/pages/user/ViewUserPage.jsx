@@ -28,6 +28,7 @@ const ViewUserPage = () => {
   const routeParams = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const loggeduser = useSelector(selectLoggedInUser);
   const user = useSelector(routeParams.id ? selectUserById(routeParams.id) : selectLoggedInUser);
   const [initLoading, setInitLoading] = useState(routeParams.id ? true : false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -70,8 +71,8 @@ const ViewUserPage = () => {
           title="User details"
           hasBack={true}
           backTo="/dashboard/users"
-          hasDelete={() => setDeleteOpen(true)}
-          hasUpdate={() => navigate(`/dashboard/users/${user.id}/update`)}
+          hasDelete={loggeduser.role !== 'keeper' && (() => setDeleteOpen(true))}
+          hasUpdate={loggeduser.role !== 'keeper' && (() => navigate(`/dashboard/users/${user.id}/update`))}
         />
         <Box className="w-full px-8 py-2 flex flex-col md:flex-row gap-8">
           <Box className="grow flex">

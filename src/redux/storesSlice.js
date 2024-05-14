@@ -35,7 +35,12 @@ export const updateStoreAction = createAsyncThunk('stores/updateStoreAction', as
   return response.data;
 });
 export const storeAddMoveProductAction = createAsyncThunk('stores/storeAddMoveProductAction', async (data) => {
-  const response = await axiosInstance.post(`/stores/addProduct`, data);
+  const formattedData = {
+    ...data,
+    from: data.from || 'main',
+    to: data.to || 'expired',
+  };
+  const response = await axiosInstance.post(`/stores/addProduct`, formattedData);
   return response.data;
 });
 

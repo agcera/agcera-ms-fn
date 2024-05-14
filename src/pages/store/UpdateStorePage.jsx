@@ -106,7 +106,7 @@ const UpdateStorePage = () => {
   return (
     <Form control={control} action="" method="post" onSubmit={handleSubmit(onSubmit)}>
       <Box className="w-full overflow-y-auto">
-        <PageHeader title={`Update ${store.name} details`} hasBack={true} backTo="/dashboard/stores" />
+        <PageHeader title={`Update ${store.name} details`} hasBack={true} />
         <Box className="px-4 py-2">
           <Grid container rowSpacing={1} columnSpacing={2} className="mb-4">
             {!isMainStore && (

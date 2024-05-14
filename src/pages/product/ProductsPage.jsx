@@ -14,6 +14,7 @@ import StatusBadge from '../../components/Table/StatusBadge';
 const ProductsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector(selectLoggedInUser);
   const products = useSelector(selectAllProducts);
   const [initLoading, setInitLoading] = useState(true);
 
@@ -38,9 +39,7 @@ const ProductsPage = () => {
       <PageHeader
         title="Products"
         hasGenerateReport={true}
-        hasCreate={() => {
-          navigate('/dashboard/products/create');
-        }}
+        hasCreate={user.role === 'admin' && (() => navigate('/dashboard/products/create'))}
       />
 
       <ProductsTable products={products} />
@@ -167,7 +166,7 @@ export const ProductsTable = ({ products, omit = [], storeId }) => {
       flex: 1,
       renderCell: (params) => (params.value ? format(new Date(params.value), 'do MMM yyyy') : 'N/a'),
     },
-    {
+    user.role === 'admin' && {
       field: 'action',
       headerName: 'Action',
       flex: 0,

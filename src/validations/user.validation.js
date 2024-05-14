@@ -2,10 +2,7 @@ import yup from '.';
 
 export const registerFormSchema = yup.object({
   storeId: yup.string().required(),
-  name: yup
-    .string()
-    .matches(/^[a-zA-Z]+\s+[a-zA-Z]+/, 'name should be in form "first_name last_name" with a space between')
-    .required(),
+  name: yup.string().required(),
   phone: yup
     .string()
     .matches(/^\+\d{12}$/, { message: 'Invalid phone number, a phone number should start with + and be 12 digits' })
@@ -14,14 +11,12 @@ export const registerFormSchema = yup.object({
   password: yup.string().min(4).required(),
   location: yup.string(),
   gender: yup.string().oneOf(['MALE', 'FEMALE', 'UNSPECIFIED']),
-  role: yup.string().oneOf(['user', 'keeper', 'admin']),
+  role: yup.string().oneOf(['user', 'keeper', 'admin']).nullable(),
 });
 
 export const updateUserSchema = yup.object({
   storeId: yup.string(),
-  name: yup
-    .string()
-    .matches(/^[a-zA-Z]+\s+[a-zA-Z]+/, 'name should be in form "first_name last_name" with a space between'),
+  name: yup.string(),
   phone: yup
     .string()
     .matches(/^\+\d{12}$/, { message: 'Invalid phone number, a phone number should start with + and be 12 digits' }),

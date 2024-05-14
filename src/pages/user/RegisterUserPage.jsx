@@ -26,6 +26,7 @@ const RegisterUserPage = () => {
     control,
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(registerFormSchema),
@@ -40,6 +41,8 @@ const RegisterUserPage = () => {
       role: user.role === 'admin' ? 'user' : null,
     },
   });
+
+  console.log(watch(), errors);
 
   const onSubmit = (data) => {
     setLoading(true);
