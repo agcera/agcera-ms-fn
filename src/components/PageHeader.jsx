@@ -4,11 +4,14 @@ import { useTheme } from '@mui/system';
 import ActionButton from './ActionButton';
 import { Link, useNavigate } from 'react-router-dom';
 import { PiSkipBackLight } from 'react-icons/pi';
+import { useSelector } from 'react-redux';
+import { selectLoggedInUser } from '../redux/usersSlice';
 
 const PageHeader = ({ title, hasGenerateReport, hasCreate, hasUpdate, hasDelete, hasBack, backTo, otherActions }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const user = useSelector(selectLoggedInUser);
 
   const handleGenerateReport = () => {
     navigate('/dashboard/report');
@@ -35,7 +38,7 @@ const PageHeader = ({ title, hasGenerateReport, hasCreate, hasUpdate, hasDelete,
 
         <Box className="flex gap-2">
           {/* button for generate report and create new record  */}
-          {hasGenerateReport && (
+          {user.role !== 'user' && hasGenerateReport && (
             <ActionButton
               content="Generate Report"
               onclick={handleGenerateReport}

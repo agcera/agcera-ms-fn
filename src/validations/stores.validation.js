@@ -23,10 +23,7 @@ export const updateStoreSchema = yup.object({
 
 export const storeAddMoveProductSchema = yup.object({
   from: yup.string().nullable(),
-  to: yup
-    .string()
-    .not([yup.ref('from')])
-    .required(),
+  to: yup.string().not([yup.ref('from')]),
   productId: yup.string().required(),
   quantity: yup.number().integer().min(1).max(yup.ref('fromQuantity')).required(),
 });

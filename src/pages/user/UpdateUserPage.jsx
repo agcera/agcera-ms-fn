@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Grid, MenuItem, capitalize } from '@mui/material';
+import { Box, Button, Grid, MenuItem, Typography, capitalize } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Controller, Form, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -48,7 +48,7 @@ const UpdateUserPage = () => {
     dispatch(updateUserAction({ id: userId, data: { ...data, image } })).then(({ payload, error }) => {
       setLoading(false);
       if (payload) {
-        navigate(`/dashboard/users`);
+        navigate(user.role !== 'user' ? `/dashboard/users` : `/dashboard/profile`);
       } else {
         toast.error(error.message);
       }
@@ -86,9 +86,20 @@ const UpdateUserPage = () => {
     );
   }
 
+  if (!createUser) {
+    return (
+      <Box className="">
+        <PageHeader title={`Update user details`} hasBack={true} backTo={-1} />
+        <Typography color="secondary.light" className="p-4">
+          User not found
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <Form control={control} method="post" action="" onSubmit={handleSubmit(onSubmit)}>
-      <PageHeader title={`Update ${capitalize(createUser.name)} details`} hasBack={true} backTo={-1} />
+      <PageHeader title={`Update ${capitalize(createUser.name)} details`} hasBack={true} />
       <Grid container className="px-4 py-2" rowSpacing={0.5} columnSpacing={2}>
         <Grid item xs={12} sm={6}>
           <Input
@@ -215,11 +226,11 @@ const UpdateUserPage = () => {
       </Box>
       <Box className="p-4 flex justify-end gap-2">
         <LoadingButton loading={loading} type="submit" className="w-full max-w-[175px]">
-          Register
+          Update
         </LoadingButton>
         <Button
           LinkComponent={Link}
-          to="/dashboard/users"
+          to={user.role !== 'user' ? '/dashboard/users' : '/dashboard/profile'}
           disabled={loading}
           color="secondary"
           className="w-full max-w-[175px]"

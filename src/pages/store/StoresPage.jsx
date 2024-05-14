@@ -3,7 +3,7 @@ import PageHeader from '../../components/PageHeader';
 import MoreButton from '../../components/Table/MoreButton';
 import StatusBadge from '../../components/Table/StatusBadge';
 import StyledTable from '../../components/Table/StyledTable';
-import { getAllStoresAction, selectAllStores } from '../../redux/storesSlice';
+import { getAllPartialStoresAction, getAllStoresAction, selectAllStores } from '../../redux/storesSlice';
 
 import { Box, useTheme } from '@mui/material';
 import { format } from 'date-fns';
@@ -23,9 +23,14 @@ const StoresPage = () => {
   const colors = tokens(theme.palette.mode);
 
   useEffect(() => {
-    dispatch(getAllStoresAction({}));
-  }, [dispatch]);
+    dispatch(user.role === 'admin' ? getAllStoresAction() : getAllPartialStoresAction());
+  }, [dispatch, user]);
 
+  const miniColumns = [
+    { field: 'id', headerName: 'ID', flex: 1 },
+    { field: 'name', headerName: 'Name', flex: 1 },
+    { field: 'location', headerName: 'Location', flex: 1 },
+  ];
   const columns = [
     { field: 'name', headerName: 'Name', flex: 1 },
     { field: 'location', headerName: 'Location', flex: 1 },
@@ -65,9 +70,12 @@ const StoresPage = () => {
       <PageHeader
         title="Stores"
         hasGenerateReport={true}
-        hasCreate={() => {
-          navigate('/dashboard/stores/create');
-        }}
+        hasCreate={
+          user.role === 'admin' &&
+          (() => {
+            navigate('/dashboard/stores/create');
+          })
+        }
         otherActions={
           user.role === 'admin' && [
             <ActionButton
@@ -83,11 +91,9 @@ const StoresPage = () => {
       />
 
       <StyledTable
-        columns={columns}
+        columns={user.role === 'admin' ? columns : miniColumns}
         data={stores}
-        onRowClick={(row) => {
-          navigate(`/dashboard/stores/${row.id}`);
-        }}
+        onRowClick={user.role === 'admin' && ((row) => navigate(`/dashboard/stores/${row.id}`))}
       />
     </Box>
   );

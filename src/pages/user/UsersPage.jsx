@@ -5,13 +5,14 @@ import PageHeader from '../../components/PageHeader';
 import MoreButton from '../../components/Table/MoreButton';
 import StatusBadge from '../../components/Table/StatusBadge';
 import StyledTable from '../../components/Table/StyledTable';
-import { getAllUsersAction, selectAllUser } from '../../redux/usersSlice';
+import { getAllUsersAction, selectAllUser, selectLoggedInUser } from '../../redux/usersSlice';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 
 const UsersPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector(selectLoggedInUser);
   const users = useSelector(selectAllUser);
 
   useEffect(() => {
@@ -54,7 +55,14 @@ const UsersPage = () => {
       field: 'actions',
       headerName: 'Actions',
       flex: 0,
-      renderCell: (params) => <MoreButton id={params.id} model={'users'} hasDelete={true} />,
+      renderCell: (params) => (
+        <MoreButton
+          id={params.id}
+          model={'users'}
+          hasEdit={user.role !== 'keeper'}
+          hasDelete={user.role !== 'keeper'}
+        />
+      ),
     },
   ];
 
@@ -63,9 +71,7 @@ const UsersPage = () => {
       <PageHeader
         title="Users"
         hasGenerateReport={true}
-        hasCreate={() => {
-          navigate('/dashboard/users/create');
-        }}
+        hasCreate={user.role !== 'user' && (() => navigate('/dashboard/users/create'))}
       />
 
       <StyledTable columns={columns} data={users} onRowClick={(user) => navigate(`/dashboard/users/${user.id}`)} />

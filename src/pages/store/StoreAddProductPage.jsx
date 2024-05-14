@@ -194,6 +194,7 @@ const StoreAddProductPage = () => {
                   options={allStoresOptions}
                   label="To"
                   placeHolder="Enter the store destination of the products"
+                  required={false}
                   error={!!error}
                   helperText={error?.message}
                   value={allStoresOptions.find((o) => o.value === field.value)}

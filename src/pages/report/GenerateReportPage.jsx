@@ -18,13 +18,14 @@ import { getAllStoresAction, selectAllStores } from '../../redux/storesSlice';
 import { tokens } from '../../themeConfig';
 import { formatQuery } from '../../utils/formatters';
 import { generateReportSchema } from '../../validations/reports.validation';
+import { selectLoggedInUser } from '../../redux/usersSlice';
 
 const GenerateReportPage = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
+  const stores = useSelector(selectAllStores);
   const [loading, setLoading] = useState(false);
   const [initLoading, setinitLoading] = useState(true);
-  const stores = useSelector(selectAllStores);
   const [url, setUrl] = useState(null);
 
   const colors = tokens(theme.palette.mode);
@@ -114,6 +115,8 @@ export default GenerateReportPage;
 
 const GeneratePageForm = ({ loading }) => {
   const stores = useSelector(selectAllStores);
+  const user = useSelector(selectLoggedInUser);
+
   const {
     register,
     control,
@@ -127,7 +130,7 @@ const GeneratePageForm = ({ loading }) => {
   return (
     <>
       <Grid container className="px-4 mb-4" rowSpacing={1} columnSpacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={user.role === 'admin' && 6}>
           <Input
             disabled={loading}
             label="From"
@@ -137,7 +140,7 @@ const GeneratePageForm = ({ loading }) => {
             inputProps={{ ...register('from'), type: 'date' }}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={user.role === 'admin' && 6}>
           <Input
             disabled={loading}
             label="To"
@@ -147,29 +150,31 @@ const GeneratePageForm = ({ loading }) => {
             inputProps={{ ...register('to'), type: 'date' }}
           />
         </Grid>
-        <Grid item xs={12}>
-          <Controller
-            disabled={loading}
-            name="storeId"
-            control={control}
-            render={({ field, fieldState: { error } }) => {
-              return (
-                <AutoCompleteInput
-                  label="Store"
-                  placeHolder="Select a store to generate a report or leave empty to generate a report for all stores..."
-                  error={!!error}
-                  helperText={error?.message}
-                  required={false}
-                  options={options}
-                  disabled={loading}
-                  value={options.find((o) => o.value === field.value)}
-                  onChange={(e, option) => field.onChange(option.value)}
-                  inputProps={{ ...field }}
-                />
-              );
-            }}
-          />
-        </Grid>
+        {user.role === 'admin' && (
+          <Grid item xs={12}>
+            <Controller
+              disabled={loading}
+              name="storeId"
+              control={control}
+              render={({ field, fieldState: { error } }) => {
+                return (
+                  <AutoCompleteInput
+                    label="Store"
+                    placeHolder="Select a store to generate a report or leave empty to generate a report for all stores..."
+                    error={!!error}
+                    helperText={error?.message}
+                    required={false}
+                    options={options}
+                    disabled={loading}
+                    value={options.find((o) => o.value === field.value)}
+                    onChange={(e, option) => field.onChange(option.value)}
+                    inputProps={{ ...field }}
+                  />
+                );
+              }}
+            />
+          </Grid>
+        )}
       </Grid>
       <Stack spacing={2} direction="row" justifyContent="flex-end" className="px-4 mb-4">
         <LoadingButton loading={loading} type="submit">
