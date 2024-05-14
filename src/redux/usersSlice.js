@@ -10,7 +10,7 @@ export const registerAction = createAsyncThunk('users/registerAction', async (da
 
   Object.keys(data).map((key) => {
     const value = data[key];
-    formData.append(key, value);
+    value && formData.append(key, value);
   });
 
   const response = await axiosInstance.post('/users/register', formData);

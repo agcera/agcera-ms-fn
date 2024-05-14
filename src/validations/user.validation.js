@@ -14,6 +14,7 @@ export const registerFormSchema = yup.object({
   password: yup.string().min(4).required(),
   location: yup.string(),
   gender: yup.string().oneOf(['MALE', 'FEMALE', 'UNSPECIFIED']),
+  role: yup.string().oneOf(['user', 'keeper', 'admin']),
 });
 
 export const loginFormSchema = yup.object({

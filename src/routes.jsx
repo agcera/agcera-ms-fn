@@ -65,21 +65,25 @@ const router = createBrowserRouter(
             <Route path=":id/update" element={<Protected Component={UpdateProductPage} allowed={['admin']} />} />
             <Route path="create" element={<Protected Component={CreateProductPage} allowed={['admin']} />} />
           </Route>
+
           <Route path="sales" element={<Outlet />}>
             <Route path="" element={<SalesPage />} />
             <Route path=":id" element={<ViewSalePage />} />
             <Route path="create" element={<Protected Component={CreateSalePage} allowed={['keeper']} />} />
           </Route>
+
           <Route path="transactions" element={<Protected Component={Outlet} denied={['user']} />}>
             <Route path="" element={<TransactionsPage />} />
             <Route path="create" element={<CreateTransactionPage />} />
           </Route>
+
           <Route path="users" element={<Protected Component={Outlet} denied={['user']} />}>
             <Route path="" element={<UsersPage />} />
             <Route path=":id" element={<ViewUserPage />} />
             <Route path=":id/update" element={<Protected Component={UpdateUserPage} allowed={['admin']} />} />
             <Route path="create" element={<RegisterUserPage />} />
           </Route>
+
           <Route path="report" element={<Protected Component={GenerateReportPage} denied={['user']} />} />
         </Route>
 

@@ -96,6 +96,7 @@ const RegisterForm = () => {
               <Select
                 className="max-w-[450px]"
                 label="Store"
+                disabled={loading}
                 error={!!error}
                 helperText={error?.message}
                 inputProps={{ ...field }}
@@ -143,6 +144,7 @@ const RegisterForm = () => {
                 className="max-w-[450px]"
                 label="Gender"
                 required={false}
+                disabled={loading}
                 error={!!error}
                 helperText={error?.message}
                 inputProps={{ ...field }}

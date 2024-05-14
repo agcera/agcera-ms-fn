@@ -94,10 +94,16 @@ const CreateTransactionPage = () => {
         </Grid>
       </Grid>
       <Box className="p-4 flex justify-end gap-2 w-full">
-        <LoadingButton loading={loading} type="submit">
+        <LoadingButton loading={loading} type="submit" className="w-full max-w-[175px]">
           Submit
         </LoadingButton>
-        <Button disabled={loading} LinkComponent={Link} to="/dashboard/transactions" color="secondary">
+        <Button
+          disabled={loading}
+          LinkComponent={Link}
+          to="/dashboard/transactions"
+          color="secondary"
+          className="w-full max-w-[175px]"
+        >
           Cancel
         </Button>
       </Box>
