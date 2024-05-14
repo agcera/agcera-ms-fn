@@ -41,6 +41,10 @@ const Sidebar = () => {
   const user = useSelector(selectLoggedInUser);
   const [isCollapsed, setIsCollapsed] = useState(isMobile);
 
+  const isStoreKeeperUp = user.role !== 'user';
+  const isAdmin = user.role === 'admin';
+  const isStoreKeeper = user.role === 'keeper';
+
   return (
     <Box
       className="absolute h-full sm:static z-50 bg-background"
@@ -122,24 +126,26 @@ const Sidebar = () => {
 
           {/* menu items  */}
           <Box paddingLeft={isCollapsed ? undefined : '10px'}>
-            <Item title="Analytics" to="/dashboard/analytics" icon={<MdAnalytics />} />
+            {isStoreKeeperUp && <Item title="Analytics" to="/dashboard/analytics" icon={<MdAnalytics />} />}
             <Item title="Stores" to="/dashboard/stores" icon={<MdOutlineStore />} />
             <Item title="Products" to="/dashboard/products" icon={<MdOutlineProductionQuantityLimits />} />
             <Item title="Sales" to="/dashboard/sales" icon={<RiExchangeDollarFill />} />
-            <Item title="Transactions" to="/dashboard/transactions" icon={<GrTransaction />} />
-            <Item title="Users" to="/dashboard/users" icon={<MdOutlinePeopleAlt />} />
+            {isStoreKeeperUp && <Item title="Transactions" to="/dashboard/transactions" icon={<GrTransaction />} />}
+            {isStoreKeeperUp && <Item title="Users" to="/dashboard/users" icon={<MdOutlinePeopleAlt />} />}
           </Box>
-          <Box
-            paddingLeft={isCollapsed ? undefined : '10px'}
-            sx={{
-              mt: 'auto',
-              ['& .ps-menu-button']: {
-                bgcolor: colors.specialBlue.main,
-              },
-            }}
-          >
-            <Item title="Sell" to="/dashboard/sales/create" icon={<RiExchangeDollarFill />} />
-          </Box>
+          {isStoreKeeper && (
+            <Box
+              paddingLeft={isCollapsed ? undefined : '10px'}
+              sx={{
+                mt: 'auto',
+                ['& .ps-menu-button']: {
+                  bgcolor: colors.specialBlue.main,
+                },
+              }}
+            >
+              <Item title="Sell" to="/dashboard/sales/create" icon={<RiExchangeDollarFill />} />
+            </Box>
+          )}
         </Menu>
       </ProSidebar>
     </Box>

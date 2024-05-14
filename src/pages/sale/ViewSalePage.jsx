@@ -5,7 +5,7 @@ import { getSaleAction, selectSaleById } from '../../redux/salesSlice';
 import { useParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import Loader from '../../components/Loader';
-import { getUserAction, selectUserById } from '../../redux/usersSlice';
+import { getUserAction, selectLoggedInUser, selectUserById } from '../../redux/usersSlice';
 import { toast } from 'react-toastify';
 import { format } from 'date-fns';
 import { ProductsTable } from '../product/ProductsPage';
@@ -31,6 +31,7 @@ const ViewSalePage = () => {
   const { id: saleId } = useParams();
   const sale = useSelector(selectSaleById(saleId));
   const client = useSelector(selectUserById(sale?.clientId));
+  const user = useSelector(selectLoggedInUser);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
 
@@ -112,7 +113,7 @@ const ViewSalePage = () => {
           title={`View Sale details`}
           hasBack={true}
           backTo="/dashboard/sales"
-          hasDelete={() => setDeleteOpen(true)}
+          hasDelete={user.role !== 'user' && (() => setDeleteOpen(true))}
         />
         <Box className="w-full px-8 py-2">
           <Typography variant="subHeader" className="font-semibold" color="primary.light">
@@ -172,7 +173,7 @@ const ViewSalePage = () => {
         </Box>
       </Box>
 
-      <DeleteSaleModal id={saleId} open={deleteOpen} handleClose={handleDeleteClose} />
+      {user.role !== 'user' && <DeleteSaleModal id={saleId} open={deleteOpen} handleClose={handleDeleteClose} />}
     </>
   );
 };

@@ -77,11 +77,11 @@ const router = createBrowserRouter(
             <Route path="create" element={<CreateTransactionPage />} />
           </Route>
 
-          <Route path="users" element={<Protected Component={Outlet} denied={['user']} />}>
-            <Route path="" element={<UsersPage />} />
+          <Route path="users" element={<Outlet />}>
+            <Route path="" element={<Protected Component={UsersPage} denied={['user']} />} />
             <Route path=":id" element={<ViewUserPage />} />
-            <Route path=":id/update" element={<Protected Component={UpdateUserPage} allowed={['admin']} />} />
-            <Route path="create" element={<RegisterUserPage />} />
+            <Route path=":id/update" element={<Protected Component={UpdateUserPage} denied={['keeper']} />} />
+            <Route path="create" element={<Protected Component={RegisterUserPage} denied={['user']} />} />
           </Route>
 
           <Route path="report" element={<Protected Component={GenerateReportPage} denied={['user']} />} />
