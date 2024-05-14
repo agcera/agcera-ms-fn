@@ -4,7 +4,7 @@ import { createLogger } from 'redux-logger';
 import productsSlice from './productsSlice';
 import storesSlice from './storesSlice';
 import salesSlice from './salesSlice';
-import transactionsSlice from './transactionsSlice';
+import analyticsSlice from './analyticsSlice';
 
 const middlewares = [];
 
@@ -15,7 +15,7 @@ const logger = createLogger({
 middlewares.push(logger);
 
 const store = configureStore({
-  reducer: combineSlices(usersSlice, productsSlice, storesSlice, salesSlice, transactionsSlice),
+  reducer: combineSlices(usersSlice, productsSlice, storesSlice, salesSlice, analyticsSlice),
   devTools: process.env.NODE_ENV !== 'production',
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(middlewares),
 });
