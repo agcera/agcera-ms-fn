@@ -16,7 +16,6 @@ export const registerAction = createAsyncThunk('users/registerAction', async (da
   const response = await axiosInstance.post('/users/register', formData);
   return response.data;
 });
-
 export const updateUserAction = createAsyncThunk('users/updateUserAction', async ({ id, data }) => {
   const formData = new FormData();
 
@@ -28,6 +27,11 @@ export const updateUserAction = createAsyncThunk('users/updateUserAction', async
   const response = await axiosInstance.patch(`/users/${id}`, formData);
   return response.data;
 });
+export const deleteUserAction = createAsyncThunk('users/deleteUserAction', async (id) => {
+  const response = await axiosInstance.delete(`/users/${id}`);
+  return response.data;
+});
+
 export const loginAction = createAsyncThunk('users/loginAction', async ({ phone, password }) => {
   const response = await axiosInstance.post('/users/login', { phone, password });
   localStorage.setItem('AuthTokenExists', true);
@@ -79,6 +83,9 @@ const usersSlice = createSlice({
       })
       .addCase(updateUserAction.fulfilled, (state, action) => {
         usersAdapter.upsertOne(state, action.payload.data);
+      })
+      .addCase(deleteUserAction.fulfilled, (state, action) => {
+        usersAdapter.removeOne(state, action.meta.arg);
       })
       .addCase(loginAction.fulfilled, (state, action) => {
         usersAdapter.upsertOne(state, action.payload.data);
