@@ -80,7 +80,7 @@ const TransactionsPage = () => {
           hasCreate={() => navigate('/dashboard/transactions/create')}
         />
 
-        <StyledTable columns={columns} data={transactions} />
+        <StyledTable columns={columns} data={transactions} onRowClick={(row) => setTransactionId(row.id)} />
       </Box>
 
       <DetailsTransactionModal id={transactionId} open={!!transactionId} handleClose={handleCloseDetails} />
