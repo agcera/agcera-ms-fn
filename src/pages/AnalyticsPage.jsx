@@ -1,23 +1,56 @@
-import { Box, Typography } from '@mui/material';
-import PageHeader from '../components/PageHeader';
-import { MdAnalytics } from 'react-icons/md';
-import { VictoryBar, VictoryChart, VictoryAxis, VictoryTheme, VictoryPie, VictoryLabel } from 'victory';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAnalytics, selectAllanalytics } from '../redux/analyticsSlice';
-import { useEffect } from 'react';
-import { selectLoggedInUser } from '../redux/usersSlice';
+import { Box, Typography, useTheme } from '@mui/material';
 import LinearProgress from '@mui/material/LinearProgress';
-// import { ObjectFormatter } from '../utils/formatters';
+import { useEffect, useState } from 'react';
+import { MdAnalytics } from 'react-icons/md';
+import { useDispatch, useSelector } from 'react-redux';
+import { VictoryAxis, VictoryBar, VictoryChart, VictoryLegend, VictoryPie, VictoryTheme } from 'victory';
+import Loader from '../components/Loader';
+import PageHeader from '../components/PageHeader';
+import { getAnalytics, selectAllanalytics } from '../redux/analyticsSlice';
+import { selectLoggedInUser } from '../redux/usersSlice';
+import { tokens } from '../themeConfig';
+
+const data = [
+  { day: 1, earnings: 13000 },
+  { day: 2, earnings: 16500 },
+  { day: 3, earnings: 14250 },
+  { day: 4, earnings: 19000 },
+  { day: 5, earnings: 13000 },
+  { day: 6, earnings: 16500 },
+  { day: 7, earnings: 14250 },
+];
+function LinearProgressWithLabel({ title, value, ...props }) {
+  return (
+    <Box className="w-full px-4 py-1 flex flex-col gap-1">
+      <Box className="flex justify-between">
+        <Typography variant="body2">{title}</Typography>
+        <Typography variant="body2" className="font-medium">
+          {value}%
+        </Typography>
+      </Box>
+      <LinearProgress variant="determinate" color="secondary" value={value} {...props} />
+    </Box>
+  );
+}
+
+const SmallBox = ({ bg, color, number, text, icon }) => {
+  return (
+    <Box className={`${bg} w-full flex-col justify-between p-3`}>
+      {icon && <icon className="mb-2" />} {/* Conditionally render icon if it's provided */}
+      <MdAnalytics className="mb-2" />
+      <Typography variant={`body2 ${color} font-bold text-[14px]`}>{number}</Typography>
+      <Typography variant={`body1 text-[14px] ${color} mt-2 font-bold`}>{text}</Typography>
+    </Box>
+  );
+};
 
 function AnalyticsPage() {
   const dispatch = useDispatch();
-  // const navigate = useNavigate();
+  const theme = useTheme();
   const user = useSelector(selectLoggedInUser);
   const analytics = useSelector(selectAllanalytics);
-  // const [initLoading, setInitLoading] = useState(true);
-
-  console.log(user, 'userllllllllllllllll', user.role);
-  console.log(analytics);
+  const [initLoading, setInitLoading] = useState(true);
+  const colors = tokens(theme.palette.mode);
 
   useEffect(() => {
     const now = new Date();
@@ -26,47 +59,37 @@ function AnalyticsPage() {
     dispatch(
       getAnalytics({ from: now.toLocaleDateString(), to: new Date().toLocaleDateString(), storeId: user.storeId })
     ).then(({ error }) => {
+      setInitLoading(false);
       if (error) console.log(error);
     });
   }, [dispatch, user]);
 
-  const data = [
-    { quarter: 1, earnings: 13000 },
-    { quarter: 2, earnings: 16500 },
-    { quarter: 3, earnings: 14250 },
-    { quarter: 4, earnings: 19000 },
-  ];
-  function LinearProgressWithLabel(props) {
+  if (initLoading && !analytics) {
     return (
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Box sx={{ width: '100%', mr: 1 }}>
-          <LinearProgress variant="determinate" {...props} />
-        </Box>
-        <Box sx={{ minWidth: 35 }}>
-          <Typography variant="body2" color="text.secondary">{`${Math.round(props.value)}%`}</Typography>
+      <Box className="size-full flex">
+        <Loader className="m-auto" />
+      </Box>
+    );
+  }
+
+  if (!analytics) {
+    return (
+      <Box className="flex flex-col size-full">
+        <PageHeader title="Analytics" hasHeader={true} />
+        <Box className="size-full flex justify-center">
+          <Typography variant="subHeader" color="secondary.light" className="m-auto font-normal">
+            No analytics available
+          </Typography>
         </Box>
       </Box>
     );
   }
 
-  const SmallBox = ({ bg, color, number, text, icon }) => {
-    return (
-      <Box className={`smallb1 ${bg}  w-36 mr-2 h-20 flex-col justify-between p-3`}>
-        {icon && <icon className="mb-2" />} {/* Conditionally render icon if it's provided */}
-        <MdAnalytics className="mb-2" />
-        <Typography variant={`body2 ${color} font-bold text-[14px]`}>{number}</Typography>
-        <Typography variant={`body1 text-[14px] ${color} mt-2 font-bold`}>{text}</Typography>
-      </Box>
-    );
-  };
-
   return (
-    <Box>
+    <Box className="size-full flex flex-col">
       <PageHeader title="Analytics" hasHeader={true} />
-      {/* constiner for all the information in the analytics  */}
-
-      <Box className="all flex ml-5 justify-left md:flex-wrap">
-        <Box className="col1 flex-[0.8] mr-[5%]">
+      <Box className="size-full flex flex-col md:flex-row px-4 overflow-auto">
+        <Box className="">
           {/* small boxes */}
           <Box className="flex justify-between">
             <SmallBox
@@ -93,63 +116,92 @@ function AnalyticsPage() {
           </Box>
 
           {/* bar chart */}
-          <Box className="bar h-[50vh] w-full mt-5">
-            <Typography className="mb-[-10px] font-bold">
+          <Box className="">
+            {/* <Typography className="mb-[-10px] font-bold">
               {user.role === 'admin' ? 'All Sales' : `Sales for your store`}
-            </Typography>
+            </Typography> */}
             <Box className="h-full">
               <VictoryChart
-                // adding the material theme provided with Victory
                 theme={VictoryTheme.material}
-                domainPadding={10}
-                className="w-full h-full"
+                domainPadding={{ x: 40, y: 80 }}
+                // animate={{ duration: 1000, easing: 'circleOut' }}
+                width={1000}
+                height={500}
               >
+                <VictoryLegend
+                  x={400}
+                  y={50}
+                  title="All sales"
+                  centerTitle
+                  // orientation="horizontal"
+                  // gutter={20}
+                  style={{ title: { fontSize: 30, fontWeight: 'bold' } }}
+                  data={[]}
+                />
                 <VictoryAxis
-                  tickValues={[1, 2, 3, 4]}
-                  tickFormat={['Quarter 1', 'Quarter 2', 'Quarter 3', 'Quarter 4']}
+                  tickValues={[1, 2, 3, 4, 5, 6, 7]}
+                  tickFormat={['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']}
                 />
                 <VictoryAxis dependentAxis tickFormat={(x) => `$${x / 1000}k`} />
-                <VictoryBar data={data} x="quarter" y="earnings" />
+                <VictoryBar
+                  alignment="middle"
+                  data={data}
+                  barWidth={40}
+                  style={{
+                    data: { fill: colors.primary.main },
+                  }}
+                  x="day"
+                  y="earnings"
+                  animate
+                />
               </VictoryChart>
             </Box>
           </Box>
 
           {/* progress bars */}
-          <Box className="pgbar">
-            <Box sx={{ width: '100%' }}>
-              <LinearProgressWithLabel value={20} />
+          <Typography className="text-center font-medium my-2 mt-8">Best Shops To sell its Products</Typography>
+          <Box className="flex w-full">
+            <Box className="flex flex-col gap-1 w-full">
+              <LinearProgressWithLabel value={40} title="shop 1" />
+              <LinearProgressWithLabel value={80} title="shop 2" />
+              <LinearProgressWithLabel value={15} title="shop 3" />
+            </Box>
+            <Box className="flex flex-col gap-1 w-full">
+              <LinearProgressWithLabel value={25} title="shop 4" />
+              <LinearProgressWithLabel value={70} title="shop 5" />
+              <LinearProgressWithLabel value={40} title="shop 6" />
             </Box>
           </Box>
         </Box>
 
-        {/* right side  */}
-        <Box className="col2">
-          {/* big generate report  */}
-          <Box className="report w-80 h-20 m-auto text-center  bg-secondary rounded-sm relative">
-            <Typography variant="body1 font-bold text-[14px] text-white text-center m-auto absolute top-[40%] left-[30%]">
-              Generate Report
-            </Typography>
-          </Box>
-
-          {/* pie chart  */}
-          <Box className="pie">
-            <svg viewBox="0 0 400 400">
-              <VictoryPie
-                standalone={false}
-                width={400}
-                height={400}
-                data={[
-                  { x: 1, y: 120 },
-                  { x: 2, y: 150 },
-                  { x: 3, y: 75 },
-                ]}
-                innerRadius={100}
-                labelRadius={120}
-                style={{ labels: { fontSize: 20, fill: 'white' } }}
-              />
-              <VictoryLabel textAnchor="middle" style={{ fontSize: 20 }} x={200} y={200} text="products" />
-            </svg>
-          </Box>
+        <Box className="overflow-auto flex flex-col">
+          <Typography className="text-center font-semibold -mb-16">Best selling products</Typography>
+          <VictoryPie
+            animate={{ duration: 1000, easing: 'bounceInOut' }}
+            colorScale={['tomato', 'orange', 'gold', 'cyan', 'navy']}
+            width={400}
+            height={400}
+            data={[
+              { x: 'Agcera', y: 10 },
+              { x: 'UnoProducto', y: 35 },
+              { x: 'DuoProducto', y: 40 },
+              { x: 'TrioProducto', y: 15 },
+            ]}
+            theme={VictoryTheme.material}
+            innerRadius={120}
+            labelRadius={100}
+            padAngle={1}
+          />
+          {/* <VictoryLegend
+            x={400}
+            y={50}
+            title="All sales"
+            centerTitle
+            // orientation="horizontal"
+            // gutter={20}
+            style={{ title: { fontSize: 30, fontWeight: 'bold' } }}
+            data={[]}
+          /> */}
         </Box>
       </Box>
     </Box>

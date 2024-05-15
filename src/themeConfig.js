@@ -72,7 +72,7 @@ export const themeSettings = (mode) => {
     },
     typography: {
       fontFamily: ['Graphik', 'sans-serif', ...defaultTheme.fontFamily.sans].join(','),
-      fontSize: 14,
+      // fontSize: 14,
       display: {
         fontSize: '2rem',
       },
@@ -190,6 +190,11 @@ export const themeSettings = (mode) => {
             opacity: 0.75,
             borderRadius: 15,
           },
+          barColorSecondary: {
+            backgroundColor: colors.primary.dark,
+            opacity: 1,
+            borderRadius: 15,
+          },
         },
       },
       MuiContainer: {
@@ -208,13 +213,11 @@ export const themeSettings = (mode) => {
 
 createTheme({
   components: {
-    MuiContainer: {
-      defaultProps: {
-        disableGutters: true,
-      },
+    MuiLinearProgress: {
       styleOverrides: {
         root: {
-          height: '100%',
+          height: 4,
+          borderRadius: 15,
         },
       },
     },
