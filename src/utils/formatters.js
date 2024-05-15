@@ -22,3 +22,10 @@ export const formatQuery = (queries) => {
 
   return queryParams.join('&');
 };
+
+export function ObjectFormatter(productsSoldByShops) {
+  return Object.entries(productsSoldByShops).map(([store, value]) => ({
+    store,
+    value,
+  }));
+}
