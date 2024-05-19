@@ -47,7 +47,7 @@ const Sidebar = () => {
 
   return (
     <Box
-      className="absolute h-full sm:static z-50 bg-background"
+      className="absolute h-full md:static z-50 bg-background"
       sx={{
         ['& ul']: {
           height: '100%',

@@ -364,6 +364,7 @@ export default {
         DEFAULT: 'rgb(var(--text-dark))',
         white: '#ffffff',
         black: '#28272A',
+        purple: '#9747FF',
       },
       colors: {
         ...defaultColors,

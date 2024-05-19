@@ -9,7 +9,7 @@ export const getAnalytics = createAsyncThunk('analytics/getAnalytics', async (da
 
 const analyticsSlice = createSlice({
   name: 'analytics',
-  initialState: { data: {} },
+  initialState: { data: null },
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getAnalytics.fulfilled, (state, { payload }) => {

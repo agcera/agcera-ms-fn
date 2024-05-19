@@ -56,7 +56,7 @@ function StyledTable({ data, columns, onRowClick, rowheight }) {
         pageSize={5}
         rowsPerPageOptions={[5, 10, 20]}
         disableRowSelectionOnClick={!onRowClick}
-        onRowClick={onRowClick}
+        onRowClick={typeof onRowClick === 'function' ? onRowClick : undefined}
         isRowSelectable={() => !!onRowClick}
         getRowHeight={() => rowheight}
       />
