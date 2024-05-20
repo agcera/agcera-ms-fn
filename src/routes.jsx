@@ -70,10 +70,11 @@ const router = createBrowserRouter(
           <Route path="history" element={<Outlet />}>
             <Route path="" element={<MovementsPage />} />
             <Route path="trash" element={<TrashPage />} />
+            <Route path="trash/:id" element={<ViewSalePage wasDeleted={true} />} />
           </Route>
           <Route path="sales" element={<Outlet />}>
             <Route path="" element={<SalesPage />} />
-            <Route path=":id" element={<ViewSalePage />} />
+            <Route path=":id" element={<ViewSalePage wasDeleted={false} />} />
             <Route path="create" element={<Protected Component={CreateSalePage} allowed={['keeper']} />} />
           </Route>
 

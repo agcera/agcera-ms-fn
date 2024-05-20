@@ -6,21 +6,31 @@ export const getAllDeleted = createAsyncThunk('history/getAllDeleted', async () 
   return response.data.data;
 });
 
+export const getDeletedItemByIdAction = createAsyncThunk('history/getDeletedItemByIdAction', async (id) => {
+  const response = await axiosInstance.get(`history/deleted/${id}`);
+  return response.data.data;
+});
+
 const deletedAdapter = createEntityAdapter();
 
-const { selectAll } = deletedAdapter.getSelectors((state) => state.deleted);
+const { selectAll, selectById } = deletedAdapter.getSelectors((state) => state.deleted);
 
 const deletedSlice = createSlice({
   name: 'deleted',
   initialState: deletedAdapter.getInitialState(),
   extraReducers: (builder) => {
-    builder.addCase(getAllDeleted.fulfilled, (state, { payload }) => {
-      console.log(payload, 'payload');
-      deletedAdapter.upsertMany(state, payload.data);
-    });
+    builder
+      .addCase(getAllDeleted.fulfilled, (state, { payload }) => {
+        console.log(payload, 'payload');
+        deletedAdapter.upsertMany(state, payload.deletedItems);
+      })
+      .addCase(getDeletedItemByIdAction.fulfilled, (state, { payload }) => {
+        deletedAdapter.upsertOne(state, payload.deletedItem);
+      });
   },
 });
 
 export const selectAllDeleted = selectAll;
+export const selectDeletedById = (id) => (state) => selectById(state, id);
 
 export default deletedSlice;

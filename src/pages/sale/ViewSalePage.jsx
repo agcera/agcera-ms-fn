@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { format } from 'date-fns';
 import { ProductsTable } from '../product/ProductsPage';
 import DeleteSaleModal from '../../components/sale/DeleteSaleModal';
+import { getDeletedItemByIdAction, selectDeletedById } from '../../redux/deletedSlice';
 
 const StoreKey = ({ children, ...props }) => {
   return (
@@ -26,14 +27,31 @@ const StoreValue = ({ children, ...props }) => {
   );
 };
 
-const ViewSalePage = () => {
+const ViewSalePage = ({ wasDeleted }) => {
   const dispatch = useDispatch();
   const { id: saleId } = useParams();
-  const sale = useSelector(selectSaleById(saleId));
+
+  let sale = null;
+
+  const saleObject = useSelector(wasDeleted ? selectDeletedById(saleId) : selectSaleById(saleId));
+  console.log(saleObject, 'SALE OBJECT');
+
+  // if the sale was deleted we will get the deleted sale from the sale description
+  if (wasDeleted) {
+    sale = saleObject && JSON.parse(saleObject.description);
+    console.log(sale, 'after parse');
+    sale = sale?.sale;
+  } else {
+    sale = saleObject;
+  }
+
   const client = useSelector(selectUserById(sale?.clientId));
   const user = useSelector(selectLoggedInUser);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
+  // check the route that was used to get to this page
+  // if the route was /dashboard/sale/deleted/:id, then the sale was deleted
+  // and we should show the delete modal
 
   const handleDeleteClose = () => {
     setDeleteOpen(false);
@@ -72,18 +90,19 @@ const ViewSalePage = () => {
   }, [sale?.variations]);
 
   useEffect(() => {
-    dispatch(getSaleAction(saleId)).then(({ error }) => {
+    dispatch(wasDeleted ? getDeletedItemByIdAction(saleId) : getSaleAction(saleId)).then(({ error }) => {
       setInitLoading(false);
       if (error) toast.error(error.message);
     });
-  }, [dispatch, saleId]);
+  }, [dispatch, saleId, wasDeleted]);
+
   useEffect(() => {
-    if (sale && sale.clientType === 'USER') {
+    if (sale?.clientType === 'USER') {
       dispatch(getUserAction(sale.clientId)).then(({ error }) => {
         if (error) toast.error(error.message);
       });
     }
-  }, [dispatch, sale]);
+  }, [dispatch, sale?.clientType, sale?.clientId]);
 
   if (!sale && initLoading) {
     return (
@@ -112,12 +131,12 @@ const ViewSalePage = () => {
         <PageHeader
           title={`View Sale details`}
           hasBack={true}
-          backTo="/dashboard/sales"
-          hasDelete={user.role !== 'user' && (() => setDeleteOpen(true))}
+          backTo={wasDeleted ? '/dashboard/history/trash' : '/dashboard/sales'}
+          hasDelete={wasDeleted ? false : user.role !== 'user' && (() => setDeleteOpen(true))}
         />
         <Box className="w-full px-8 py-2">
-          <Typography variant="subHeader" className="font-semibold" color="primary.light">
-            Sale details
+          <Typography variant="subHeader" className="font-semibold" color={wasDeleted ? 'secondary' : 'primary.light'}>
+            {wasDeleted ? 'Deleted Sale Details' : ' Sale details'}
           </Typography>
           <Table className="w-max my-2" size="small">
             <TableBody>

@@ -32,13 +32,14 @@ const MovementPage = () => {
       flex: 0,
       renderCell: (params) => params.value.name,
     },
+    { field: 'quantity', headerName: 'Quantity', flex: 0 },
     { field: 'storeFrom', headerName: 'Origin', flex: 1, renderCell: (params) => params.value.name },
 
     { field: 'storeTo', headerName: 'destination', flex: 1, renderCell: (params) => params.value.name },
     { field: 'user', headerName: 'Moved By', flex: 1, renderCell: (params) => params.value.name },
 
     {
-      field: 'CreatedAt',
+      field: 'createdAt',
       headerName: 'Done At',
       flex: 1,
       renderCell: (params) => format(new Date(params.value), 'do MMM yyyy'),
@@ -48,7 +49,7 @@ const MovementPage = () => {
   return (
     <Box className="size-full flex flex-col">
       <PageHeader
-        title="Users"
+        title="Moved Products"
         hasGenerateReport={true}
         hasCreate={() => {
           console.log('Create user');
