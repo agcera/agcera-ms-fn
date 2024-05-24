@@ -3,9 +3,15 @@ import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 import { GrTransaction } from 'react-icons/gr';
 import { IoMenuOutline } from 'react-icons/io5';
-import { MdAnalytics, MdOutlinePeopleAlt, MdOutlineProductionQuantityLimits, MdOutlineStore } from 'react-icons/md';
+import {
+  MdAnalytics,
+  MdDashboard,
+  MdOutlinePeopleAlt,
+  MdOutlineProductionQuantityLimits,
+  MdOutlineStore,
+} from 'react-icons/md';
 import { RiExchangeDollarFill } from 'react-icons/ri';
-import { Menu, MenuItem, Sidebar as ProSidebar } from 'react-pro-sidebar';
+import { Menu, MenuItem, Sidebar as ProSidebar, SubMenu } from 'react-pro-sidebar';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { tokens } from '../themeConfig';
 import { useSelector } from 'react-redux';
@@ -133,6 +139,12 @@ const Sidebar = () => {
             {isStoreKeeperUp && <Item title="Transactions" to="/dashboard/transactions" icon={<GrTransaction />} />}
             {isStoreKeeperUp && <Item title="Users" to="/dashboard/users" icon={<MdOutlinePeopleAlt />} />}
           </Box>
+          {isAdmin && (
+            <SubMenu label="History" icon={<MdDashboard />} className="text-sm">
+              <Item title="Movements" to="/dashboard/history" />
+              <Item title="Trash" to="/dashboard/trash" />
+            </SubMenu>
+          )}
           {isStoreKeeper && (
             <Box
               paddingLeft={isCollapsed ? undefined : '10px'}

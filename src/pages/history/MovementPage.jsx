@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, capitalize } from '@mui/material';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -33,10 +33,28 @@ const MovementPage = () => {
       renderCell: (params) => params.value.name,
     },
     { field: 'quantity', headerName: 'Quantity', flex: 0 },
-    { field: 'storeFrom', headerName: 'Origin', flex: 1, renderCell: (params) => params.value.name },
+    {
+      field: 'storeFrom',
+      headerName: 'Origin',
+      flex: 1,
+      renderCell: (params) =>
+        params.value ? capitalize(params.value.name) : <span className="text-secondary">Deleted Store</span>,
+    },
 
-    { field: 'storeTo', headerName: 'destination', flex: 1, renderCell: (params) => params.value.name },
-    { field: 'user', headerName: 'Moved By', flex: 1, renderCell: (params) => params.value.name },
+    {
+      field: 'storeTo',
+      headerName: 'destination',
+      flex: 1,
+      renderCell: (params) =>
+        params.value ? capitalize(params.value.name) : <span className="text-secondary">Deleted Store</span>,
+    },
+    {
+      field: 'user',
+      headerName: 'Moved By',
+      flex: 1,
+      renderCell: (params) =>
+        params.value ? capitalize(params.value.name) : <span className="text-secondary">Deleted User</span>,
+    },
 
     {
       field: 'createdAt',
@@ -51,6 +69,7 @@ const MovementPage = () => {
       <PageHeader
         title="Moved Products"
         hasGenerateReport={true}
+        hasBack={true}
         hasCreate={() => {
           console.log('Create user');
         }}

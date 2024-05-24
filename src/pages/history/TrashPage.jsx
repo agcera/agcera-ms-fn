@@ -38,11 +38,23 @@ const TrashPage = () => {
       flex: 1,
     },
     {
-      field: 'userId',
+      field: 'deletedBy',
       headerName: 'Deleted By',
-      flex: 2,
+      flex: 1,
       renderCell: (params) => {
-        return params.value;
+        // const user = JSON.parse(params.value)
+        const user = JSON.parse(params.value);
+        return user.name;
+      },
+    },
+    {
+      field: 'phone',
+      headerName: 'Phone',
+      flex: 1,
+      renderCell: (params) => {
+        // const user = JSON.parse(params.value)
+        const user = JSON.parse(params.row.deletedBy);
+        return user.phone;
       },
     },
 
@@ -64,7 +76,7 @@ const TrashPage = () => {
               const table = params.row.table;
               console.log(table, 'table');
               table === 'product' ? setmodel('product') || setTrashId(params.id) : null;
-              table === 'sale' && navigate(`/dashboard/history/trash/${params.id}`);
+              table === 'sale' && navigate(`/dashboard/trash/${params.id}`);
               table === 'user' ? setmodel('user') || setTrashId(params.id) : null;
               table === 'store' ? setmodel('store') || setTrashId(params.id) : null;
             }}

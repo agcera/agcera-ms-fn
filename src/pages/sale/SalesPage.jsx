@@ -33,7 +33,7 @@ const SalesPage = () => {
       field: 'store',
       headerName: 'Store',
       flex: 1,
-      renderCell: (params) => <Box>{params.value.name}</Box>,
+      renderCell: (params) => <Box>{params.value?.name || <span className="text-secondary">Deleted Store</span>}</Box>,
     },
     {
       field: 'variations',

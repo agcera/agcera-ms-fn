@@ -68,6 +68,7 @@ const ViewSalePage = ({ wasDeleted }) => {
   const clientDetails = useMemo(() => {
     if (!sale) return 'Fetching details ....';
     if (sale.clientType === 'USER') {
+      if (sale.clientId === null) return <span className="text-secondary"> Deleted User </span>;
       if (!client) return 'Fetching details ....';
       return `${client.name} |---| ${client.email}, ${client.phone}`;
     } else {
@@ -97,7 +98,7 @@ const ViewSalePage = ({ wasDeleted }) => {
   }, [dispatch, saleId, wasDeleted]);
 
   useEffect(() => {
-    if (sale?.clientType === 'USER') {
+    if (sale?.clientType === 'USER' && sale?.clientId) {
       dispatch(getUserAction(sale.clientId)).then(({ error }) => {
         if (error) toast.error(error.message);
       });
@@ -158,7 +159,7 @@ const ViewSalePage = ({ wasDeleted }) => {
               </TableRow>
               <TableRow>
                 <StoreKey>Store :</StoreKey>
-                <StoreValue>{sale.store.name}</StoreValue>
+                <StoreValue>{sale.store?.name || <span className="text-secondary">Deleted Store</span>}</StoreValue>
               </TableRow>
               <TableRow>
                 <StoreKey>Purchase total :</StoreKey>

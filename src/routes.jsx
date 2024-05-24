@@ -69,8 +69,11 @@ const router = createBrowserRouter(
           </Route>
           <Route path="history" element={<Outlet />}>
             <Route path="" element={<MovementsPage />} />
-            <Route path="trash" element={<TrashPage />} />
-            <Route path="trash/:id" element={<ViewSalePage wasDeleted={true} />} />
+          </Route>
+
+          <Route path="trash" element={<Outlet />}>
+            <Route path="" element={<TrashPage />} />
+            <Route path=":id" element={<ViewSalePage wasDeleted={true} />} />
           </Route>
           <Route path="sales" element={<Outlet />}>
             <Route path="" element={<SalesPage />} />

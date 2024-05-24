@@ -106,6 +106,7 @@ function AnalyticsPage() {
         }
         case 'weekly': {
           const day = weekDays[new Date(curr).getDay()];
+          console.log(day, 'day');
           acc[day] = acc[day] + analytics.salesByDate[curr];
           break;
         }
@@ -122,6 +123,9 @@ function AnalyticsPage() {
   const chartFormattedData = useMemo(() => {
     return Object.keys(chartData).map((key) => ({ day: key, earnings: chartData[key] }));
   }, [chartData]);
+
+  console.log(chartData, 'chartData');
+  console.log(chartFormattedData, 'chartFormattedData');
 
   useEffect(() => {
     let to;
@@ -252,7 +256,7 @@ function AnalyticsPage() {
                       : Object.keys(chartData)
                   }
                 />
-                <VictoryAxis dependentAxis animate />
+                <VictoryAxis dependentAxis animate tickFormat={(x) => `${x / 1000}k`} />
                 <VictoryBar
                   labels={({ datum }) => `Sales: ${datum.earnings} MZN`}
                   labelComponent={<VictoryTooltip />}
