@@ -17,8 +17,20 @@ const TransactionsPage = () => {
   const [transactionId, setTransactionId] = useState(null);
 
   const columns = [
-    { field: 'store', headerName: 'Store', flex: 1, renderCell: (params) => capitalize(params.value.name) },
-    { field: 'user', headerName: 'Created by', flex: 1, renderCell: (params) => capitalize(params.value.name) },
+    {
+      field: 'store',
+      headerName: 'Store',
+      flex: 1,
+      renderCell: (params) =>
+        params.value ? capitalize(params.value?.name) : <span className="text-secondary">Deleted Store</span>,
+    },
+    {
+      field: 'user',
+      headerName: 'Created by',
+      flex: 1,
+      renderCell: (params) =>
+        params.value ? capitalize(params.value.name) : <span className="text-secondary">Deleted User</span>,
+    },
     {
       field: 'type',
       headerName: 'Type',

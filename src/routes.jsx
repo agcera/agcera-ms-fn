@@ -26,6 +26,8 @@ import GenerateReportPage from './pages/report/GenerateReportPage';
 import CreateTransactionPage from './pages/transaction/CreateTransactionPage';
 import Redirect from './global/Redirect';
 import Protected from './components/route/Protected';
+import MovementsPage from './pages/history/MovementPage';
+import TrashPage from './pages/history/TrashPage';
 import RegisterPage from './pages/auth/RegisterPage';
 
 const router = createBrowserRouter(
@@ -65,10 +67,17 @@ const router = createBrowserRouter(
             <Route path=":id/update" element={<Protected Component={UpdateProductPage} allowed={['admin']} />} />
             <Route path="create" element={<Protected Component={CreateProductPage} allowed={['admin']} />} />
           </Route>
+          <Route path="history" element={<Outlet />}>
+            <Route path="" element={<MovementsPage />} />
+          </Route>
 
+          <Route path="trash" element={<Outlet />}>
+            <Route path="" element={<TrashPage />} />
+            <Route path=":id" element={<ViewSalePage wasDeleted={true} />} />
+          </Route>
           <Route path="sales" element={<Outlet />}>
             <Route path="" element={<SalesPage />} />
-            <Route path=":id" element={<ViewSalePage />} />
+            <Route path=":id" element={<ViewSalePage wasDeleted={false} />} />
             <Route path="create" element={<Protected Component={CreateSalePage} allowed={['keeper']} />} />
           </Route>
 

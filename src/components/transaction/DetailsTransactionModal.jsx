@@ -50,11 +50,24 @@ const DetailsTransactionModal = ({ id, open = false, handleClose }) => {
             </TableRow>
             <TableRow>
               <StoreKey>Store :</StoreKey>
-              <StoreValue>{capitalize(transaction.store.name)}</StoreValue>
+              <StoreValue>
+                {' '}
+                {transaction.store ? (
+                  capitalize(transaction.store.name)
+                ) : (
+                  <span className="text-secondary">Deleted Store</span>
+                )}
+              </StoreValue>
             </TableRow>
             <TableRow>
               <StoreKey>Done By :</StoreKey>
-              <StoreValue>{capitalize(transaction.user.name)}</StoreValue>
+              <StoreValue>
+                {transaction.user ? (
+                  capitalize(transaction.user.name)
+                ) : (
+                  <span className="text-secondary">Deleted User</span>
+                )}
+              </StoreValue>
             </TableRow>
             <TableRow>
               <StoreKey>Amount :</StoreKey>
