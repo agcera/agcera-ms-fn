@@ -23,7 +23,8 @@ const store = configureStore({
     productsSlice,
     storesSlice,
     salesSlice,
-    analyticsSlice, transactionsSlice,
+    analyticsSlice,
+    transactionsSlice,
     movementsSlice,
     deletedSlice
   ),
