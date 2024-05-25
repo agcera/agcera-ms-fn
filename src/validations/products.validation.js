@@ -21,7 +21,7 @@ export const productCreateSpecialSchema = yup.object({
           .required('selling price is a required field'),
       })
     )
-    .uniqueField('number', 'No two or more variations can have the same number of products')
+    .uniqueField('name', 'No two or more variations can have the same name')
     .min(1)
     .required(),
 });
@@ -63,7 +63,7 @@ export const productUpdateSpecialSchema = yup.object({
           .required('selling price is a required field'),
       })
     )
-    .uniqueField('number', 'No two or more variations can have the same number of products')
+    .uniqueField('name', 'No two or more variations can have the same name')
     .min(1),
 });
 
