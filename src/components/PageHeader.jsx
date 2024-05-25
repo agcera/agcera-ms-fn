@@ -7,7 +7,17 @@ import { PiSkipBackLight } from 'react-icons/pi';
 import { useSelector } from 'react-redux';
 import { selectLoggedInUser } from '../redux/usersSlice';
 
-const PageHeader = ({ title, hasGenerateReport, hasCreate, hasUpdate, hasDelete, hasBack, backTo, otherActions }) => {
+const PageHeader = ({
+  title,
+  hasGenerateReport,
+  hasCreate,
+  hasUpdate,
+  hasDelete,
+  altDeleteText,
+  hasBack,
+  backTo,
+  otherActions,
+}) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -55,7 +65,7 @@ const PageHeader = ({ title, hasGenerateReport, hasCreate, hasUpdate, hasDelete,
           )}
           {hasDelete && (
             <ActionButton
-              content="Delete"
+              content={altDeleteText || 'Delete'}
               onclick={hasDelete}
               bg={colors.secondary.main}
               color={colors.text_light.main}

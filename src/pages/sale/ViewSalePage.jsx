@@ -8,9 +8,8 @@ import Loader from '../../components/Loader';
 import { getUserAction, selectLoggedInUser, selectUserById } from '../../redux/usersSlice';
 import { toast } from 'react-toastify';
 import { format } from 'date-fns';
-import { ProductsTable } from '../product/ProductsPage';
-import DeleteSaleModal from '../../components/sale/DeleteSaleModal';
-import { getDeletedItemByIdAction, selectDeletedById } from '../../redux/deletedSlice';
+import RefundSaleModal from '../../components/sale/RefundSaleModal';
+import StyledTable from '../../components/Table/StyledTable';
 
 const StoreKey = ({ children, ...props }) => {
   return (
@@ -27,34 +26,24 @@ const StoreValue = ({ children, ...props }) => {
   );
 };
 
-const ViewSalePage = ({ wasDeleted }) => {
+const ViewSalePage = () => {
   const dispatch = useDispatch();
   const { id: saleId } = useParams();
 
-  let sale = null;
+  const sale = useSelector(selectSaleById(saleId));
 
-  const saleObject = useSelector(wasDeleted ? selectDeletedById(saleId) : selectSaleById(saleId));
-  console.log(saleObject, 'SALE OBJECT');
-
-  // if the sale was deleted we will get the deleted sale from the sale description
-  if (wasDeleted) {
-    sale = saleObject && JSON.parse(saleObject.description);
-    console.log(sale, 'after parse');
-    sale = sale?.sale;
-  } else {
-    sale = saleObject;
-  }
+  const refundedAt = sale?.refundedAt || false;
 
   const client = useSelector(selectUserById(sale?.clientId));
   const user = useSelector(selectLoggedInUser);
-  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [refundOpen, setRefundOpen] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
   // check the route that was used to get to this page
   // if the route was /dashboard/sale/deleted/:id, then the sale was deleted
   // and we should show the delete modal
 
   const handleDeleteClose = () => {
-    setDeleteOpen(false);
+    setRefundOpen(false);
   };
 
   const calculateTotal = (sale) => {
@@ -64,6 +53,29 @@ const ViewSalePage = ({ wasDeleted }) => {
     });
     return total;
   };
+
+  // build column for variations to be displayed in the table
+  const transformedData = sale?.variations.map((variations) => ({
+    id: variations.variation.id,
+    productName: variations.variation.product.name,
+    variationName: variations.variation.name,
+    variationNumber: variations.variation.number,
+    quantity: variations.quantity,
+    totalSellingPrice: variations.quantity * variations.variation.number * variations.variation.sellingPrice,
+  }));
+
+  const columns = [
+    { field: 'productName', headerName: 'Product Name', flex: 1 },
+    { field: 'variationName', headerName: 'Var Name', flex: 1 },
+    { field: 'variationNumber', headerName: 'Var Number', flex: 0 },
+    { field: 'quantity', headerName: 'Quantity', flex: 0, renderCell: (params) => `${params.value} pcs` },
+    {
+      field: 'totalSellingPrice',
+      headerName: 'Total Selling Price',
+      flex: 1,
+      renderCell: (params) => `${params.value} MZN`,
+    },
+  ];
 
   const clientDetails = useMemo(() => {
     if (!sale) return 'Fetching details ....';
@@ -91,11 +103,11 @@ const ViewSalePage = ({ wasDeleted }) => {
   }, [sale?.variations]);
 
   useEffect(() => {
-    dispatch(wasDeleted ? getDeletedItemByIdAction(saleId) : getSaleAction(saleId)).then(({ error }) => {
+    dispatch(getSaleAction(saleId)).then(({ error }) => {
       setInitLoading(false);
       if (error) toast.error(error.message);
     });
-  }, [dispatch, saleId, wasDeleted]);
+  }, [dispatch, saleId]);
 
   useEffect(() => {
     if (sale?.clientType === 'USER' && sale?.clientId) {
@@ -132,12 +144,13 @@ const ViewSalePage = ({ wasDeleted }) => {
         <PageHeader
           title={`View Sale details`}
           hasBack={true}
-          backTo={wasDeleted ? '/dashboard/history/trash' : '/dashboard/sales'}
-          hasDelete={wasDeleted ? false : user.role !== 'user' && (() => setDeleteOpen(true))}
+          backTo={'/dashboard/sales'}
+          hasDelete={refundedAt ? false : user.role !== 'user' && (() => setRefundOpen(true))}
+          altDeleteText={'Refund'}
         />
         <Box className="w-full px-8 py-2">
-          <Typography variant="subHeader" className="font-semibold" color={wasDeleted ? 'secondary' : 'primary.light'}>
-            {wasDeleted ? 'Deleted Sale Details' : ' Sale details'}
+          <Typography variant="subHeader" className="font-semibold" color={refundedAt ? 'secondary' : 'primary.light'}>
+            {refundedAt ? 'Refunded Sale Details' : ' Sale details'}
           </Typography>
           <Table className="w-max my-2" size="small">
             <TableBody>
@@ -169,10 +182,10 @@ const ViewSalePage = ({ wasDeleted }) => {
                 <StoreKey>Purchased On :</StoreKey>
                 <StoreValue>{format(new Date(sale.createdAt), 'do MMM yyyy')}</StoreValue>
               </TableRow>
-              {sale.deletedAt && (
+              {sale.refundedAt && (
                 <TableRow>
                   <StoreKey>Cancelled On :</StoreKey>
-                  <StoreValue>{format(new Date(sale.deletedAt), 'd0 MMM yyyy')}</StoreValue>
+                  <StoreValue>{format(new Date(sale.refundedAt), 'do MMM yyyy')}</StoreValue>
                 </TableRow>
               )}
             </TableBody>
@@ -183,8 +196,9 @@ const ViewSalePage = ({ wasDeleted }) => {
             </Typography>
 
             {soldProducts?.length > 0 ? (
-              <ProductsTable products={soldProducts} omit={['action', 'createdAt']} />
+              <StyledTable data={transformedData} columns={columns} />
             ) : (
+              // <ProductsTable products={soldProducts} omit={['action', 'createdAt']} />
               <Typography color="secondary.light" className="text-center py-4">
                 This sale has no products
               </Typography>
@@ -193,7 +207,7 @@ const ViewSalePage = ({ wasDeleted }) => {
         </Box>
       </Box>
 
-      {user.role !== 'user' && <DeleteSaleModal id={saleId} open={deleteOpen} handleClose={handleDeleteClose} />}
+      {user.role !== 'user' && <RefundSaleModal id={saleId} open={refundOpen} handleClose={handleDeleteClose} />}
     </>
   );
 };

@@ -19,7 +19,7 @@ export const createSaleAction = createAsyncThunk('sales/createSaleAction', async
 });
 
 export const deleteSaleAction = createAsyncThunk('sales/deleteSaleAction', async (id) => {
-  const response = await axiosInstance.delete(`/sales/${id}`);
+  const response = await axiosInstance.patch(`/sales/${id}`);
   return response.data;
 });
 
