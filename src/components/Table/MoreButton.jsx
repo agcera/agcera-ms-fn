@@ -6,7 +6,7 @@ import { MdMoreHoriz } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import DeleteProductModal from '../products/DeleteProductModal';
 import DeleteStoreModal from '../store/DeleteStoreModal';
-import DeleteSaleModal from '../sale/DeleteSaleModal';
+import DeleteSaleModal from '../sale/RefundSaleModal';
 import DeleteUserModal from '../user/DeleteUserModal';
 
 function MoreButton({ id, model, hasDelete = false, hasDetails = true, hasEdit = true, ...props }) {

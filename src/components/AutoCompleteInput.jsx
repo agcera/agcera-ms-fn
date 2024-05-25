@@ -55,7 +55,7 @@ const AutoCompleteInput = ({
             size="small"
             inputProps={{
               ...params.inputProps,
-              autoComplete: 'off',
+              autoComplete: 'on',
             }}
           />
         )}

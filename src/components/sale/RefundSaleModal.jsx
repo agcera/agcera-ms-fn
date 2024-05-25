@@ -7,7 +7,7 @@ import Input from '../Input';
 import LoadingButton from '../LoadingButton';
 import { useNavigate } from 'react-router-dom';
 
-const DeleteSaleModal = ({ open = false, handleClose, id }) => {
+const RefundSaleModal = ({ open = false, handleClose, id }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const sale = useSelector(selectSaleById(id));
@@ -43,8 +43,8 @@ const DeleteSaleModal = ({ open = false, handleClose, id }) => {
           <Typography component="span" color="secondary.light">
             Attention
           </Typography>
-          , by continuing with this action, you will be deleting this sale from the system records, this will remove it
-          permanentlly along with some of its associated data and it can&apos;t be reversed.
+          , by continuing with this action, you will be refunding this sale in the system records, this will undo all
+          information set to this sale permanently along with some of its associated data and it can&apos;t be reversed.
         </Typography>
         <Typography variant="body2" className="mb-2 font-semibold">
           If you are sure, Enter the following word
@@ -57,7 +57,7 @@ const DeleteSaleModal = ({ open = false, handleClose, id }) => {
       </DialogContent>
       <DialogActions className="flex-end px-6 mb-2">
         <LoadingButton loading={loading} disabled={value !== agree} color="secondary" onClick={handleSubmit}>
-          Yes, delete
+          Yes, Refund
         </LoadingButton>
         <Button disabled={loading} onClick={handleClose}>
           No, cancel
@@ -67,4 +67,4 @@ const DeleteSaleModal = ({ open = false, handleClose, id }) => {
   );
 };
 
-export default DeleteSaleModal;
+export default RefundSaleModal;

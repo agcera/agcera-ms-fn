@@ -8,6 +8,7 @@ import MoreButton from '../../components/Table/MoreButton';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { selectLoggedInUser } from '../../redux/usersSlice';
+import StatusBadge from '../../components/Table/StatusBadge';
 
 const SalesPage = () => {
   const dispatch = useDispatch();
@@ -66,11 +67,23 @@ const SalesPage = () => {
       renderCell: (params) => <Box>{calculateTotal(params.row)} MZN</Box>,
     },
     {
+      field: 'refundedAt',
+      headerName: 'Status',
+      flex: 1,
+      renderCell: (params) => (
+        <StatusBadge
+          status={!params.value ? 'Delivered' : format(new Date(params.value), 'd MMM yyyy')}
+          bg={!params.value ? 'bg-green-500' : 'bg-red-500'}
+          color={'white'}
+        />
+      ),
+    },
+    {
       field: 'createdAt',
       headerName: 'Date',
       flex: 1,
       renderCell: (params) => {
-        return <Box>{format(new Date(params.value), 'do MMM yyyy')}</Box>;
+        return <Box>{format(new Date(params.value), 'd MMM yyyy')}</Box>;
       },
     },
     { field: 'paymentMethod', headerName: 'Payment', flex: 0 },
