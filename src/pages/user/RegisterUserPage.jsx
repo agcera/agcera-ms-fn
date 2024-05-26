@@ -1,18 +1,18 @@
-import { Box, Button, Grid, MenuItem, Typography, capitalize } from '@mui/material';
-import PageHeader from '../../components/PageHeader';
-import Input from '../../components/Input';
-import { Controller, Form, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { registerFormSchema } from '../../validations/user.validation';
-import { useDispatch, useSelector } from 'react-redux';
-import { registerAction, selectLoggedInUser } from '../../redux/usersSlice';
+import { Box, Button, Grid, MenuItem, Typography, capitalize } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { getAllPartialStoresAction, getAllStoresAction, selectAllStores } from '../../redux/storesSlice';
+import { Controller, Form, useForm } from 'react-hook-form';
+import { PiUploadFill } from 'react-icons/pi';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import Select from '../../components/Select';
-import { PiUploadFill } from 'react-icons/pi';
+import Input from '../../components/Input';
 import LoadingButton from '../../components/LoadingButton';
+import PageHeader from '../../components/PageHeader';
+import Select from '../../components/Select';
+import { getAllPartialStoresAction, getAllStoresAction, selectAllStores } from '../../redux/storesSlice';
+import { registerAction, selectLoggedInUser } from '../../redux/usersSlice';
+import { registerFormSchema } from '../../validations/user.validation';
 
 const RegisterUserPage = () => {
   const dispatch = useDispatch();
@@ -26,7 +26,6 @@ const RegisterUserPage = () => {
     control,
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(registerFormSchema),
@@ -38,11 +37,9 @@ const RegisterUserPage = () => {
       email: '',
       location: '',
       gender: 'UNSPECIFIED',
-      role: user.role === 'admin' ? 'user' : null,
+      role: 'keeper',
     },
   });
-
-  console.log(watch(), errors);
 
   const onSubmit = (data) => {
     setLoading(true);
@@ -86,30 +83,28 @@ const RegisterUserPage = () => {
             inputProps={{ ...register('phone') }}
           />
         </Grid>
-        {user.role === 'admin' && (
-          <Grid item xs={12} sm={6}>
-            <Controller
-              name="role"
-              control={control}
-              render={({ field, fieldState: { error } }) => {
-                return (
-                  <Select
-                    label="Role"
-                    required={false}
-                    disabled={loading}
-                    error={!!error}
-                    helperText={error?.message}
-                    inputProps={{ ...field }}
-                  >
-                    <MenuItem value="admin">Admin</MenuItem>
-                    <MenuItem value="keeper">Keeper</MenuItem>
-                    <MenuItem value="user">User</MenuItem>
-                  </Select>
-                );
-              }}
-            />
-          </Grid>
-        )}
+        <Grid item xs={12} sm={6}>
+          <Controller
+            name="role"
+            control={control}
+            render={({ field, fieldState: { error } }) => {
+              return (
+                <Select
+                  label="Role"
+                  required={false}
+                  disabled={loading}
+                  error={!!error}
+                  helperText={error?.message}
+                  inputProps={{ ...field }}
+                >
+                  <MenuItem value="admin">Admin</MenuItem>
+                  <MenuItem value="keeper">Keeper</MenuItem>
+                  {/* <MenuItem value="user">User</MenuItem> */}
+                </Select>
+              );
+            }}
+          />
+        </Grid>
         <Grid item xs={12} sm={6}>
           <Input
             label="Password"

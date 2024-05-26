@@ -17,7 +17,6 @@ import { tokens } from '../themeConfig';
 import { useSelector } from 'react-redux';
 import { selectLoggedInUser } from '../redux/usersSlice';
 
-/* eslint-disable */
 const Item = ({ title, to, icon, className, ...props }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -140,7 +139,7 @@ const Sidebar = () => {
             )}
             <Item title="Sales" to="/dashboard/sales" icon={<RiExchangeDollarFill />} />
             {isStoreKeeperUp && <Item title="Transactions" to="/dashboard/transactions" icon={<GrTransaction />} />}
-            {isStoreKeeperUp && <Item title="Users" to="/dashboard/users" icon={<MdOutlinePeopleAlt />} />}
+            {isAdmin && <Item title="Users" to="/dashboard/users" icon={<MdOutlinePeopleAlt />} />}
           </Box>
           {isAdmin && (
             <SubMenu label="History" icon={<MdDashboard />} className="text-sm">
