@@ -1,12 +1,13 @@
 import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
+import { formatQuery } from '../utils/formatters';
 
-export const getAllPartialStoresAction = createAsyncThunk('stores/getAllPartialStoresAction', async () => {
-  const response = await axiosInstance.get(`/stores/all`);
+export const getAllPartialStoresAction = createAsyncThunk('stores/getAllPartialStoresAction', async (query) => {
+  const response = await axiosInstance.get(`/stores/all?${formatQuery(query)}`);
   return response.data;
 });
-export const getAllStoresAction = createAsyncThunk('stores/getAllStoresAction', async () => {
-  const response = await axiosInstance.get(`/stores`);
+export const getAllStoresAction = createAsyncThunk('stores/getAllStoresAction', async (query) => {
+  const response = await axiosInstance.get(`/stores?${formatQuery(query)}`);
   return response.data;
 });
 export const getStoreAction = createAsyncThunk('stores/getStoreAction', async (id) => {

@@ -68,12 +68,12 @@ const ViewSalePage = () => {
     { field: 'productName', headerName: 'Product Name', flex: 1 },
     { field: 'variationName', headerName: 'Var Name', flex: 1 },
     { field: 'variationNumber', headerName: 'Var Number', flex: 0 },
-    { field: 'quantity', headerName: 'Quantity', flex: 0, renderCell: (params) => `${params.value} pcs` },
+    { field: 'quantity', headerName: 'Quantity', flex: 0, valueGetter: (params, row) => `${row.quantity} pcs` },
     {
       field: 'totalSellingPrice',
       headerName: 'Total Selling Price',
       flex: 1,
-      renderCell: (params) => `${params.value} MZN`,
+      valueGetter: (params, row) => `${row.totalSellingPrice} MZN`,
     },
   ];
 
