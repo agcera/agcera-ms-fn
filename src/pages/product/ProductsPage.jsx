@@ -1,4 +1,4 @@
-import { Box, FormControl, MenuItem, Select } from '@mui/material';
+import { Box, FormControl, MenuItem, Select, Typography } from '@mui/material';
 import { format } from 'date-fns';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -49,16 +49,18 @@ const ProductsPage = () => {
         hasCreate={user.role === 'admin' && (() => navigate('/dashboard/products/create'))}
       />
 
-      <ProductsTable products={products} fetchData={fetchData} />
+      <ProductsTable products={products} fetchData={fetchData} omit={['capital', 'income']} />
     </Box>
   );
 };
 
 export default ProductsPage;
 
-export const ProductsTable = ({ products, fetchData, omit = [], storeId }) => {
+export const ProductsTable = ({ products, fetchData, omit = [], storeId, projection }) => {
   const user = useSelector(selectLoggedInUser);
   const [variationMap, setVariationMap] = useState({}); // State to hold selected variation for each row
+  const [totalCapital, setTotalCapital] = useState(0);
+  const [totalExpectedIncome, setTotalExpectedIncome] = useState(0);
 
   const handleChange = (e, id) => {
     const { value } = e.target;
@@ -70,11 +72,35 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId }) => {
 
   const getSellingPriceForVariation = (variations, selectedVariation) => {
     const variation = variations.find((variation) => variation.name === selectedVariation);
-    return variation ? variation.sellingPrice : '';
+    return { number: variation ? variation.number : 1, price: variation ? variation.sellingPrice : 0 };
   };
+
   const getCostPriceForVariation = (variations, selectedVariation) => {
     const variation = variations.find((variation) => variation.name === selectedVariation);
-    return variation ? variation.costPrice : '';
+    return { number: variation ? variation.number : 1, price: variation ? variation.costPrice : 0 };
+  };
+
+  const getQuantityForStore = (stores) => {
+    const store = stores.find((s) => s.storeId === storeId);
+    return store ? store.quantity : 0;
+  };
+
+  const calculateTotals = (products, variationMap) => {
+    let totalCapital = 0;
+    let totalExpectedIncome = 0;
+
+    products.forEach((product) => {
+      const selectedVariation =
+        variationMap[product.id] || (product.variations.length > 0 ? product.variations[0].name : '');
+      const costPrice = getCostPriceForVariation(product.variations, selectedVariation);
+      const sellingPrice = getSellingPriceForVariation(product.variations, selectedVariation);
+      const quantity = getQuantityForStore(product.stores);
+      totalCapital += (costPrice.price * quantity) / costPrice.number;
+      totalExpectedIncome += (sellingPrice.price * quantity) / sellingPrice.number;
+    });
+
+    setTotalCapital(totalCapital);
+    setTotalExpectedIncome(totalExpectedIncome);
   };
 
   useEffect(() => {
@@ -84,7 +110,15 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId }) => {
       initialVariationMap[product.id] = product.variations.length > 0 ? product.variations[0].name : '';
     });
     setVariationMap(initialVariationMap);
+
+    // Calculate initial totals
+    calculateTotals(products, initialVariationMap);
   }, [products]);
+
+  useEffect(() => {
+    // Recalculate totals when variationMap changes
+    calculateTotals(products, variationMap);
+  }, [variationMap, products]);
 
   const columns = [
     {
@@ -108,23 +142,21 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId }) => {
       field: 'type',
       headerName: 'Type',
       flex: 0,
-      renderCell: (params) => {
-        return (
-          <StatusBadge
-            className="min-w-[80px]"
-            status={params.value.toLowerCase()}
-            bg={params.value === 'STANDARD' ? 'bg-green-500' : 'bg-red-500'}
-            color={'white'}
-          />
-        );
-      },
+      renderCell: (params) => (
+        <StatusBadge
+          className="min-w-[80px]"
+          status={params.value.toLowerCase()}
+          bg={params.value === 'STANDARD' ? 'bg-green-500' : 'bg-red-500'}
+          color={'white'}
+        />
+      ),
     },
     {
       field: 'stores',
       headerName: 'In store',
       flex: 0,
       align: 'center',
-      renderCell: (params) => params.value?.find((s) => s.storeId === storeId).quantity,
+      renderCell: (params) => getQuantityForStore(params.value),
     },
     {
       field: 'variations',
@@ -156,7 +188,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId }) => {
       valueGetter: (params, row) => {
         const selectedVariation = variationMap[row.id] || '';
         const price = getSellingPriceForVariation(row.variations, selectedVariation);
-        return `${price} MZN`;
+        return `${price.price} MZN`;
       },
     },
     user.role === 'admin' && {
@@ -166,7 +198,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId }) => {
       valueGetter: (params, row) => {
         const selectedVariation = variationMap[row.id] || '';
         const price = getCostPriceForVariation(row.variations, selectedVariation);
-        return `${price} MZN`;
+        return `${price.price} MZN`;
       },
     },
     {
@@ -187,7 +219,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId }) => {
     },
   ].filter((b) => b && !omit.includes(b.field) && !(!storeId && b.field === 'stores'));
 
-  // zoomable image
+  // Zoomable image component
   const ZoomableImage = ({ image }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
@@ -220,5 +252,19 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId }) => {
     );
   };
 
-  return <StyledTable fetchData={fetchData} columns={columns} data={products} />;
+  return (
+    <Box>
+      {projection && (
+        <Box className="mb-4 p-2 bg-gray-100">
+          {user.role === 'admin' && (
+            <Typography variant="text-body text-[14px]">Total Capital: {totalCapital.toFixed(2)} MZN</Typography>
+          )}
+          <Typography variant="text-body text-[14px]">
+            Total Expected Income: {totalExpectedIncome.toFixed(2)} MZN
+          </Typography>
+        </Box>
+      )}
+      <StyledTable fetchData={fetchData} columns={columns} data={products} />
+    </Box>
+  );
 };
