@@ -30,6 +30,7 @@ function StyledTable({
   fetchData,
   initPagination = {},
   disableSearch = false,
+  minWidth,
 }) {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -114,10 +115,16 @@ function StyledTable({
           color: 'red',
         },
         [`& .${gridClasses.root}`]: {
-          minWidth: '700px',
+          minWidth: minWidth || '700px',
+          width: '100%',
           minHeight: '200px',
           border: 'none',
         },
+        [`& .${gridClasses.main}`]: {
+          minWidth: minWidth || '700px',
+          width: '100%',
+        },
+        // []:{},
         [`& .${gridClasses.footerContainer}`]: {
           backgroundColor: colors.text_light.main,
         },

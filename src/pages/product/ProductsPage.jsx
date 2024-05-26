@@ -56,7 +56,7 @@ const ProductsPage = () => {
 
 export default ProductsPage;
 
-export const ProductsTable = ({ products, fetchData, omit = [], storeId, projection }) => {
+export const ProductsTable = ({ products, fetchData, omit = [], storeId, projection, minWidth }) => {
   const user = useSelector(selectLoggedInUser);
   const [variationMap, setVariationMap] = useState({}); // State to hold selected variation for each row
   const [totalCapital, setTotalCapital] = useState(0);
@@ -80,28 +80,34 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
     return { number: variation ? variation.number : 1, price: variation ? variation.costPrice : 0 };
   };
 
-  const getQuantityForStore = (stores) => {
-    const store = stores?.find((s) => s.storeId === storeId);
-    return store ? store.quantity : 0;
-  };
+  const getQuantityForStore = useCallback(
+    (stores) => {
+      const store = stores?.find((s) => s.storeId === storeId);
+      return store ? store.quantity : 0;
+    },
+    [storeId]
+  );
 
-  const calculateTotals = (products, variationMap) => {
-    let totalCapital = 0;
-    let totalExpectedIncome = 0;
+  const calculateTotals = useCallback(
+    (products, variationMap) => {
+      let totalCapital = 0;
+      let totalExpectedIncome = 0;
 
-    products.forEach((product) => {
-      const selectedVariation =
-        variationMap[product.id] || (product.variations.length > 0 ? product.variations[0].name : '');
-      const costPrice = getCostPriceForVariation(product.variations, selectedVariation);
-      const sellingPrice = getSellingPriceForVariation(product.variations, selectedVariation);
-      const quantity = getQuantityForStore(product.stores);
-      totalCapital += (costPrice.price * quantity) / costPrice.number;
-      totalExpectedIncome += (sellingPrice.price * quantity) / sellingPrice.number;
-    });
+      products.forEach((product) => {
+        const selectedVariation =
+          variationMap[product.id] || (product.variations.length > 0 ? product.variations[0].name : '');
+        const costPrice = getCostPriceForVariation(product.variations, selectedVariation);
+        const sellingPrice = getSellingPriceForVariation(product.variations, selectedVariation);
+        const quantity = getQuantityForStore(product.stores);
+        totalCapital += (costPrice.price * quantity) / costPrice.number;
+        totalExpectedIncome += (sellingPrice.price * quantity) / sellingPrice.number;
+      });
 
-    setTotalCapital(totalCapital);
-    setTotalExpectedIncome(totalExpectedIncome);
-  };
+      setTotalCapital(totalCapital);
+      setTotalExpectedIncome(totalExpectedIncome);
+    },
+    [getQuantityForStore]
+  );
 
   useEffect(() => {
     // Initialize variationMap with the first variation for each row
@@ -113,12 +119,12 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
 
     // Calculate initial totals
     calculateTotals(products, initialVariationMap);
-  }, [products]);
+  }, [products, calculateTotals]);
 
   useEffect(() => {
     // Recalculate totals when variationMap changes
     calculateTotals(products, variationMap);
-  }, [variationMap, products]);
+  }, [variationMap, products, calculateTotals]);
 
   const columns = [
     {
@@ -181,6 +187,16 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
         );
       },
     },
+    user.role === 'admin' && {
+      field: 'costPrice',
+      headerName: 'Cost Price',
+      flex: 1,
+      valueGetter: (params, row) => {
+        const selectedVariation = variationMap[row.id] || '';
+        const price = getCostPriceForVariation(row.variations, selectedVariation);
+        return `${price.price} MZN`;
+      },
+    },
     {
       field: 'sellingPrice',
       headerName: 'Selling Price',
@@ -204,7 +220,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
     },
     {
       field: 'income',
-      headerName: 'Expected Income',
+      headerName: 'Income',
       flex: 1,
       valueGetter: (params, row) => {
         const selectedVariation = variationMap[row.id] || '';
@@ -214,16 +230,6 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
       },
     },
 
-    user.role === 'admin' && {
-      field: 'costPrice',
-      headerName: 'Cost Price',
-      flex: 1,
-      valueGetter: (params, row) => {
-        const selectedVariation = variationMap[row.id] || '';
-        const price = getCostPriceForVariation(row.variations, selectedVariation);
-        return `${price.price} MZN`;
-      },
-    },
     {
       field: 'createdAt',
       headerName: 'Created',
@@ -287,7 +293,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
           </Typography>
         </Box>
       )}
-      <StyledTable fetchData={fetchData} columns={columns} data={products} />
+      <StyledTable fetchData={fetchData} columns={columns} data={products} minWidth={minWidth} />
     </Box>
   );
 };
