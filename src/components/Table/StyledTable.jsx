@@ -20,7 +20,7 @@ function CustomToolbar({ disableSearch }) {
   );
 }
 
-const pageSizeOptions = [1, 2, 5, 10, 25, 50, 75, 100];
+const pageSizeOptions = [5, 10, 25, 50, 75, 100];
 
 function StyledTable({
   data: fetchedData,
@@ -36,7 +36,7 @@ function StyledTable({
   const [data, setData] = useState([]);
   const [query, setQuery] = useState({
     skip: initPagination.skip || 0,
-    limit: initPagination.limit || 1,
+    limit: initPagination.limit || 25,
     sort: null,
     ...(!disableSearch ? { search: null } : {}),
   });

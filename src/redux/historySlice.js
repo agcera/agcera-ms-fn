@@ -1,8 +1,9 @@
 import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
+import { formatQuery } from '../utils/formatters';
 
-export const getAllMovements = createAsyncThunk('history/getAllMovements', async () => {
-  const response = await axiosInstance.get(`history/movements`);
+export const getAllMovements = createAsyncThunk('history/getAllMovements', async (query) => {
+  const response = await axiosInstance.get(`history/movements?${formatQuery(query)}`);
   return response.data;
 });
 

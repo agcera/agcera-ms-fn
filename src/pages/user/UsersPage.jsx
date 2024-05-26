@@ -1,14 +1,13 @@
 import { Box } from '@mui/material';
-import { useCallback, useEffect } from 'react';
+import { format } from 'date-fns';
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import MoreButton from '../../components/Table/MoreButton';
 import StatusBadge from '../../components/Table/StatusBadge';
 import StyledTable from '../../components/Table/StyledTable';
 import { getAllUsersAction, selectAllUser, selectLoggedInUser } from '../../redux/usersSlice';
-import { format } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 
 const UsersPage = () => {
   const navigate = useNavigate();
@@ -22,12 +21,6 @@ const UsersPage = () => {
     },
     [dispatch]
   );
-
-  useEffect(() => {
-    fetchData().then(({ error }) => {
-      if (error) toast.error(error.message);
-    });
-  }, [fetchData]);
 
   const columns = [
     {

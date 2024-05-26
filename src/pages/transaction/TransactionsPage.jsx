@@ -1,6 +1,6 @@
 import { Box, capitalize } from '@mui/material';
 import { format } from 'date-fns';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
@@ -9,7 +9,6 @@ import StatusBadge from '../../components/Table/StatusBadge';
 import StyledTable from '../../components/Table/StyledTable';
 import DetailsTransactionModal from '../../components/transaction/DetailsTransactionModal';
 import { getAllTransactionsAction, selectAllTransactions } from '../../redux/transactionsSlice';
-import { toast } from 'react-toastify';
 
 const TransactionsPage = () => {
   const dispatch = useDispatch();
@@ -109,12 +108,6 @@ const TransactionsPage = () => {
     },
     [dispatch]
   );
-
-  useEffect(() => {
-    fetchData().then(({ error }) => {
-      if (error) toast.error(error.message);
-    });
-  }, [fetchData]);
 
   return (
     <>

@@ -1,35 +1,42 @@
 import { Box } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import PageHeader from '../../components/PageHeader';
-
 import { format } from 'date-fns';
+import { useCallback, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import PageHeader from '../../components/PageHeader';
+import MoreButton from '../../components/Table/MoreButton';
 import StyledTable from '../../components/Table/StyledTable';
 import { getAllDeleted, selectAllDeleted } from '../../redux/deletedSlice';
-import MoreButton from '../../components/Table/MoreButton';
 import ViewTrashModel from './ViewTrashModel';
-import { useNavigate } from 'react-router-dom';
 
 const TrashPage = () => {
-  /* eslint-disable no-unused-vars */
-  // const [loading, setLoading] = useState(false);
-
-  // const theme = useTheme();
-  // const colors = tokens(theme.palette.mode);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const trash = useSelector(selectAllDeleted);
-
-  console.log(trash, 'trash mvementsjdkfsdkfjskldfsf');
   const [trashId, setTrashId] = useState(null);
   const [model, setmodel] = useState(null);
 
-  useEffect(() => {
-    dispatch(getAllDeleted({}));
-  }, [dispatch]);
+  const fetchData = useCallback(
+    (query) => {
+      if (query?.sort) {
+        query.sort = Object.keys(query.sort).reduce((acc, key) => {
+          switch (key) {
+            case 'deletedBy':
+              acc['deletedBy'] = query.sort[key];
+              break;
+            case 'phone':
+              acc['deletedBy'] = query.sort[key];
+              break;
+            default:
+              acc[key] = query.sort[key];
+          }
+          return acc;
+        }, {});
+      }
+      return dispatch(getAllDeleted(query));
+    },
+    [dispatch]
+  );
 
   const columns = [
     {
@@ -41,9 +48,8 @@ const TrashPage = () => {
       field: 'deletedBy',
       headerName: 'Deleted By',
       flex: 1,
-      renderCell: (params) => {
-        // const user = JSON.parse(params.value)
-        const user = JSON.parse(params.value);
+      valueGetter: (params, row) => {
+        const user = JSON.parse(row.deletedBy);
         return user.name;
       },
     },
@@ -51,23 +57,23 @@ const TrashPage = () => {
       field: 'phone',
       headerName: 'Phone',
       flex: 1,
-      renderCell: (params) => {
-        // const user = JSON.parse(params.value)
-        const user = JSON.parse(params.row.deletedBy);
+      valueGetter: (params, row) => {
+        const user = JSON.parse(row.deletedBy);
         return user.phone;
       },
     },
-
     {
       field: 'createdAt',
       headerName: 'Done At',
       flex: 1,
-      renderCell: (params) => format(new Date(params.value), 'do MMM yyyy'),
+      valueGetter: (params, row) => format(new Date(row.createdAt), 'do MMM yyyy'),
     },
     {
       field: 'action',
       headerName: 'Action',
       flex: 0,
+      sortable: false,
+      disableExport: true,
       renderCell: (params) => {
         return (
           <MoreButton
@@ -100,7 +106,7 @@ const TrashPage = () => {
         }}
       />
 
-      <StyledTable columns={columns} data={trash} getRowId={(row) => row.id} />
+      <StyledTable fetchData={fetchData} columns={columns} data={trash} getRowId={(row) => row.id} />
 
       {!!trashId && <ViewTrashModel id={trashId} open={!!trashId} handleClose={handleCloseDetails} model={model} />}
     </Box>
