@@ -1,14 +1,14 @@
-import { useDispatch, useSelector } from 'react-redux';
-import PageHeader from '../../components/PageHeader';
-import { getAllSalesAction, selectAllSales } from '../../redux/salesSlice';
-import { useEffect } from 'react';
 import { Box } from '@mui/material';
-import StyledTable from '../../components/Table/StyledTable';
-import MoreButton from '../../components/Table/MoreButton';
-import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { selectLoggedInUser } from '../../redux/usersSlice';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import PageHeader from '../../components/PageHeader';
+import MoreButton from '../../components/Table/MoreButton';
 import StatusBadge from '../../components/Table/StatusBadge';
+import StyledTable from '../../components/Table/StyledTable';
+import { getAllSalesAction, selectAllSales } from '../../redux/salesSlice';
+import { selectLoggedInUser } from '../../redux/usersSlice';
 
 const SalesPage = () => {
   const dispatch = useDispatch();
@@ -17,9 +17,26 @@ const SalesPage = () => {
 
   const sales = useSelector(selectAllSales);
 
-  useEffect(() => {
-    dispatch(getAllSalesAction({}));
-  }, [dispatch]);
+  const fetchData = useCallback(
+    (query) => {
+      if (query) {
+        if (query?.sort) {
+          query.sort = Object.keys(query.sort).reduce((acc, key) => {
+            switch (key) {
+              case 'store':
+                acc['store.name'] = query.sort[key];
+                break;
+              default:
+                acc[key] = query.sort[key];
+            }
+            return acc;
+          }, {});
+        }
+      }
+      return dispatch(getAllSalesAction(query));
+    },
+    [dispatch]
+  );
 
   const calculateTotal = (sale) => {
     let total = 0;
@@ -34,12 +51,17 @@ const SalesPage = () => {
       field: 'store',
       headerName: 'Store',
       flex: 1,
-      renderCell: (params) => <Box>{params.value?.name || <span className="text-secondary">Deleted Store</span>}</Box>,
+      valueGetter: (params, row) => row.store?.name || 'Deleted Store',
+      renderCell: (params) => (
+        <Box>{params.row.store?.name || <span className="text-secondary">Deleted Store</span>}</Box>
+      ),
     },
     {
       field: 'variations',
       headerName: 'Products',
       flex: 3,
+      sortable: false,
+      disableExport: true,
       renderCell: (params) => (
         <Box className="">
           {params.value.map((variations, index) => (
@@ -64,16 +86,18 @@ const SalesPage = () => {
       field: 'total',
       headerName: 'Total',
       flex: 1,
-      renderCell: (params) => <Box>{calculateTotal(params.row)} MZN</Box>,
+      sortable: false,
+      valueGetter: (params, row) => `${calculateTotal(row)} MZN`,
     },
     {
       field: 'refundedAt',
       headerName: 'Status',
       flex: 1,
+      valueGetter: (params, row) => (!row.refundedAt ? 'Delivered' : format(new Date(row.refundedAt), 'd MMM yyyy')),
       renderCell: (params) => (
         <StatusBadge
-          status={!params.value ? 'Delivered' : format(new Date(params.value), 'd MMM yyyy')}
-          bg={!params.value ? 'bg-green-500' : 'bg-red-500'}
+          status={params.value}
+          bg={params.value === 'Delivered' ? 'bg-green-500' : 'bg-red-500'}
           color={'white'}
         />
       ),
@@ -82,15 +106,15 @@ const SalesPage = () => {
       field: 'createdAt',
       headerName: 'Date',
       flex: 1,
-      renderCell: (params) => {
-        return <Box>{format(new Date(params.value), 'd MMM yyyy')}</Box>;
-      },
+      valueGetter: (params, row) => format(new Date(row.createdAt), 'd MMM yyyy'),
     },
     { field: 'paymentMethod', headerName: 'Payment', flex: 0 },
     {
       field: 'action',
       headerName: 'Action',
       flex: 0,
+      disableExport: true,
+      sortable: false,
       renderCell: (params) => (
         <MoreButton id={params.id} model={'sales'} className="my-2" hasEdit={false} hasDelete={user.role !== 'user'} />
       ),
@@ -105,6 +129,8 @@ const SalesPage = () => {
         hasCreate={user.role === 'keeper' && (() => navigate('/dashboard/sales/create'))}
       />
       <StyledTable
+        disableSearch={true}
+        fetchData={fetchData}
         data={sales}
         columns={columns}
         onRowClick={(sale) => navigate(`/dashboard/sales/${sale.id}`)}

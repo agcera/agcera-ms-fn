@@ -39,8 +39,8 @@ export const updateProductAction = createAsyncThunk('products/updateProductActio
   const response = await axiosInstance.patch(`/products/${id}`, formData);
   return response.data;
 });
-export const getAllProductsAction = createAsyncThunk('products/getAllProductsAction', async () => {
-  const response = await axiosInstance.get(`/products`);
+export const getAllProductsAction = createAsyncThunk('products/getAllProductsAction', async (query) => {
+  const response = await axiosInstance.get(`/products?${formatQuery(query)}`);
   return response.data;
 });
 export const getProductAction = createAsyncThunk('products/getProductAction', async (id) => {

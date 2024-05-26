@@ -1,5 +1,6 @@
 import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
+import { formatQuery } from '../utils/formatters';
 
 const salesAdapter = createEntityAdapter();
 
@@ -8,8 +9,8 @@ export const getSaleAction = createAsyncThunk('sales/getSaleAction', async (id) 
   return response.data;
 });
 
-export const getAllSalesAction = createAsyncThunk('sales/getAllSalesAction', async () => {
-  const response = await axiosInstance.get('/sales');
+export const getAllSalesAction = createAsyncThunk('sales/getAllSalesAction', async (query) => {
+  const response = await axiosInstance.get(`/sales?${formatQuery(query)}`);
   return response.data;
 });
 

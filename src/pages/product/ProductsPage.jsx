@@ -1,38 +1,45 @@
-import { useState, useEffect } from 'react';
+import { Box, FormControl, MenuItem, Select } from '@mui/material';
+import { format } from 'date-fns';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, FormControl, MenuItem, Select } from '@mui/material';
-import { getAllProductsAction, selectAllProducts } from '../../redux/productsSlice';
 import PageHeader from '../../components/PageHeader';
-import StyledTable from '../../components/Table/StyledTable';
-import Loader from '../../components/Loader';
 import MoreButton from '../../components/Table/MoreButton';
-import { format } from 'date-fns';
-import { selectLoggedInUser } from '../../redux/usersSlice';
 import StatusBadge from '../../components/Table/StatusBadge';
+import StyledTable from '../../components/Table/StyledTable';
+import { getAllProductsAction, selectAllProducts } from '../../redux/productsSlice';
+import { selectLoggedInUser } from '../../redux/usersSlice';
 
 const ProductsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector(selectLoggedInUser);
   const products = useSelector(selectAllProducts);
-  const [initLoading, setInitLoading] = useState(true);
 
-  useEffect(() => {
-    setInitLoading(false);
-    dispatch(getAllProductsAction()).then(({ error }) => {
-      setInitLoading(false);
-      if (error) console.log(error);
-    });
-  }, [dispatch]);
-
-  if (!(products?.length > 0) && initLoading) {
-    return (
-      <Box className="w-full h-full flex">
-        <Loader className="m-auto" />
-      </Box>
-    );
-  }
+  const fetchData = useCallback(
+    (query) => {
+      if (query?.sort) {
+        query.sort = Object.keys(query.sort).reduce((acc, key) => {
+          switch (key) {
+            case 'variations':
+              acc['variations.name'] = query.sort[key];
+              break;
+            case 'sellingPrice':
+              acc['variations.sellingPrice'] = query.sort[key];
+              break;
+            case 'costPrice':
+              acc['variations.costPrice'] = query.sort[key];
+              break;
+            default:
+              acc[key] = query.sort[key];
+          }
+          return acc;
+        }, {});
+      }
+      return dispatch(getAllProductsAction(query));
+    },
+    [dispatch]
+  );
 
   return (
     <Box className="size-full flex flex-col">
@@ -42,14 +49,14 @@ const ProductsPage = () => {
         hasCreate={user.role === 'admin' && (() => navigate('/dashboard/products/create'))}
       />
 
-      <ProductsTable products={products} />
+      <ProductsTable products={products} fetchData={fetchData} />
     </Box>
   );
 };
 
 export default ProductsPage;
 
-export const ProductsTable = ({ products, omit = [], storeId }) => {
+export const ProductsTable = ({ products, fetchData, omit = [], storeId }) => {
   const user = useSelector(selectLoggedInUser);
   const [variationMap, setVariationMap] = useState({}); // State to hold selected variation for each row
 
@@ -84,6 +91,7 @@ export const ProductsTable = ({ products, omit = [], storeId }) => {
       field: 'image',
       headerName: 'Image',
       flex: 0,
+      disableExport: true,
 
       // in the params there will go the dedicated image for the products
       // eslint-disable-next-line
@@ -122,6 +130,7 @@ export const ProductsTable = ({ products, omit = [], storeId }) => {
       field: 'variations',
       headerName: 'Variations',
       flex: 1,
+      disableExport: true,
       renderCell: (params) => {
         return (
           <FormControl fullWidth variant="filled" sx={{ borderBottom: 'none' }}>
@@ -144,32 +153,34 @@ export const ProductsTable = ({ products, omit = [], storeId }) => {
       field: 'sellingPrice',
       headerName: 'Selling Price',
       flex: 1,
-      renderCell: (params) => {
-        const selectedVariation = variationMap[params.row.id] || '';
-        const price = getSellingPriceForVariation(params.row.variations, selectedVariation);
-        return <Typography className="py-1 mt-4 h-6 text-[14px]">{price} MZN</Typography>;
+      valueGetter: (params, row) => {
+        const selectedVariation = variationMap[row.id] || '';
+        const price = getSellingPriceForVariation(row.variations, selectedVariation);
+        return `${price} MZN`;
       },
     },
     user.role === 'admin' && {
       field: 'costPrice',
       headerName: 'Cost Price',
       flex: 1,
-      renderCell: (params) => {
-        const selectedVariation = variationMap[params.row.id] || '';
-        const price = getCostPriceForVariation(params.row.variations, selectedVariation);
-        return <Typography className="py-1 mt-4 h-6 text-[14px]">{price} MZN</Typography>;
+      valueGetter: (params, row) => {
+        const selectedVariation = variationMap[row.id] || '';
+        const price = getCostPriceForVariation(row.variations, selectedVariation);
+        return `${price} MZN`;
       },
     },
     {
       field: 'createdAt',
       headerName: 'Created',
       flex: 1,
-      renderCell: (params) => (params.value ? format(new Date(params.value), 'do MMM yyyy') : 'N/a'),
+      valueGetter: (params, row) => (row.createdAt ? format(new Date(row.createdAt), 'do MMM yyyy') : 'N/a'),
     },
     user.role === 'admin' && {
       field: 'action',
       headerName: 'Action',
       flex: 0,
+      disableExport: true,
+      sortable: false,
       renderCell: (params) => {
         return <MoreButton id={params.id} model={'products'} hasDetails={false} hasDelete={true} />;
       },
@@ -209,5 +220,5 @@ export const ProductsTable = ({ products, omit = [], storeId }) => {
     );
   };
 
-  return <StyledTable columns={columns} data={products} />;
+  return <StyledTable fetchData={fetchData} columns={columns} data={products} />;
 };

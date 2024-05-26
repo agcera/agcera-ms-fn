@@ -7,11 +7,11 @@ import { getAllPartialStoresAction, getAllStoresAction, selectAllStores } from '
 
 import { Box, useTheme } from '@mui/material';
 import { format } from 'date-fns';
-import { useEffect } from 'react';
+import { useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ActionButton from '../../components/ActionButton';
-import { tokens } from '../../themeConfig';
 import { selectLoggedInUser } from '../../redux/usersSlice';
+import { tokens } from '../../themeConfig';
 
 const StoresPage = () => {
   const theme = useTheme();
@@ -22,9 +22,10 @@ const StoresPage = () => {
 
   const colors = tokens(theme.palette.mode);
 
-  useEffect(() => {
-    dispatch(user.role === 'admin' ? getAllStoresAction() : getAllPartialStoresAction());
-  }, [dispatch, user]);
+  const fetchData = useCallback(
+    (query) => dispatch(user.role === 'admin' ? getAllStoresAction(query) : getAllPartialStoresAction()),
+    [user.role, dispatch]
+  );
 
   const miniColumns = [
     { field: 'id', headerName: 'ID', flex: 1 },
@@ -39,10 +40,11 @@ const StoresPage = () => {
       field: 'isActive',
       headerName: 'Status',
       flex: 0,
+      valueGetter: (params, row) => (row.isActive ? 'Active' : 'InActive'),
       renderCell: (params) => (
         <StatusBadge
-          status={params.value ? 'active' : 'inactive'}
-          bg={params.value ? 'bg-green-500' : 'bg-red-500'}
+          status={params.value}
+          bg={params.value === 'Active' ? 'bg-green-500' : 'bg-red-500'}
           color={'white'}
         />
       ),
@@ -51,12 +53,14 @@ const StoresPage = () => {
       field: 'createdAt',
       headerName: 'Created',
       flex: 1,
-      renderCell: (params) => format(new Date(params.value), 'do MMM yyyy'),
+      valueGetter: (params, row) => format(new Date(row.createdAt), 'do MMM yyyy'),
     },
     {
       field: 'action',
       headerName: 'Action',
       flex: 0,
+      disableExport: true,
+      sortable: false,
       renderCell: (params) => {
         let hasDelete = true;
         if (['main', 'expired'].includes(params.row.name.toLowerCase())) hasDelete = false;
@@ -91,6 +95,7 @@ const StoresPage = () => {
       />
 
       <StyledTable
+        fetchData={fetchData}
         columns={user.role === 'admin' ? columns : miniColumns}
         data={stores}
         onRowClick={user.role === 'admin' && ((row) => navigate(`/dashboard/stores/${row.id}`))}

@@ -1,6 +1,6 @@
 import { Box, capitalize } from '@mui/material';
 import { format } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
@@ -21,15 +21,21 @@ const TransactionsPage = () => {
       field: 'store',
       headerName: 'Store',
       flex: 1,
+      valueGetter: (params, row) => (row.store?.name ? capitalize(row.store?.name) : 'Deleted Store'),
       renderCell: (params) =>
-        params.value ? capitalize(params.value?.name) : <span className="text-secondary">Deleted Store</span>,
+        params.row.store?.name ? (
+          capitalize(params.row.store.name)
+        ) : (
+          <span className="text-secondary">Deleted Store</span>
+        ),
     },
     {
       field: 'user',
       headerName: 'Created by',
       flex: 1,
+      valueGetter: (params, row) => (row.user?.name ? capitalize(row.user?.name) : 'Deleted User'),
       renderCell: (params) =>
-        params.value ? capitalize(params.value.name) : <span className="text-secondary">Deleted User</span>,
+        params.row.user?.name ? capitalize(params.row.user.name) : <span className="text-secondary">Deleted User</span>,
     },
     {
       field: 'type',
@@ -48,18 +54,20 @@ const TransactionsPage = () => {
       field: 'amount',
       headerName: 'Amount',
       flex: 1,
-      renderCell: (params) => `${params.value} MZN`,
+      valueGetter: (params, row) => `${row.amount} MZN`,
     },
     {
       field: 'createdAt',
       headerName: 'Created',
       flex: 1,
-      renderCell: (params) => format(new Date(params.value), 'do MMM yyyy'),
+      valueGetter: (params, row) => format(new Date(row.createdAt), 'do MMM yyyy'),
     },
     {
       field: 'action',
       headerName: 'Action',
       flex: 0,
+      sortable: false,
+      disableExport: true,
       renderCell: (params) => {
         return (
           <MoreButton
@@ -79,9 +87,27 @@ const TransactionsPage = () => {
     setTransactionId(null);
   };
 
-  useEffect(() => {
-    dispatch(getAllTransactionsAction({}));
-  }, [dispatch]);
+  const fetchData = useCallback(
+    (query) => {
+      if (query?.sort) {
+        query.sort = Object.keys(query.sort).reduce((acc, key) => {
+          switch (key) {
+            case 'store':
+              acc['store.name'] = query.sort[key];
+              break;
+            case 'user':
+              acc['user.name'] = query.sort[key];
+              break;
+            default:
+              acc[key] = query.sort[key];
+          }
+          return acc;
+        }, {});
+      }
+      return dispatch(getAllTransactionsAction(query));
+    },
+    [dispatch]
+  );
 
   return (
     <>
@@ -92,7 +118,13 @@ const TransactionsPage = () => {
           hasCreate={() => navigate('/dashboard/transactions/create')}
         />
 
-        <StyledTable columns={columns} data={transactions} onRowClick={(row) => setTransactionId(row.id)} />
+        <StyledTable
+          disableSearch={true}
+          fetchData={fetchData}
+          columns={columns}
+          data={transactions}
+          onRowClick={(row) => setTransactionId(row.id)}
+        />
       </Box>
 
       <DetailsTransactionModal id={transactionId} open={!!transactionId} handleClose={handleCloseDetails} />
