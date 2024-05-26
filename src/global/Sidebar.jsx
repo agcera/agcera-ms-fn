@@ -133,8 +133,11 @@ const Sidebar = () => {
           {/* menu items  */}
           <Box paddingLeft={isCollapsed ? undefined : '10px'}>
             {isStoreKeeperUp && <Item title="Analytics" to="/dashboard/analytics" icon={<MdAnalytics />} />}
-            <Item title="Stores" to="/dashboard/stores" icon={<MdOutlineStore />} />
-            <Item title="Products" to="/dashboard/products" icon={<MdOutlineProductionQuantityLimits />} />
+            {isAdmin && <Item title="Stores" to="/dashboard/stores" icon={<MdOutlineStore />} />}
+            {isAdmin && <Item title="Products" to="/dashboard/products" icon={<MdOutlineProductionQuantityLimits />} />}
+            {isStoreKeeper && (
+              <Item title="Store" to={`/dashboard/stores/${user.storeId}/store`} icon={<MdOutlineStore />} />
+            )}
             <Item title="Sales" to="/dashboard/sales" icon={<RiExchangeDollarFill />} />
             {isStoreKeeperUp && <Item title="Transactions" to="/dashboard/transactions" icon={<GrTransaction />} />}
             {isStoreKeeperUp && <Item title="Users" to="/dashboard/users" icon={<MdOutlinePeopleAlt />} />}

@@ -91,10 +91,14 @@ const ViewStorePage = () => {
       <Box className="w-full h-full">
         <PageHeader
           title={`${capitalize(store.name)} store`}
-          hasBack={true}
+          hasBack={user.role === 'admin'}
           backTo="/dashboard/stores"
-          hasUpdate={() => navigate(`/dashboard/stores/${store.id}/update`)}
-          hasDelete={!['main', 'expired'].includes(store.name.toLowerCase()) && (() => setDeleteOpen(true))}
+          hasUpdate={user.role === 'admin' ? () => navigate(`/dashboard/stores/${store.id}/update`) : false}
+          hasDelete={
+            user.role === 'admin'
+              ? !['main', 'expired'].includes(store.name.toLowerCase()) && (() => setDeleteOpen(true))
+              : false
+          }
         />
         <Box className="w-full px-8 py-2">
           <Typography variant="subHeader" className="font-semibold" color="primary.light">
@@ -154,7 +158,7 @@ const ViewStorePage = () => {
           </Stack>
 
           {products?.length > 0 ? (
-            <ProductsTable products={products} omit={['action']} storeId={routeParams.id} />
+            <ProductsTable products={products} omit={['action']} storeId={routeParams.id} projection />
           ) : (
             <Typography color="secondary.light" className="text-center py-4">
               This store has no products

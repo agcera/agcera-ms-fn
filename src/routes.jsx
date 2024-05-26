@@ -54,10 +54,11 @@ const router = createBrowserRouter(
           <Route path="profile" element={<ViewUserPage />} />
 
           <Route path="stores" element={<Outlet />}>
-            <Route path="" element={<StoresPage />} />
+            <Route path="" element={<Protected Component={StoresPage} allowed={['admin']} />} />
             <Route path=":id" element={<Protected Component={ViewStorePage} denied={['user']} />} />
+            <Route path=":id/store" element={<Protected Component={ViewStorePage} allowed={['keeper']} />} />
             <Route path=":id/add-product" element={<Protected Component={StoreAddProductPage} denied={['user']} />} />
-            <Route path=":id/update" element={<Protected Component={UpdateStorePage} denied={['user']} />} />
+            <Route path=":id/update" element={<Protected Component={UpdateStorePage} allowed={['admin']} />} />
             <Route path="create" element={<Protected Component={CreateStorePage} allowed={['admin']} />} />
             <Route path="add-product" element={<Protected Component={StoreAddProductPage} allowed={['admin']} />} />
           </Route>
