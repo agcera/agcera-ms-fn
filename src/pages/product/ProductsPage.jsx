@@ -192,6 +192,29 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
       },
     },
     user.role === 'admin' && {
+      field: 'capital',
+      headerName: 'Capital',
+      flex: 1,
+      valueGetter: (params, row) => {
+        const selectedVariation = variationMap[row.id] || '';
+        const price = getCostPriceForVariation(row.variations, selectedVariation);
+        const quantity = getQuantityForStore(row.stores);
+        return `${(price.price * quantity) / price.number} MZN`;
+      },
+    },
+    {
+      field: 'income',
+      headerName: 'Expected Income',
+      flex: 1,
+      valueGetter: (params, row) => {
+        const selectedVariation = variationMap[row.id] || '';
+        const price = getSellingPriceForVariation(row.variations, selectedVariation);
+        const quantity = getQuantityForStore(row.stores);
+        return `${(price.price * quantity) / price.number} MZN`;
+      },
+    },
+
+    user.role === 'admin' && {
       field: 'costPrice',
       headerName: 'Cost Price',
       flex: 1,
