@@ -106,7 +106,6 @@ function AnalyticsPage() {
         }
         case 'weekly': {
           const day = weekDays[new Date(curr).getDay()];
-          console.log(day, 'day');
           acc[day] = acc[day] + analytics.salesByDate[curr];
           break;
         }
@@ -123,9 +122,6 @@ function AnalyticsPage() {
   const chartFormattedData = useMemo(() => {
     return Object.keys(chartData).map((key) => ({ day: key, earnings: chartData[key] }));
   }, [chartData]);
-
-  console.log(chartData, 'chartData');
-  console.log(chartFormattedData, 'chartFormattedData');
 
   useEffect(() => {
     let to;
@@ -240,23 +236,14 @@ function AnalyticsPage() {
             </Typography> */}
             <Box className="h-full">
               <VictoryChart theme={VictoryTheme.material} domainPadding={{ x: 40, y: 80 }} width={1000} height={500}>
-                <VictoryLegend
-                  x={400}
-                  y={50}
-                  title="All sales"
-                  centerTitle
-                  style={{ title: { fontSize: 30, fontWeight: 'bold' } }}
-                  data={[]}
-                />
                 <VictoryAxis
-                  animate
                   tickFormat={
                     dateRange === 'weekly'
                       ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
                       : Object.keys(chartData)
                   }
                 />
-                <VictoryAxis dependentAxis animate tickFormat={(x) => `${x / 1000}k`} />
+                <VictoryAxis dependentAxis tickFormat={(x) => `${x / 1000}k`} />
                 <VictoryBar
                   labels={({ datum }) => `Sales: ${datum.earnings} MZN`}
                   labelComponent={<VictoryTooltip />}
@@ -268,7 +255,14 @@ function AnalyticsPage() {
                   }}
                   x="day"
                   y="earnings"
-                  animate
+                />
+                <VictoryLegend
+                  x={400}
+                  y={50}
+                  title="All sales"
+                  centerTitle
+                  style={{ title: { fontSize: 30, fontWeight: 'bold' } }}
+                  data={[]}
                 />
               </VictoryChart>
             </Box>
