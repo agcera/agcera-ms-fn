@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { logoutAction } from '../redux/usersSlice';
+import { resetStoreAction } from '../redux/store';
 
 function Topbar() {
   const navigate = useNavigate();
@@ -28,7 +29,11 @@ function Topbar() {
     setLogoutLoading(true);
     dispatch(logoutAction()).then(({ error }) => {
       setLogoutLoading(true);
-      if (error) toast.error(error.message);
+      if (!error) {
+        dispatch(resetStoreAction());
+      } else {
+        toast.error(error.message);
+      }
     });
     handleClose();
   };

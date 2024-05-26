@@ -81,7 +81,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
   };
 
   const getQuantityForStore = (stores) => {
-    const store = stores.find((s) => s.storeId === storeId);
+    const store = stores?.find((s) => s.storeId === storeId);
     return store ? store.quantity : 0;
   };
 
