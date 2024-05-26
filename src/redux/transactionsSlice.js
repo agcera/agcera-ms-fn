@@ -3,7 +3,7 @@ import axiosInstance from '../axios';
 import { formatQuery } from '../utils/formatters';
 
 export const getAllTransactionsAction = createAsyncThunk('transactions/getAllTransactionsAction', async (query) => {
-  const response = await axiosInstance.get(`/transactions/${formatQuery(query)}`);
+  const response = await axiosInstance.get(`/transactions?${formatQuery(query)}`);
   const data = response.data;
   return {
     ...data,

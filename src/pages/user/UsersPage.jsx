@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PageHeader from '../../components/PageHeader';
 import MoreButton from '../../components/Table/MoreButton';
@@ -8,6 +8,7 @@ import StyledTable from '../../components/Table/StyledTable';
 import { getAllUsersAction, selectAllUser, selectLoggedInUser } from '../../redux/usersSlice';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const UsersPage = () => {
   const navigate = useNavigate();
@@ -15,15 +16,25 @@ const UsersPage = () => {
   const user = useSelector(selectLoggedInUser);
   const users = useSelector(selectAllUser);
 
+  const fetchData = useCallback(
+    (query) => {
+      return dispatch(getAllUsersAction(query));
+    },
+    [dispatch]
+  );
+
   useEffect(() => {
-    dispatch(getAllUsersAction({}));
-  }, [dispatch]);
+    fetchData().then(({ error }) => {
+      if (error) toast.error(error.message);
+    });
+  }, [fetchData]);
 
   const columns = [
     {
       field: 'image',
       headerName: 'Avatar',
       flex: 0,
+      disableExport: true,
       renderCell: (params) => (
         <Box className="h-full aspect-square p-1">
           <img src={params.value} alt="avatar" className="w-full h-full rounded-full object-cover bg-slate-300" />
@@ -37,10 +48,11 @@ const UsersPage = () => {
       field: 'isActive',
       headerName: 'Status',
       flex: 0,
+      valueGetter: (params, row) => (row.isActive ? 'Active' : 'InActive'),
       renderCell: (params) => (
         <StatusBadge
-          status={params.value ? 'active' : 'inactive'}
-          bg={params.value ? 'bg-green-500' : 'bg-red-500'}
+          status={params.value}
+          bg={params.value === 'Active' ? 'bg-green-500' : 'bg-red-500'}
           color={'white'}
         />
       ),
@@ -49,12 +61,14 @@ const UsersPage = () => {
       field: 'createdAt',
       headerName: 'Created',
       flex: 1,
-      renderCell: (params) => format(new Date(params.value), 'do MMM yyyy'),
+      valueGetter: (params, row) => format(new Date(row.createdAt), 'do MMM yyyy'),
     },
     {
       field: 'actions',
       headerName: 'Actions',
       flex: 0,
+      disableExport: true,
+      sortable: false,
       renderCell: (params) => (
         <MoreButton
           id={params.id}
@@ -74,7 +88,12 @@ const UsersPage = () => {
         hasCreate={user.role !== 'user' && (() => navigate('/dashboard/users/create'))}
       />
 
-      <StyledTable columns={columns} data={users} onRowClick={(user) => navigate(`/dashboard/users/${user.id}`)} />
+      <StyledTable
+        fetchData={fetchData}
+        columns={columns}
+        data={users}
+        onRowClick={(user) => navigate(`/dashboard/users/${user.id}`)}
+      />
     </Box>
   );
 };
