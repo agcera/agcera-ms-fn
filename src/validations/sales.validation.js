@@ -13,4 +13,5 @@ export const createSaleSchema = yup.object({
     })
     .required(),
   isMember: yup.boolean().default(false),
+  doneOn: yup.date(),
 });

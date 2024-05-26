@@ -42,6 +42,7 @@ const CreateSalePage = () => {
       paymentMethod: 'CASH',
       clientName: '',
       phone: '',
+      // doneOn: null
     },
   });
 
@@ -132,7 +133,28 @@ const CreateSalePage = () => {
                       );
                     }}
                   />
+                </Grid>
 
+                <Grid item xs={12} sm={6}>
+                  <Controller
+                    disabled={loading}
+                    name="phone"
+                    control={control}
+                    render={({ field, fieldState: { error } }) => {
+                      return (
+                        <Input
+                          label="Phone number"
+                          placeHolder="Enter phone number ..."
+                          error={!!error}
+                          helperText={error?.message}
+                          inputProps={{ ...field }}
+                        />
+                      );
+                    }}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
                   <Controller
                     name="isMember"
                     control={control}
@@ -147,19 +169,20 @@ const CreateSalePage = () => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+
+                <Grid item xs={12} sm={6} sx={{ marginTop: '4px' }}>
                   <Controller
-                    disabled={loading}
-                    name="phone"
+                    name="doneOn"
                     control={control}
                     render={({ field, fieldState: { error } }) => {
                       return (
                         <Input
-                          label="Phone number"
-                          placeHolder="Enter phone number ..."
+                          disabled={loading}
+                          label="Date of payment"
+                          placeHolder="Enter the Date of Payement..."
                           error={!!error}
                           helperText={error?.message}
-                          inputProps={{ ...field }}
+                          inputProps={{ ...field, type: 'date' }}
                         />
                       );
                     }}

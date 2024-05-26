@@ -158,7 +158,13 @@ const ViewStorePage = () => {
           </Stack>
 
           {products?.length > 0 ? (
-            <ProductsTable products={products} omit={['action']} storeId={routeParams.id} projection />
+            <ProductsTable
+              products={products}
+              omit={['action']}
+              storeId={routeParams.id}
+              projection
+              minWidth={'1000px'}
+            />
           ) : (
             <Typography color="secondary.light" className="text-center py-4">
               This store has no products
