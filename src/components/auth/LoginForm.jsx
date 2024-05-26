@@ -1,14 +1,14 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
+import { useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { loginAction } from '../../redux/usersSlice';
 import { loginFormSchema } from '../../validations/user.validation';
 import Input from '../Input';
 import LoadingButton from '../LoadingButton';
-import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { useState } from 'react';
 
 const StyledTextField = ({ ...props }) => {
   return <Input className="max-w-[450px]" {...props} />;
@@ -85,7 +85,7 @@ const LoginForm = () => {
         >
           Login
         </LoadingButton>
-        <Button
+        {/* <Button
           LinkComponent={Link}
           to="/register"
           color="secondary"
@@ -93,7 +93,7 @@ const LoginForm = () => {
           disabled={loading}
         >
           Go to register
-        </Button>
+        </Button> */}
       </Box>
     </Form>
   );

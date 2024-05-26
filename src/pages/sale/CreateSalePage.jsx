@@ -13,7 +13,7 @@ import Select from '../../components/Select';
 import SelectVariations from '../../components/sale/SelectVariations';
 import { createSaleAction } from '../../redux/salesSlice';
 import { getStoreAction, selectStoreById } from '../../redux/storesSlice';
-import { getAllUsersAction, selectLoggedInUser } from '../../redux/usersSlice';
+import { selectLoggedInUser } from '../../redux/usersSlice';
 import { createSaleSchema } from '../../validations/sales.validation';
 // import { MuiTelInput } from 'mui-tel-input'
 
@@ -60,7 +60,7 @@ const CreateSalePage = () => {
   };
 
   useEffect(() => {
-    Promise.all([dispatch(getStoreAction(profile.storeId)), dispatch(getAllUsersAction({ role: ['USER'] }))]).then(
+    Promise.all([dispatch(getStoreAction(profile.storeId)) /*, dispatch(getAllUsersAction({ role: ['USER'] }))*/]).then(
       (resp) => {
         setInitLoading(false);
         resp.forEach(({ error }) => {
