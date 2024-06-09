@@ -146,7 +146,7 @@ function AnalyticsPage() {
         break;
     }
 
-    dispatch(getAnalytics({ from: from.toLocaleDateString(), to: to.toLocaleDateString() })).then(({ error }) => {
+    dispatch(getAnalytics({ from: from.toISOString(), to: to.toISOString() })).then(({ error }) => {
       setInitLoading(false);
       if (error) toast.error(error.message);
     });
