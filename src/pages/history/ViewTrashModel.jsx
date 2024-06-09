@@ -21,9 +21,7 @@ import { format } from 'date-fns';
 const ViewTrashModel = ({ open = false, handleClose, id, model }) => {
   const dispatch = useDispatch();
   const deleted = useSelector(selectDeletedById(id));
-  console.log(deleted);
 
-  open && console.log(JSON.parse(deleted.description), 'FROM DELETED');
   const deletedObject = open ? JSON.parse(deleted.description) : null;
 
   useEffect(() => {

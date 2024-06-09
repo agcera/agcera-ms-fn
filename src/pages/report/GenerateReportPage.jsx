@@ -19,6 +19,7 @@ import { tokens } from '../../themeConfig';
 import { formatQuery } from '../../utils/formatters';
 import { generateReportSchema } from '../../validations/reports.validation';
 import { selectLoggedInUser } from '../../redux/usersSlice';
+import { format } from 'date-fns';
 
 const GenerateReportPage = () => {
   const dispatch = useDispatch();
@@ -33,8 +34,8 @@ const GenerateReportPage = () => {
   const methods = useForm({
     resolver: yupResolver(generateReportSchema),
     defaultValues: {
-      from: null,
-      to: null,
+      from: `${format(new Date(), 'yyyy-MM-dd')}T00:00`,
+      to: `${format(new Date(), 'yyyy-MM-dd')}T23:59`,
       storeId: '',
     },
   });
@@ -44,8 +45,8 @@ const GenerateReportPage = () => {
     setLoading(true);
     const resp = await axiosInstance.get(
       `/report?${formatQuery({
-        from: new Date(data.from).toLocaleDateString(),
-        to: new Date(data.to).toLocaleDateString(),
+        from: new Date(data.from).toISOString(),
+        to: new Date(data.to).toISOString(),
         storeId: data.storeId,
       })}`,
       { responseType: 'blob' }
@@ -120,6 +121,7 @@ const GeneratePageForm = ({ loading }) => {
   const {
     register,
     control,
+    watch,
     formState: { errors },
   } = useFormContext();
 
@@ -137,7 +139,15 @@ const GeneratePageForm = ({ loading }) => {
             placeHolder="Enter the start date for the report..."
             error={!!errors.from}
             helperText={errors.from?.message}
-            inputProps={{ ...register('from'), type: 'date' }}
+            inputProps={{
+              ...register('from'),
+              type: 'datetime-local',
+              InputProps: {
+                inputProps: {
+                  max: `${format(new Date(), 'yyyy-MM-dd')}T${format(new Date(), 'hh:mm')}`,
+                },
+              },
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={user.role === 'admin' && 6}>
@@ -147,7 +157,15 @@ const GeneratePageForm = ({ loading }) => {
             placeHolder="Enter the End date for the report..."
             error={!!errors.to}
             helperText={errors.to?.message}
-            inputProps={{ ...register('to'), type: 'date' }}
+            inputProps={{
+              ...register('to'),
+              type: 'datetime-local',
+              InputProps: {
+                inputProps: {
+                  min: `${format(new Date(watch('from') || Date.now()), 'yyyy-MM-dd')}T${format(new Date(watch('from') || Date.now()), 'hh:mm')}`,
+                },
+              },
+            }}
           />
         </Grid>
         {user.role === 'admin' && (

@@ -80,7 +80,6 @@ const TrashPage = () => {
             hasEdit={false}
             hasDetails={() => {
               const table = params.row.table;
-              console.log(table, 'table');
               table === 'product' ? setmodel('product') || setTrashId(params.id) : null;
               table === 'sale' && navigate(`/dashboard/trash/${params.id}`);
               table === 'user' ? setmodel('user') || setTrashId(params.id) : null;
@@ -98,13 +97,7 @@ const TrashPage = () => {
 
   return (
     <Box className="size-full flex flex-col">
-      <PageHeader
-        title="Trash"
-        hasGenerateReport={true}
-        hasCreate={() => {
-          console.log('Create user');
-        }}
-      />
+      <PageHeader title="Trash" hasGenerateReport={true} />
 
       <StyledTable fetchData={fetchData} columns={columns} data={trash} getRowId={(row) => row.id} />
 

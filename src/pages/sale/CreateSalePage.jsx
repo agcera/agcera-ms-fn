@@ -15,6 +15,7 @@ import { createSaleAction } from '../../redux/salesSlice';
 import { getStoreAction, selectStoreById } from '../../redux/storesSlice';
 import { selectLoggedInUser } from '../../redux/usersSlice';
 import { createSaleSchema } from '../../validations/sales.validation';
+import { format } from 'date-fns';
 // import { MuiTelInput } from 'mui-tel-input'
 
 const CreateSalePage = () => {
@@ -182,7 +183,15 @@ const CreateSalePage = () => {
                           placeHolder="Enter the Date of Payement..."
                           error={!!error}
                           helperText={error?.message}
-                          inputProps={{ ...field, type: 'date' }}
+                          inputProps={{
+                            ...field,
+                            type: 'datetime-local',
+                            InputProps: {
+                              inputProps: {
+                                max: `${format(new Date(), 'yyyy-MM-dd')}T${format(new Date(), 'hh:mm')}`,
+                              },
+                            },
+                          }}
                         />
                       );
                     }}

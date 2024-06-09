@@ -18,6 +18,7 @@ import PageHeader from '../components/PageHeader';
 import { getAnalytics, selectAllanalytics } from '../redux/analyticsSlice';
 import { selectLoggedInUser } from '../redux/usersSlice';
 import { tokens } from '../themeConfig';
+import { toast } from 'react-toastify';
 
 function LinearProgressWithLabel({ title, value, ...props }) {
   return (
@@ -47,10 +48,10 @@ function ChoiceButton({ active, children, onClick, ...props }) {
   );
 }
 
-const SmallBox = ({ bg, color, number, text, Icon }) => {
+const SmallBox = ({ bg, color, number, text }) => {
   return (
     <Box className={`${bg} w-full flex-col justify-between p-3`}>
-      {Icon && <Icon className="mb-2" />} {/* Conditionally render icon if it's provided */}
+      {/* {Icon && <Icon className="mb-2" />} */}
       <Typography variant={`body2 ${color} font-bold text-[14px]`}>{number}</Typography>
       <Typography variant={`body1 text-[14px] ${color} mt-2 font-bold`}>{text}</Typography>
     </Box>
@@ -100,7 +101,7 @@ function AnalyticsPage() {
     data = Object.keys(analytics.salesByDate).reduce((acc, curr) => {
       switch (dateRange) {
         case 'daily': {
-          const hour = new Date(curr).getHours();
+          const hour = new Date(curr).getHours() || 24;
           acc[hour] = acc[hour] + analytics.salesByDate[curr];
           break;
         }
@@ -147,7 +148,7 @@ function AnalyticsPage() {
 
     dispatch(getAnalytics({ from: from.toLocaleDateString(), to: to.toLocaleDateString() })).then(({ error }) => {
       setInitLoading(false);
-      if (error) console.log(error);
+      if (error) toast.error(error.message);
     });
   }, [dispatch, user, dateRange]);
 
@@ -237,6 +238,7 @@ function AnalyticsPage() {
             <Box className="h-full">
               <VictoryChart theme={VictoryTheme.material} domainPadding={{ x: 40, y: 80 }} width={1000} height={500}>
                 <VictoryAxis
+                  offsetY={48}
                   tickFormat={
                     dateRange === 'weekly'
                       ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -251,7 +253,7 @@ function AnalyticsPage() {
                   data={chartFormattedData}
                   barWidth={40}
                   style={{
-                    data: { fill: colors.primary.main },
+                    data: { fill: colors.primary.main, cursor: 'pointer' },
                   }}
                   x="day"
                   y="earnings"

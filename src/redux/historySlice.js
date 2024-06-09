@@ -16,7 +16,6 @@ const movementsSlice = createSlice({
   initialState: movementsAdapter.getInitialState(),
   extraReducers: (builder) => {
     builder.addCase(getAllMovements.fulfilled, (state, { payload }) => {
-      console.log(payload, 'payload');
       movementsAdapter.upsertMany(state, payload.data.movements);
     });
   },
