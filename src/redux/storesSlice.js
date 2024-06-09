@@ -6,6 +6,7 @@ export const getAllPartialStoresAction = createAsyncThunk('stores/getAllPartialS
   const response = await axiosInstance.get(`/stores/all?${formatQuery(query)}`);
   return response.data;
 });
+
 export const getAllStoresAction = createAsyncThunk('stores/getAllStoresAction', async (query) => {
   const response = await axiosInstance.get(`/stores?${formatQuery(query)}`);
   return response.data;

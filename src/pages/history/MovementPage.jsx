@@ -10,6 +10,10 @@ const MovementPage = () => {
   const dispatch = useDispatch();
   const movements = useSelector(selectAllMovements);
 
+  console.log(movements, 'movements');
+  // get all stores and keep in state of stores
+
+  // include also the storeId int he query
   const fetchData = useCallback(
     (query) => {
       if (query?.sort) {
@@ -33,7 +37,7 @@ const MovementPage = () => {
           return acc;
         }, {});
       }
-      return dispatch(getAllMovements(query));
+      return dispatch(getAllMovements({ ...query }));
     },
     [dispatch]
   );
@@ -98,6 +102,7 @@ const MovementPage = () => {
         columns={columns}
         data={movements}
         getRowId={(row) => row.id}
+        enableStoreSelector={true}
       />
     </Box>
   );
