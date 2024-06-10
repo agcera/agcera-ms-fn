@@ -36,7 +36,7 @@ const RefundSaleModal = ({ open = false, handleClose, id }) => {
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle color="secondary" variant="header" className="font-semibold">
-        Delete sale
+        Refund sale
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2" className="mb-2">

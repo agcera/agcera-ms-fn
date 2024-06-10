@@ -8,6 +8,7 @@ import salesSlice from './salesSlice';
 import storesSlice from './storesSlice';
 import transactionsSlice from './transactionsSlice';
 import usersSlice from './usersSlice';
+import { ENVIRONMENT } from '../constants';
 
 const middlewares = [];
 
@@ -15,7 +16,7 @@ const logger = createLogger({
   collapsed: (getState, action, logEntry) => !logEntry.error,
 });
 
-middlewares.push(logger);
+middlewares.push(ENVIRONMENT !== 'production' && logger);
 
 const slices = combineSlices(
   usersSlice,
