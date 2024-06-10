@@ -16,7 +16,7 @@ const logger = createLogger({
   collapsed: (getState, action, logEntry) => !logEntry.error,
 });
 
-middlewares.push(ENVIRONMENT !== 'production' && logger);
+ENVIRONMENT !== 'production' && middlewares.push(logger);
 
 const slices = combineSlices(
   usersSlice,
