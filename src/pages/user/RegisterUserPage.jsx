@@ -134,6 +134,7 @@ const RegisterUserPage = () => {
                     </MenuItem>
                   )}
                   {stores?.map((store) => {
+                    if (store.name === 'expired') return null;
                     return (
                       <MenuItem key={store.id} value={store.id}>
                         {capitalize(store.name)}
