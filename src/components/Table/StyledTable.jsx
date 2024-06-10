@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, MenuItem } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import {
   DataGrid,
@@ -10,12 +10,41 @@ import {
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { tokens } from '../../themeConfig';
+import Select from '../Select';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllPartialStoresAction, selectAllStores } from '../../redux/storesSlice';
 
-function CustomToolbar({ disableSearch }) {
+function CustomToolbar({ disableSearch, enableStoreSelector, setStoreId }) {
+  const dispatch = useDispatch();
+
+  const stores = useSelector(selectAllStores);
+
+  useEffect(() => {
+    dispatch(getAllPartialStoresAction());
+  }, [dispatch]);
+
   return (
     <GridToolbarContainer className="flex flex-row gap-2 justify-between mb-1">
       <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
       {!disableSearch && <GridToolbarQuickFilter />}
+      {enableStoreSelector && (
+        <Select
+          label="Store"
+          placeHolder="Select the Store"
+          // disabled={loading}
+          // error={!!errors.type}
+          // helperText={errors.type?.message}
+          inputProps={{ onChange: (e) => setStoreId(e.target.value) }}
+          className="max-w-[200px]"
+        >
+          {stores.map((store) => (
+            <MenuItem key={store.id} value={store.id}>
+              {' '}
+              {store.name}
+            </MenuItem>
+          ))}
+        </Select>
+      )}
     </GridToolbarContainer>
   );
 }
@@ -31,7 +60,10 @@ function StyledTable({
   initPagination = {},
   disableSearch = false,
   minWidth,
+  enableStoreSelector = false,
 }) {
+  const [storeId, setStoreId] = useState(null);
+
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [data, setData] = useState([]);
@@ -83,7 +115,7 @@ function StyledTable({
   useEffect(() => {
     if (fetchData) {
       setLoading(true);
-      fetchData(query).then(({ payload, error }) => {
+      fetchData({ ...query, storeId }).then(({ payload, error }) => {
         setLoading(false);
         if (payload) {
           const dataKeys = Object.keys(payload.data);
@@ -100,7 +132,7 @@ function StyledTable({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  }, [query, storeId]);
   useLayoutEffect(() => {
     if (!fetchData && fetchedData) {
       setData(fetchedData);
@@ -179,7 +211,7 @@ function StyledTable({
         onSortModelChange={onSortModelChange}
         slots={{ toolbar: CustomToolbar }}
         slotProps={{
-          toolbar: { disableSearch },
+          toolbar: { disableSearch, enableStoreSelector, setStoreId },
           baseButton: {
             sx: {
               variant: 'contained',
