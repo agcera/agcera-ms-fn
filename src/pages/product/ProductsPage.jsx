@@ -215,7 +215,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
         const selectedVariation = variationMap[row.id] || '';
         const price = getCostPriceForVariation(row.variations, selectedVariation);
         const quantity = getQuantityForStore(row.stores);
-        return `${(price.price * quantity) / price.number} MZN`;
+        return `${parseFloat((price.price * quantity) / price.number).toFixed(2)} MZN`;
       },
     },
     {
@@ -226,7 +226,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
         const selectedVariation = variationMap[row.id] || '';
         const price = getSellingPriceForVariation(row.variations, selectedVariation);
         const quantity = getQuantityForStore(row.stores);
-        return `${(price.price * quantity) / price.number} MZN`;
+        return `${parseFloat(((price.price * quantity) / price.number).toFixed(2))} MZN`;
       },
     },
 
