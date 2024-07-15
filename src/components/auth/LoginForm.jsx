@@ -62,6 +62,7 @@ const LoginForm = () => {
           helperText={errors.password?.message}
           disabled={loading}
           inputProps={{ ...register('password') }}
+          autoComplete="off"
         />
 
         <Stack direction="row-reverse" className="max-w-[450px] w-full">

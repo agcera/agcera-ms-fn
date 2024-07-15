@@ -12,6 +12,7 @@ const Input = ({
   required = true,
   inputProps = {},
   labelProps = {},
+  autoComplete = 'on',
   ...otherProps
 }) => {
   return (
@@ -36,6 +37,7 @@ const Input = ({
         disabled={disabled}
         error={error}
         helperText={helperText}
+        autoComplete={autoComplete}
         fullWidth
         {...inputProps}
       />

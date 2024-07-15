@@ -76,7 +76,7 @@ const Sidebar = () => {
               },
             },
           }}
-          className="h-full"
+          className="h-full relative"
         >
           {/* menu and logo item */}
           <Box className="inline-flex">
