@@ -112,7 +112,9 @@ const ViewStorePage = () => {
               </TableRow>
               <TableRow>
                 <StoreKey>Store keepers:</StoreKey>
-                <StoreValue>{storeKeepers?.map((u) => u.name).join(', ') || 'This store has no keepers'}</StoreValue>
+                <StoreValue>
+                  {storeKeepers?.map((u) => u.name).join(', ') || 'This store does not have keepers'}
+                </StoreValue>
               </TableRow>
               <TableRow>
                 <StoreKey>Telephone number:</StoreKey>
