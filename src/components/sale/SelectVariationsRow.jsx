@@ -62,7 +62,7 @@ const SelectVariationsRow = memo(function SelectVariationsRow({
       </CustomTableCell>
 
       <CustomTableCell align="center">
-        <Typography>Total: {field[1] * variation.number * variation.sellingPrice} MZN</Typography>
+        <Typography>Total: {field[1] * variation.sellingPrice} MZN</Typography>
       </CustomTableCell>
 
       <CustomTableCell align="center">
