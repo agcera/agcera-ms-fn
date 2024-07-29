@@ -158,6 +158,7 @@ const CreateProductPage = () => {
             inputProps={{
               type: 'file',
               accept: 'image/*',
+
               className: 'w-full max-w-[450px]',
               classes: { input: 'h-[50px]' },
               name: 'image',

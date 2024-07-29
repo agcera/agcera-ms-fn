@@ -61,7 +61,7 @@ const ViewSalePage = () => {
     variationName: variations.variation.name,
     variationNumber: variations.variation.number,
     quantity: variations.quantity,
-    totalSellingPrice: variations.quantity * variations.variation.number * variations.variation.sellingPrice,
+    totalSellingPrice: variations.quantity * variations.variation.sellingPrice,
   }));
 
   const columns = [

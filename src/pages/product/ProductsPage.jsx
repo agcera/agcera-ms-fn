@@ -99,8 +99,8 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
         const costPrice = getCostPriceForVariation(product.variations, selectedVariation);
         const sellingPrice = getSellingPriceForVariation(product.variations, selectedVariation);
         const quantity = getQuantityForStore(product.stores);
-        totalCapital += (costPrice.price * quantity) / costPrice.number;
-        totalExpectedIncome += (sellingPrice.price * quantity) / sellingPrice.number;
+        totalCapital += costPrice.price * Math.floor(quantity / costPrice.number);
+        totalExpectedIncome += sellingPrice.price * Math.floor(quantity / sellingPrice.number);
       });
 
       setTotalCapital(totalCapital);
@@ -116,7 +116,6 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
       initialVariationMap[product.id] = product.variations.length > 0 ? product.variations[0].name : '';
     });
     setVariationMap(initialVariationMap);
-
     // Calculate initial totals
     calculateTotals(products, initialVariationMap);
   }, [products, calculateTotals]);
@@ -162,7 +161,14 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
       headerName: 'In store',
       flex: 0,
       align: 'center',
-      renderCell: (params) => getQuantityForStore(params.value),
+      renderCell: (params) => {
+        console.log(params.row, 'this is params .row');
+        const selectedVariation =
+          variationMap[params.row.id] || (params.row.variations.length > 0 ? params.row.variations[0].name : '');
+
+        const variationNumber = params.row.variations.find((v) => v.name === selectedVariation).number;
+        return Math.floor(getQuantityForStore(params.value) / variationNumber);
+      },
     },
     {
       field: 'variations',
@@ -215,7 +221,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
         const selectedVariation = variationMap[row.id] || '';
         const price = getCostPriceForVariation(row.variations, selectedVariation);
         const quantity = getQuantityForStore(row.stores);
-        return `${parseFloat((price.price * quantity) / price.number).toFixed(2)} MZN`;
+        return `${parseFloat(price.price * Math.floor(quantity / price.number)).toFixed(2)} MZN`;
       },
     },
     {
@@ -226,7 +232,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
         const selectedVariation = variationMap[row.id] || '';
         const price = getSellingPriceForVariation(row.variations, selectedVariation);
         const quantity = getQuantityForStore(row.stores);
-        return `${parseFloat(((price.price * quantity) / price.number).toFixed(2))} MZN`;
+        return `${parseFloat((price.price * Math.floor(quantity / price.number)).toFixed(2))} MZN`;
       },
     },
 
