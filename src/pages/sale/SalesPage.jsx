@@ -9,6 +9,7 @@ import StatusBadge from '../../components/Table/StatusBadge';
 import StyledTable from '../../components/Table/StyledTable';
 import { getAllSalesAction, selectAllSales } from '../../redux/salesSlice';
 import { selectLoggedInUser } from '../../redux/usersSlice';
+import { calculateProfit, calculateTotal } from '../../utils/sales.utils';
 
 const SalesPage = () => {
   const dispatch = useDispatch();
@@ -37,14 +38,6 @@ const SalesPage = () => {
     },
     [dispatch]
   );
-
-  const calculateTotal = (sale) => {
-    let total = 0;
-    sale.variations.forEach((variation) => {
-      total += variation.quantity * variation.variation.number * variation.variation.sellingPrice;
-    });
-    return total;
-  };
 
   const columns = [
     {
@@ -89,6 +82,13 @@ const SalesPage = () => {
       sortable: false,
       valueGetter: (params, row) => `${calculateTotal(row)} MZN`,
     },
+    user.role === 'admin' && {
+      field: 'profit',
+      headerName: 'profit',
+      flex: 1,
+      sortable: false,
+      valueGetter: (params, row) => `${calculateProfit(row)} MZN`,
+    },
     {
       field: 'refundedAt',
       headerName: 'Status',
@@ -119,7 +119,7 @@ const SalesPage = () => {
         <MoreButton id={params.id} model={'sales'} className="my-2" hasEdit={false} hasDelete={user.role !== 'user'} />
       ),
     },
-  ];
+  ].filter(Boolean);
 
   return (
     <Box className="size-full flex flex-col">
