@@ -129,6 +129,7 @@ const SalesPage = () => {
         hasCreate={user.role === 'keeper' && (() => navigate('/dashboard/sales/create'))}
       />
       <StyledTable
+        enableStoreSelector={true}
         disableSearch={true}
         fetchData={fetchData}
         data={sales}

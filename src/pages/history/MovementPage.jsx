@@ -10,7 +10,6 @@ const MovementPage = () => {
   const dispatch = useDispatch();
   const movements = useSelector(selectAllMovements);
 
-  console.log(movements, 'movements');
   // get all stores and keep in state of stores
 
   // include also the storeId int he query
