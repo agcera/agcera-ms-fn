@@ -75,7 +75,7 @@ const DetailsTransactionModal = ({ id, open = false, handleClose }) => {
             </TableRow>
             <TableRow>
               <StoreKey>Done On :</StoreKey>
-              <StoreValue>{format(new Date(transaction.createdAt), 'do MMM yyyy')}</StoreValue>
+              <StoreValue>{format(new Date(transaction.createdAt), 'do MMM yyyy h:mm a')}</StoreValue>
             </TableRow>
             <TableRow>
               <StoreKey>Tranasction type :</StoreKey>

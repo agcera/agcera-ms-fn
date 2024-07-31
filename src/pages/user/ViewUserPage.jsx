@@ -116,7 +116,7 @@ const ViewUserPage = () => {
                 </TableRow>
                 <TableRow>
                   <StoreKey>Created :</StoreKey>
-                  <StoreValue>{format(new Date(user.createdAt), 'do MMM yyyy')}</StoreValue>
+                  <StoreValue>{format(new Date(user.createdAt), 'do MMM yyyy h:mm a')}</StoreValue>
                 </TableRow>
               </TableBody>
             </Table>

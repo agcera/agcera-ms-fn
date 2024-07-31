@@ -23,6 +23,7 @@ const CreateTransactionPage = () => {
       type: 'INCOME',
       amount: 0,
       description: '',
+      paymentMethod: 'CASH',
     },
   });
 
@@ -58,6 +59,25 @@ const CreateTransactionPage = () => {
         </Grid>
         <Grid item xs={12}>
           <Controller
+            name="paymentMethod"
+            control={control}
+            render={({ field }) => {
+              return (
+                <Select label="Payment Method" disabled={loading} inputProps={{ ...field }}>
+                  <MenuItem value="M-PESA">M-PESA</MenuItem>
+                  <MenuItem value="E-MOLA">E-MOLA</MenuItem>
+                  <MenuItem value="P.O.S">P.O.S</MenuItem>
+                  <MenuItem value="BANCO BIM">BANCO BIM</MenuItem>
+                  <MenuItem value="BANCO BCI">BANCO BCI</MenuItem>
+                  <MenuItem value="CASH">CASH</MenuItem>
+                </Select>
+              );
+            }}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Controller
             name="amount"
             control={control}
             render={({ field, fieldState: { error } }) => {
@@ -74,6 +94,7 @@ const CreateTransactionPage = () => {
             }}
           />
         </Grid>
+
         <Grid item xs={12}>
           <Controller
             name="description"

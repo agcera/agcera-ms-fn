@@ -40,7 +40,7 @@ const TransactionsPage = () => {
     {
       field: 'type',
       headerName: 'Type',
-      flex: 0,
+      flex: 1,
       renderCell: (params) => (
         <StatusBadge
           className="min-w-[80px]"
@@ -53,14 +53,33 @@ const TransactionsPage = () => {
     {
       field: 'amount',
       headerName: 'Amount',
-      flex: 1,
+      flex: 0,
       valueGetter: (params, row) => `${row.amount} MZN`,
+    },
+    {
+      field: 'paymentMethod',
+      headerName: 'Payment',
+      flex: 0,
+      valueGetter: (params, row) => row.paymentMethod,
+    },
+    {
+      field: 'checked',
+      headerName: 'Status',
+      flex: 0,
+      renderCell: (params) => (
+        <StatusBadge
+          className="min-w-[80px]"
+          status={params.row.checked ? 'CHECKED' : 'NOT YET'}
+          bg={params.row.checked ? 'bg-green-500' : 'bg-red-500'}
+          color={'white'}
+        />
+      ),
     },
     {
       field: 'createdAt',
       headerName: 'Created',
       flex: 1,
-      valueGetter: (params, row) => format(new Date(row.createdAt), 'do MMM yyyy'),
+      valueGetter: (params, row) => format(new Date(row.createdAt), 'do MMM yyyy h:mm a'),
     },
     {
       field: 'action',

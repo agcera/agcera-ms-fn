@@ -113,7 +113,7 @@ const ViewTrashModel = ({ open = false, handleClose, id, model }) => {
               </TableRow>
               <TableRow>
                 <TableKey>Opening Date:</TableKey>
-                <TableValue>{format(new Date(deletedObject.store.createdAt), 'do MMM yyyy')}</TableValue>
+                <TableValue>{format(new Date(deletedObject.store.createdAt), 'do MMM yyyy h:mm a')}</TableValue>
               </TableRow>
 
               <Box className="w-full h-1 bg-primary"></Box>

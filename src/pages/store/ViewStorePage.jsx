@@ -126,7 +126,7 @@ const ViewStorePage = () => {
               </TableRow>
               <TableRow>
                 <StoreKey>Opening Date:</StoreKey>
-                <StoreValue>{format(new Date(store.createdAt), 'do MMM yyyy')}</StoreValue>
+                <StoreValue>{format(new Date(store.createdAt), 'do MMM yyyy h:mm a')}</StoreValue>
               </TableRow>
               <TableRow>
                 <StoreKey>Status:</StoreKey>

@@ -240,7 +240,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
       field: 'createdAt',
       headerName: 'Created',
       flex: 1,
-      valueGetter: (params, row) => (row.createdAt ? format(new Date(row.createdAt), 'do MMM yyyy') : 'N/a'),
+      valueGetter: (params, row) => (row.createdAt ? format(new Date(row.createdAt), 'do MMM yyyy h:mm a') : 'N/a'),
     },
     user.role === 'admin' && {
       field: 'action',

@@ -180,12 +180,12 @@ const ViewSalePage = () => {
               </TableRow>
               <TableRow>
                 <StoreKey>Purchased On :</StoreKey>
-                <StoreValue>{format(new Date(sale.createdAt), 'do MMM yyyy')}</StoreValue>
+                <StoreValue>{format(new Date(sale.createdAt), 'do MMM yyyy h:mm a')}</StoreValue>
               </TableRow>
               {sale.refundedAt && (
                 <TableRow>
                   <StoreKey>Cancelled On :</StoreKey>
-                  <StoreValue>{format(new Date(sale.refundedAt), 'do MMM yyyy')}</StoreValue>
+                  <StoreValue>{format(new Date(sale.refundedAt), 'do MMM yyyy h:mm a')}</StoreValue>
                 </TableRow>
               )}
             </TableBody>

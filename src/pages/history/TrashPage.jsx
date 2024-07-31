@@ -66,7 +66,7 @@ const TrashPage = () => {
       field: 'createdAt',
       headerName: 'Done At',
       flex: 1,
-      valueGetter: (params, row) => format(new Date(row.createdAt), 'do MMM yyyy'),
+      valueGetter: (params, row) => format(new Date(row.createdAt), 'do MMM yyyy h:mm a'),
     },
     {
       field: 'action',

@@ -106,7 +106,7 @@ const SalesPage = () => {
       field: 'createdAt',
       headerName: 'Date',
       flex: 1,
-      valueGetter: (params, row) => format(new Date(row.createdAt), 'd MMM yyyy'),
+      valueGetter: (params, row) => format(new Date(row.createdAt), 'do MMM yyyy h:mm a'),
     },
     { field: 'paymentMethod', headerName: 'Payment', flex: 0 },
     {
