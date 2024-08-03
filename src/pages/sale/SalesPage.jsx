@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
 import { format } from 'date-fns';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -80,6 +80,7 @@ const SalesPage = () => {
       headerName: 'Total',
       flex: 1,
       sortable: false,
+      align: 'left',
       valueGetter: (params, row) => `${calculateTotal(row)} MZN`,
     },
     user.role === 'admin' && {
@@ -93,13 +94,25 @@ const SalesPage = () => {
       field: 'refundedAt',
       headerName: 'Status',
       flex: 1,
-      valueGetter: (params, row) => (!row.refundedAt ? 'Delivered' : format(new Date(row.refundedAt), 'd MMM yyyy')),
+      valueGetter: (params, row) =>
+        !row.refundedAt && !row.checkedAt
+          ? 'Delivered'
+          : format(new Date(row.checkedAt || row.refundedAt), 'd MMM yyyy'),
       renderCell: (params) => (
-        <StatusBadge
-          status={params.value}
-          bg={params.value === 'Delivered' ? 'bg-green-500' : 'bg-red-500'}
-          color={'white'}
-        />
+        <Tooltip
+          title={params.row.refundedAt ? 'Refunded' : params.row.checkedAt ? 'Collected' : 'Delivered'}
+          placement="top"
+          disableInteractive
+          arrow
+        >
+          <div>
+            <StatusBadge
+              status={params.value}
+              bg={params.row.checkedAt ? 'bg-gray-200' : params.value === 'Delivered' ? 'bg-green-500' : 'bg-red-500'}
+              color={'white'}
+            />
+          </div>
+        </Tooltip>
       ),
     },
     {

@@ -181,6 +181,12 @@ const ViewSalePage = () => {
                 <StoreKey>Purchased On :</StoreKey>
                 <StoreValue>{format(new Date(sale.createdAt), 'do MMM yyyy h:mm a')}</StoreValue>
               </TableRow>
+              {sale.checkedAt && (
+                <TableRow>
+                  <StoreKey>Collected On :</StoreKey>
+                  <StoreValue>{format(new Date(sale.checkedAt), 'do MMM yyyy h:mm a')}</StoreValue>
+                </TableRow>
+              )}
               {sale.refundedAt && (
                 <TableRow>
                   <StoreKey>Cancelled On :</StoreKey>

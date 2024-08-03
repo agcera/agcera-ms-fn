@@ -45,6 +45,15 @@ export const storeAddMoveProductAction = createAsyncThunk('stores/storeAddMovePr
   const response = await axiosInstance.post(`/stores/addProduct`, formattedData);
   return response.data;
 });
+export const storeCollectProfitAction = createAsyncThunk(
+  'stores/storeCollectProfitAction',
+  async ({ storeId, from, to }) => {
+    const data = { from, to };
+    if (storeId) data.storeId = storeId;
+    const response = await axiosInstance.post(`/stores/collectProfit`, data);
+    return response.data;
+  }
+);
 
 const storesAdapter = createEntityAdapter();
 

@@ -14,7 +14,7 @@ import Input from '../../components/Input';
 import Loader from '../../components/Loader';
 import LoadingButton from '../../components/LoadingButton';
 import PageHeader from '../../components/PageHeader';
-import { getAllStoresAction, selectAllStores } from '../../redux/storesSlice';
+import { getAllStoresAction, selectAllStores, storeCollectProfitAction } from '../../redux/storesSlice';
 import { tokens } from '../../themeConfig';
 import { formatQuery } from '../../utils/formatters';
 import { generateReportSchema } from '../../validations/reports.validation';
@@ -28,6 +28,7 @@ const GenerateReportPage = () => {
   const [loading, setLoading] = useState(false);
   const [initLoading, setinitLoading] = useState(true);
   const [url, setUrl] = useState(null);
+  const [collected, setCollected] = useState(false);
 
   const colors = tokens(theme.palette.mode);
 
@@ -39,7 +40,15 @@ const GenerateReportPage = () => {
       storeId: '',
     },
   });
-  const { control, handleSubmit } = methods;
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { dirtyFields },
+  } = methods;
+
+  const storeId = watch('storeId');
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -57,12 +66,70 @@ const GenerateReportPage = () => {
     setUrl(url);
   };
 
+  const handleCollectProfit = async () => {
+    setLoading(true);
+    const data = methods.getValues();
+    dispatch(
+      storeCollectProfitAction({
+        from: new Date(data.from).toISOString(),
+        to: new Date(data.to).toISOString(),
+        storeId: data.storeId,
+      })
+    ).then(({ error }) => {
+      setLoading(false);
+      if (error) {
+        toast.error('Failed to collect profit: ' + error.message);
+      } else {
+        toast.success('Profit collected successfully');
+        setCollected(true);
+      }
+    });
+  };
+
+  const handleReGenerate = () => {
+    setCollected(false);
+    setUrl(null);
+  };
+
   useEffect(() => {
     dispatch(getAllStoresAction()).then(({ error }) => {
       setinitLoading(false);
       if (error) toast.error('Failed to load stores');
     });
   }, [dispatch]);
+  useEffect(() => {
+    let lastCollectedAt;
+    if (!stores?.length) return;
+    if (!storeId) {
+      lastCollectedAt = stores[0].lastCollectedAt;
+      if (!lastCollectedAt) return;
+    } else {
+      const store = stores.find((s) => s.id === storeId);
+      lastCollectedAt = store?.lastCollectedAt;
+      if (!lastCollectedAt) return;
+    }
+    !dirtyFields['from'] &&
+      setValue(
+        'from',
+        `${format(new Date(lastCollectedAt), 'yyyy-MM-dd')}T${format(new Date(lastCollectedAt), 'HH:mm')}`,
+        {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+        }
+      );
+    !dirtyFields['to'] &&
+      setValue(
+        'to',
+        `${format(new Date(lastCollectedAt), 'yyyy-MM-dd')}T${format(new Date(lastCollectedAt), 'HH:mm')}`,
+        {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+        }
+      );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stores, storeId, setValue]);
 
   if (!stores?.length > 0 && initLoading) {
     return (
@@ -82,10 +149,17 @@ const GenerateReportPage = () => {
             otherActions={
               url && [
                 <ActionButton
+                  color="primary.light"
+                  key="0"
+                  disabled={collected}
+                  onClick={handleCollectProfit}
+                  content="Collect Profit"
+                />,
+                <ActionButton
                   bg={colors.blue.main}
                   color={colors.text_dark.main}
                   LinkComponent="a"
-                  key="0"
+                  key="1"
                   href={url}
                   download="report.pdf"
                   content={
@@ -97,8 +171,8 @@ const GenerateReportPage = () => {
                 <ActionButton
                   bg={colors.blue.main}
                   color={colors.text_dark.main}
-                  key="1"
-                  onClick={() => setUrl(null)}
+                  key="2"
+                  onClick={handleReGenerate}
                   content="Re-generate"
                 />,
               ]
@@ -171,7 +245,6 @@ const GeneratePageForm = ({ loading }) => {
         {user.role === 'admin' && (
           <Grid item xs={12}>
             <Controller
-              disabled={loading}
               name="storeId"
               control={control}
               render={({ field, fieldState: { error } }) => {
