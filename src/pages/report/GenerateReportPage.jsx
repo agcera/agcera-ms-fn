@@ -1,6 +1,6 @@
 import { useTheme } from '@emotion/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Grid, Stack } from '@mui/material';
+import { Box, Button, Grid, MenuItem, Stack } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, Form, FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { GrDocumentDownload } from 'react-icons/gr';
@@ -20,6 +20,7 @@ import { formatQuery } from '../../utils/formatters';
 import { generateReportSchema } from '../../validations/reports.validation';
 import { selectLoggedInUser } from '../../redux/usersSlice';
 import { format } from 'date-fns';
+import Select from '../../components/Select';
 
 const GenerateReportPage = () => {
   const dispatch = useDispatch();
@@ -38,6 +39,7 @@ const GenerateReportPage = () => {
       from: `${format(new Date(), 'yyyy-MM-dd')}T00:00`,
       to: `${format(new Date(), 'yyyy-MM-dd')}T23:59`,
       storeId: '',
+      includeChecked: true,
     },
   });
   const {
@@ -54,9 +56,10 @@ const GenerateReportPage = () => {
     setLoading(true);
     const resp = await axiosInstance.get(
       `/report?${formatQuery({
+        ...data,
         from: new Date(data.from).toISOString(),
         to: new Date(data.to).toISOString(),
-        storeId: data.storeId,
+        storeId: data.storeId || undefined,
       })}`,
       { responseType: 'blob' }
     );
@@ -243,28 +246,51 @@ const GeneratePageForm = ({ loading }) => {
           />
         </Grid>
         {user.role === 'admin' && (
-          <Grid item xs={12}>
-            <Controller
-              name="storeId"
-              control={control}
-              render={({ field, fieldState: { error } }) => {
-                return (
-                  <AutoCompleteInput
-                    label="Store"
-                    placeHolder="Select a store to generate a report or leave empty to generate a report for all stores..."
-                    error={!!error}
-                    helperText={error?.message}
-                    required={false}
-                    options={options}
-                    disabled={loading}
-                    value={options.find((o) => o.value === field.value)}
-                    onChange={(e, option) => field.onChange(option.value)}
-                    inputProps={{ ...field }}
-                  />
-                );
-              }}
-            />
-          </Grid>
+          <>
+            <Grid item xs={12} sm={6}>
+              <Controller
+                name="storeId"
+                control={control}
+                render={({ field, fieldState: { error } }) => {
+                  return (
+                    <AutoCompleteInput
+                      label="Store"
+                      placeHolder="Select a store to generate a report or leave empty to generate a report for all stores..."
+                      error={!!error}
+                      helperText={error?.message}
+                      required={false}
+                      options={options}
+                      disabled={loading}
+                      value={options.find((o) => o.value === field.value)}
+                      onChange={(e, option) => field.onChange(option.value)}
+                      inputProps={{ ...field }}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Controller
+                name="includeChecked"
+                control={control}
+                render={({ field, fieldState: { error } }) => {
+                  return (
+                    <Select
+                      label="Include collected sales and transactions"
+                      error={!!error}
+                      helperText={error?.message}
+                      required={false}
+                      disabled={loading}
+                      inputProps={{ ...field }}
+                    >
+                      <MenuItem value={true}>Yes</MenuItem>
+                      <MenuItem value={false}>No</MenuItem>
+                    </Select>
+                  );
+                }}
+              />
+            </Grid>
+          </>
         )}
       </Grid>
       <Stack spacing={2} direction="row" justifyContent="flex-end" className="px-4 mb-4">

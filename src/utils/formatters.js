@@ -5,7 +5,7 @@ export const formatQuery = (queries) => {
 
   keys.forEach((key) => {
     const query = queries[key];
-    if (!query) return;
+    if (query === null || query === undefined) return;
     if (Array.isArray(query)) {
       queryParams.push(`${key}=${query.join(',')}`);
     } else if (typeof query === 'object') {
