@@ -67,9 +67,7 @@ const SalesPage = () => {
                 <span className="font-semibold">Var:</span> {variations.variation.name};
               </Box>
               <Box className="mr-1"> {variations.quantity} pcs;</Box>
-              <Box className="mr-1">
-                {variations.quantity * variations.variation.number * variations.variation.sellingPrice} MZN
-              </Box>
+              <Box className="mr-1">{variations.quantity * variations.variation.sellingPrice} MZN</Box>
             </Box>
           ))}
         </Box>

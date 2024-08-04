@@ -121,16 +121,14 @@ const GenerateReportPage = () => {
           shouldValidate: false,
         }
       );
+    const to =
+      new Date(lastCollectedAt).toISOString() < new Date().toISOString() ? new Date() : new Date(lastCollectedAt);
     !dirtyFields['to'] &&
-      setValue(
-        'to',
-        `${format(new Date(lastCollectedAt), 'yyyy-MM-dd')}T${format(new Date(lastCollectedAt), 'HH:mm')}`,
-        {
-          shouldDirty: false,
-          shouldTouch: false,
-          shouldValidate: false,
-        }
-      );
+      setValue('to', `${format(to, 'yyyy-MM-dd')}T${format(to, 'HH:mm')}`, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stores, storeId, setValue]);
 
@@ -153,6 +151,7 @@ const GenerateReportPage = () => {
               url && [
                 <ActionButton
                   color="primary.light"
+                  className="text-white"
                   key="0"
                   disabled={collected}
                   onClick={handleCollectProfit}
