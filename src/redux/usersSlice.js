@@ -47,8 +47,8 @@ export const getUserAction = createAsyncThunk('users/getUserAction', async (id) 
   const response = await axiosInstance.get(`/users/${id}`);
   return response.data;
 });
-export const forgotPasswordAction = createAsyncThunk('users/forgotPasswordAction', async ({ email }) => {
-  const response = await axiosInstance.post(`/users/forgot`, { email });
+export const forgotPasswordAction = createAsyncThunk('users/forgotPasswordAction', async ({ phone }) => {
+  const response = await axiosInstance.post(`/users/forgot`, { phone });
   return response.data;
 });
 export const resetPasswordAction = createAsyncThunk('users/resetPasswordAction', async ({ password, token }) => {

@@ -192,6 +192,7 @@ const CreateSalePage = () => {
                               },
                             },
                           }}
+                          defaultValue={format(new Date(), 'yyyy-MM-ddThh:mm')}
                         />
                       );
                     }}
