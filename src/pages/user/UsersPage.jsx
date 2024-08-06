@@ -86,6 +86,7 @@ const UsersPage = () => {
         columns={columns}
         data={users}
         onRowClick={(user) => navigate(`/dashboard/users/${user.id}`)}
+        enableSecurity={true}
       />
     </Box>
   );

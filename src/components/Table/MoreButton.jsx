@@ -5,11 +5,12 @@ import { FaEye, FaTrash } from 'react-icons/fa';
 import { MdMoreHoriz } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import DeleteProductModal from '../products/DeleteProductModal';
+import { HiReceiptRefund } from 'react-icons/hi';
 import DeleteStoreModal from '../store/DeleteStoreModal';
 import DeleteSaleModal from '../sale/RefundSaleModal';
 import DeleteUserModal from '../user/DeleteUserModal';
 
-function MoreButton({ id, model, hasDelete = false, hasDetails = true, hasEdit = true, ...props }) {
+function MoreButton({ id, model, hasDelete = false, hasDetails = true, hasEdit = true, hasRefund = false, ...props }) {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -43,6 +44,11 @@ function MoreButton({ id, model, hasDelete = false, hasDetails = true, hasEdit =
     handleCloseMenu();
   };
 
+  const handleRefund = () => {
+    setDeleteOpen(true);
+    handleCloseMenu();
+  };
+
   const handleCloseDelete = () => {
     setDeleteOpen(false);
   };
@@ -72,6 +78,13 @@ function MoreButton({ id, model, hasDelete = false, hasDetails = true, hasEdit =
           <MenuItem onClick={handleDelete}>
             <FaTrash className="mr-2" />
             Delete
+          </MenuItem>
+        )}
+
+        {hasRefund && (
+          <MenuItem onClick={handleRefund}>
+            <HiReceiptRefund className="mr-2" />
+            Refund
           </MenuItem>
         )}
       </Menu>

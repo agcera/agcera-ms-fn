@@ -13,6 +13,7 @@ const Input = ({
   inputProps = {},
   labelProps = {},
   autoComplete = 'on',
+  password = false,
   ...otherProps
 }) => {
   return (
@@ -36,6 +37,7 @@ const Input = ({
         placeholder={placeHolder}
         disabled={disabled}
         error={error}
+        type={password ? 'password' : 'text'}
         helperText={helperText}
         autoComplete={autoComplete}
         fullWidth

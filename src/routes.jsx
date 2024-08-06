@@ -45,7 +45,7 @@ const router = createBrowserRouter(
         <Route path="login" element={<LoginPage />} />
         {/* <Route path="register" element={<RegisterPage />} /> */}
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="reset-password/:name/:token" element={<ResetPasswordPage />} />
 
         <Route path="dashboard" element={<DashboardPage />}>
           <Route path="" element={<Redirect />} />

@@ -29,11 +29,14 @@ const CheckLoggedIn = ({ children }) => {
     }
   }, [dispatch, loggedIn, user]);
 
-  if (!location.pathname.startsWith('/dashboard')) {
+  if (
+    !location.pathname.startsWith('/dashboard') &&
+    !location.pathname.startsWith('/reset-password') &&
+    !location.pathname.startsWith('/forgot')
+  ) {
     if (loggedIn) return <Navigate to="/dashboard" />;
   } else {
     if (!loggedIn) return <Navigate to="/login" />;
-
     if (!user && !error)
       return (
         <Paper className="w-full h-full flex">

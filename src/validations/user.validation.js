@@ -34,7 +34,10 @@ export const loginFormSchema = yup.object({
 });
 
 export const forgotPasswordSchema = yup.object({
-  email: yup.string().email().required(),
+  phone: yup
+    .string()
+    .matches(/^\+\d{12}$/, { message: 'Invalid phone number, a phone number should start with + and be 12 digits' })
+    .required(),
 });
 
 export const resetPasswordSchema = yup.object({
