@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
 import { format } from 'date-fns';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,6 +9,7 @@ import StatusBadge from '../../components/Table/StatusBadge';
 import StyledTable from '../../components/Table/StyledTable';
 import { getAllSalesAction, selectAllSales } from '../../redux/salesSlice';
 import { selectLoggedInUser } from '../../redux/usersSlice';
+import { calculateProfit, calculateTotal } from '../../utils/sales.utils';
 
 const SalesPage = () => {
   const dispatch = useDispatch();
@@ -38,14 +39,6 @@ const SalesPage = () => {
     [dispatch]
   );
 
-  const calculateTotal = (sale) => {
-    let total = 0;
-    sale.variations.forEach((variation) => {
-      total += variation.quantity * variation.variation.number * variation.variation.sellingPrice;
-    });
-    return total;
-  };
-
   const columns = [
     {
       field: 'store',
@@ -74,9 +67,7 @@ const SalesPage = () => {
                 <span className="font-semibold">Var:</span> {variations.variation.name};
               </Box>
               <Box className="mr-1"> {variations.quantity} pcs;</Box>
-              <Box className="mr-1">
-                {variations.quantity * variations.variation.number * variations.variation.sellingPrice} MZN
-              </Box>
+              <Box className="mr-1">{variations.quantity * variations.variation.sellingPrice} MZN</Box>
             </Box>
           ))}
         </Box>
@@ -87,19 +78,39 @@ const SalesPage = () => {
       headerName: 'Total',
       flex: 1,
       sortable: false,
+      align: 'left',
       valueGetter: (params, row) => `${calculateTotal(row)} MZN`,
+    },
+    user.role === 'admin' && {
+      field: 'profit',
+      headerName: 'profit',
+      flex: 1,
+      sortable: false,
+      valueGetter: (params, row) => `${calculateProfit(row)} MZN`,
     },
     {
       field: 'refundedAt',
       headerName: 'Status',
       flex: 1,
-      valueGetter: (params, row) => (!row.refundedAt ? 'Delivered' : format(new Date(row.refundedAt), 'd MMM yyyy')),
+      valueGetter: (params, row) =>
+        !row.refundedAt && !row.checkedAt
+          ? 'Delivered'
+          : format(new Date(row.checkedAt || row.refundedAt), 'd MMM yyyy'),
       renderCell: (params) => (
-        <StatusBadge
-          status={params.value}
-          bg={params.value === 'Delivered' ? 'bg-green-500' : 'bg-red-500'}
-          color={'white'}
-        />
+        <Tooltip
+          title={params.row.refundedAt ? 'Refunded' : params.row.checkedAt ? 'Collected' : 'Delivered'}
+          placement="top"
+          disableInteractive
+          arrow
+        >
+          <div>
+            <StatusBadge
+              status={params.value}
+              bg={params.row.checkedAt ? 'bg-gray-200' : params.value === 'Delivered' ? 'bg-green-500' : 'bg-red-500'}
+              color={'white'}
+            />
+          </div>
+        </Tooltip>
       ),
     },
     {
@@ -116,10 +127,10 @@ const SalesPage = () => {
       disableExport: true,
       sortable: false,
       renderCell: (params) => (
-        <MoreButton id={params.id} model={'sales'} className="my-2" hasEdit={false} hasDelete={user.role !== 'user'} />
+        <MoreButton id={params.id} model={'sales'} className="my-2" hasEdit={false} hasRefund={user.role !== 'user'} />
       ),
     },
-  ];
+  ].filter(Boolean);
 
   return (
     <Box className="size-full flex flex-col">
@@ -129,6 +140,7 @@ const SalesPage = () => {
         hasCreate={user.role === 'keeper' && (() => navigate('/dashboard/sales/create'))}
       />
       <StyledTable
+        enableStoreSelector={true}
         disableSearch={true}
         fetchData={fetchData}
         data={sales}

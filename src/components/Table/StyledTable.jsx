@@ -7,14 +7,14 @@ import {
   GridToolbarQuickFilter,
   gridClasses,
 } from '@mui/x-data-grid';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { tokens } from '../../themeConfig';
 import Select from '../Select';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllPartialStoresAction, selectAllStores } from '../../redux/storesSlice';
 
-function CustomToolbar({ disableSearch, enableStoreSelector, setStoreId }) {
+const CustomToolbar = memo(function CustomToolbar({ disableSearch, enableStoreSelector, setStoreId, storeId }) {
   const dispatch = useDispatch();
 
   const stores = useSelector(selectAllStores);
@@ -34,9 +34,15 @@ function CustomToolbar({ disableSearch, enableStoreSelector, setStoreId }) {
           // disabled={loading}
           // error={!!errors.type}
           // helperText={errors.type?.message}
-          inputProps={{ onChange: (e) => setStoreId(e.target.value) }}
+          inputProps={{
+            onChange: (e) => setStoreId(e.target.value !== 'all' ? e.target.value : null),
+            value: storeId || 'all',
+          }}
           className="max-w-[200px]"
         >
+          <MenuItem key={'all'} value={'all'}>
+            {` All`}
+          </MenuItem>
           {stores.map((store) => (
             <MenuItem key={store.id} value={store.id}>
               {' '}
@@ -47,7 +53,7 @@ function CustomToolbar({ disableSearch, enableStoreSelector, setStoreId }) {
       )}
     </GridToolbarContainer>
   );
-}
+});
 
 const pageSizeOptions = [5, 10, 25, 50, 75, 100];
 
@@ -211,7 +217,7 @@ function StyledTable({
         onSortModelChange={onSortModelChange}
         slots={{ toolbar: CustomToolbar }}
         slotProps={{
-          toolbar: { disableSearch, enableStoreSelector, setStoreId },
+          toolbar: { disableSearch, enableStoreSelector, setStoreId, storeId },
           baseButton: {
             sx: {
               variant: 'contained',

@@ -1,6 +1,6 @@
 import { useTheme } from '@emotion/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Grid, Stack } from '@mui/material';
+import { Box, Button, Grid, MenuItem, Stack } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, Form, FormProvider, useForm, useFormContext } from 'react-hook-form';
 import { GrDocumentDownload } from 'react-icons/gr';
@@ -14,12 +14,13 @@ import Input from '../../components/Input';
 import Loader from '../../components/Loader';
 import LoadingButton from '../../components/LoadingButton';
 import PageHeader from '../../components/PageHeader';
-import { getAllStoresAction, selectAllStores } from '../../redux/storesSlice';
+import { getAllStoresAction, selectAllStores, storeCollectProfitAction } from '../../redux/storesSlice';
 import { tokens } from '../../themeConfig';
 import { formatQuery } from '../../utils/formatters';
 import { generateReportSchema } from '../../validations/reports.validation';
 import { selectLoggedInUser } from '../../redux/usersSlice';
 import { format } from 'date-fns';
+import Select from '../../components/Select';
 
 const GenerateReportPage = () => {
   const dispatch = useDispatch();
@@ -28,6 +29,7 @@ const GenerateReportPage = () => {
   const [loading, setLoading] = useState(false);
   const [initLoading, setinitLoading] = useState(true);
   const [url, setUrl] = useState(null);
+  const [collected, setCollected] = useState(false);
 
   const colors = tokens(theme.palette.mode);
 
@@ -37,17 +39,27 @@ const GenerateReportPage = () => {
       from: `${format(new Date(), 'yyyy-MM-dd')}T00:00`,
       to: `${format(new Date(), 'yyyy-MM-dd')}T23:59`,
       storeId: '',
+      includeChecked: true,
     },
   });
-  const { control, handleSubmit } = methods;
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { dirtyFields },
+  } = methods;
+
+  const storeId = watch('storeId');
 
   const onSubmit = async (data) => {
     setLoading(true);
     const resp = await axiosInstance.get(
       `/report?${formatQuery({
+        ...data,
         from: new Date(data.from).toISOString(),
         to: new Date(data.to).toISOString(),
-        storeId: data.storeId,
+        storeId: data.storeId || undefined,
       })}`,
       { responseType: 'blob' }
     );
@@ -57,12 +69,68 @@ const GenerateReportPage = () => {
     setUrl(url);
   };
 
+  const handleCollectProfit = async () => {
+    setLoading(true);
+    const data = methods.getValues();
+    dispatch(
+      storeCollectProfitAction({
+        from: new Date(data.from).toISOString(),
+        to: new Date(data.to).toISOString(),
+        storeId: data.storeId,
+      })
+    ).then(({ error }) => {
+      setLoading(false);
+      if (error) {
+        toast.error('Failed to collect profit: ' + error.message);
+      } else {
+        toast.success('Profit collected successfully');
+        setCollected(true);
+      }
+    });
+  };
+
+  const handleReGenerate = () => {
+    setCollected(false);
+    setUrl(null);
+  };
+
   useEffect(() => {
     dispatch(getAllStoresAction()).then(({ error }) => {
       setinitLoading(false);
       if (error) toast.error('Failed to load stores');
     });
   }, [dispatch]);
+  useEffect(() => {
+    let lastCollectedAt;
+    if (!stores?.length) return;
+    if (!storeId) {
+      lastCollectedAt = stores[0].lastCollectedAt;
+      if (!lastCollectedAt) return;
+    } else {
+      const store = stores.find((s) => s.id === storeId);
+      lastCollectedAt = store?.lastCollectedAt;
+      if (!lastCollectedAt) return;
+    }
+    !dirtyFields['from'] &&
+      setValue(
+        'from',
+        `${format(new Date(lastCollectedAt), 'yyyy-MM-dd')}T${format(new Date(lastCollectedAt), 'HH:mm')}`,
+        {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+        }
+      );
+    const to =
+      new Date(lastCollectedAt).toISOString() < new Date().toISOString() ? new Date() : new Date(lastCollectedAt);
+    !dirtyFields['to'] &&
+      setValue('to', `${format(to, 'yyyy-MM-dd')}T${format(to, 'HH:mm')}`, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stores, storeId, setValue]);
 
   if (!stores?.length > 0 && initLoading) {
     return (
@@ -82,10 +150,18 @@ const GenerateReportPage = () => {
             otherActions={
               url && [
                 <ActionButton
+                  color="primary.light"
+                  className="text-white"
+                  key="0"
+                  disabled={collected}
+                  onClick={handleCollectProfit}
+                  content="Collect Profit"
+                />,
+                <ActionButton
                   bg={colors.blue.main}
                   color={colors.text_dark.main}
                   LinkComponent="a"
-                  key="0"
+                  key="1"
                   href={url}
                   download="report.pdf"
                   content={
@@ -97,8 +173,8 @@ const GenerateReportPage = () => {
                 <ActionButton
                   bg={colors.blue.main}
                   color={colors.text_dark.main}
-                  key="1"
-                  onClick={() => setUrl(null)}
+                  key="2"
+                  onClick={handleReGenerate}
                   content="Re-generate"
                 />,
               ]
@@ -169,29 +245,51 @@ const GeneratePageForm = ({ loading }) => {
           />
         </Grid>
         {user.role === 'admin' && (
-          <Grid item xs={12}>
-            <Controller
-              disabled={loading}
-              name="storeId"
-              control={control}
-              render={({ field, fieldState: { error } }) => {
-                return (
-                  <AutoCompleteInput
-                    label="Store"
-                    placeHolder="Select a store to generate a report or leave empty to generate a report for all stores..."
-                    error={!!error}
-                    helperText={error?.message}
-                    required={false}
-                    options={options}
-                    disabled={loading}
-                    value={options.find((o) => o.value === field.value)}
-                    onChange={(e, option) => field.onChange(option.value)}
-                    inputProps={{ ...field }}
-                  />
-                );
-              }}
-            />
-          </Grid>
+          <>
+            <Grid item xs={12} sm={6}>
+              <Controller
+                name="storeId"
+                control={control}
+                render={({ field, fieldState: { error } }) => {
+                  return (
+                    <AutoCompleteInput
+                      label="Store"
+                      placeHolder="Select a store to generate a report or leave empty to generate a report for all stores..."
+                      error={!!error}
+                      helperText={error?.message}
+                      required={false}
+                      options={options}
+                      disabled={loading}
+                      value={options.find((o) => o.value === field.value)}
+                      onChange={(e, option) => field.onChange(option.value)}
+                      inputProps={{ ...field }}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Controller
+                name="includeChecked"
+                control={control}
+                render={({ field, fieldState: { error } }) => {
+                  return (
+                    <Select
+                      label="Include collected sales and transactions"
+                      error={!!error}
+                      helperText={error?.message}
+                      required={false}
+                      disabled={loading}
+                      inputProps={{ ...field }}
+                    >
+                      <MenuItem value={true}>Yes</MenuItem>
+                      <MenuItem value={false}>No</MenuItem>
+                    </Select>
+                  );
+                }}
+              />
+            </Grid>
+          </>
         )}
       </Grid>
       <Stack spacing={2} direction="row" justifyContent="flex-end" className="px-4 mb-4">

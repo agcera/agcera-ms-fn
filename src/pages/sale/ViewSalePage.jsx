@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { format } from 'date-fns';
 import RefundSaleModal from '../../components/sale/RefundSaleModal';
 import StyledTable from '../../components/Table/StyledTable';
+import { calculateProfit, calculateTotal } from '../../utils/sales.utils';
 
 const StoreKey = ({ children, ...props }) => {
   return (
@@ -44,14 +45,6 @@ const ViewSalePage = () => {
 
   const handleDeleteClose = () => {
     setRefundOpen(false);
-  };
-
-  const calculateTotal = (sale) => {
-    let total = 0;
-    sale.variations.forEach((variation) => {
-      total += variation.quantity * variation.variation.number * variation.variation.sellingPrice;
-    });
-    return total;
   };
 
   // build column for variations to be displayed in the table
@@ -174,6 +167,12 @@ const ViewSalePage = () => {
                 <StoreKey>Store :</StoreKey>
                 <StoreValue>{sale.store?.name || <span className="text-secondary">Deleted Store</span>}</StoreValue>
               </TableRow>
+              {user.role === 'admin' && (
+                <TableRow>
+                  <StoreKey>Purchase profit :</StoreKey>
+                  <StoreValue>{calculateProfit(sale)} MZN</StoreValue>
+                </TableRow>
+              )}
               <TableRow>
                 <StoreKey>Purchase total :</StoreKey>
                 <StoreValue>{calculateTotal(sale)} MZN</StoreValue>
@@ -182,6 +181,12 @@ const ViewSalePage = () => {
                 <StoreKey>Purchased On :</StoreKey>
                 <StoreValue>{format(new Date(sale.createdAt), 'do MMM yyyy h:mm a')}</StoreValue>
               </TableRow>
+              {sale.checkedAt && (
+                <TableRow>
+                  <StoreKey>Collected On :</StoreKey>
+                  <StoreValue>{format(new Date(sale.checkedAt), 'do MMM yyyy h:mm a')}</StoreValue>
+                </TableRow>
+              )}
               {sale.refundedAt && (
                 <TableRow>
                   <StoreKey>Cancelled On :</StoreKey>
