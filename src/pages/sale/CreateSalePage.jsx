@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, Checkbox, FormControlLabel, Grid, MenuItem, Stack } from '@mui/material';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { Controller, Form, FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -16,25 +16,21 @@ import { getStoreAction, selectStoreById } from '../../redux/storesSlice';
 import { selectLoggedInUser } from '../../redux/usersSlice';
 import { createSaleSchema } from '../../validations/sales.validation';
 import { format } from 'date-fns';
-// import { MuiTelInput } from 'mui-tel-input'
+import { getAllClientsAction, selectAllClients } from '../../redux/clientSlice';
+import AutoCompleteInput from '../../components/AutoCompleteInput';
 
 const CreateSalePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const profile = useSelector(selectLoggedInUser);
-  // const users = useSelector(selectAllUsersByRole('USER'));
   const store = useSelector(selectStoreById(profile.storeId));
   const [initLoading, setInitLoading] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  // const customers = useMemo(() => {
-  //   return users.map((user) => {
-  //     return { label: user.name, value: user.id };
-  //   });
-  // }, [users]);
+  const clients = useSelector(selectAllClients);
 
   const methods = useForm({
-    mode: 'all',
+    mode: 'onChange',
     criteriaMode: 'all',
     resolver: yupResolver(createSaleSchema),
     defaultValues: {
@@ -43,7 +39,7 @@ const CreateSalePage = () => {
       paymentMethod: 'CASH',
       clientName: '',
       phone: '',
-      // doneOn: null
+      isMember: false,
     },
   });
 
@@ -62,15 +58,14 @@ const CreateSalePage = () => {
   };
 
   useEffect(() => {
-    Promise.all([dispatch(getStoreAction(profile.storeId)) /*, dispatch(getAllUsersAction({ role: ['USER'] }))*/]).then(
-      (resp) => {
-        setInitLoading(false);
-        resp.forEach(({ error }) => {
-          if (error) toast.error(error.message);
-        });
-      }
-    );
+    Promise.all([dispatch(getStoreAction(profile.storeId)), dispatch(getAllClientsAction())]).then((resp) => {
+      setInitLoading(false);
+      resp.forEach(({ error }) => {
+        if (error) toast.error(error.message);
+      });
+    });
   }, [dispatch, profile.storeId]);
+
   useLayoutEffect(() => {
     if (store) {
       setValue('storeId', store.id);
@@ -87,31 +82,11 @@ const CreateSalePage = () => {
 
   return (
     <FormProvider {...methods}>
-      <Form control={control} method="post" action="" onSubmit={handleSubmit(onSubmit)}>
+      <form method="post" action="" onSubmit={handleSubmit(onSubmit)}>
         <Box className="size-full flex flex-col">
           <PageHeader title="Make a sell" hasBack={true} />
           <Box className="px-4 py-2">
             <Box className="px-4 py-4">
-              {/* <Controller
-                disabled={loading}
-                name="storeId"
-                control={control}
-                render={({ field, fieldState: { error } }) => {
-                  return (
-                    <AutoCompleteInput
-                      label="Store"
-                      placeHolder="Choose store to purchase from..."
-                      error={!!error}
-                      helperText={error?.message}
-                      options={options}
-                      value={options.find((o) => o.value === field.value)}
-                      onChange={(e, option) => field.onChange({ target: { value: option?.value } })}
-                      inputProps={{ ...field }}
-                    />
-                  );
-                }}
-              /> */}
-
               <Box className="py-4 mt-2">
                 <SelectVariations loading={loading} />
               </Box>
@@ -124,12 +99,67 @@ const CreateSalePage = () => {
                     control={control}
                     render={({ field, fieldState: { error } }) => {
                       return (
-                        <Input
-                          label="Customer name"
-                          placeHolder="Enter customer name..."
+                        <AutoCompleteInput
+                          freeSolo
+                          label="Client name"
+                          placeHolder="Choose or enter a value"
                           error={!!error}
                           helperText={error?.message}
-                          inputProps={{ ...field }}
+                          options={clients}
+                          value={clients.find((client) => client.name === field.value) || field.value}
+                          onChange={(_, newValue) => {
+                            if (typeof newValue === 'string') {
+                              setValue('clientName', newValue);
+                              setValue('phone', '');
+                              setValue('isMember', false);
+                            } else if (newValue && newValue.inputValue) {
+                              setValue('clientName', newValue.inputValue);
+                              setValue('phone', '');
+                              setValue('isMember', false);
+                            } else {
+                              setValue('clientName', newValue?.name || '');
+                              setValue('phone', newValue?.phone || '');
+                              setValue('isMember', newValue?.isMember || false);
+                            }
+                          }}
+                          inputValue={field.value}
+                          onInputChange={(event, newInputValue) => {
+                            setValue('clientName', newInputValue);
+                          }}
+                          getOptionLabel={(option) => {
+                            if (typeof option === 'string') {
+                              return option;
+                            }
+                            if (option.inputValue) {
+                              return option.inputValue;
+                            }
+                            return option.name;
+                          }}
+                          renderOption={(props, option) => (
+                            <Box component="li" {...props}>
+                              {option.name} ({option.phone})
+                            </Box>
+                          )}
+                          filterOptions={(options, params) => {
+                            let filtered = options.filter((option) => {
+                              if (typeof option === 'string') {
+                                return option.toLowerCase().includes(params.inputValue.toLowerCase());
+                              }
+                              if (option.inputValue) {
+                                return option.inputValue.toLowerCase().includes(params.inputValue.toLowerCase());
+                              }
+                              return option.name.toLowerCase().includes(params.inputValue.toLowerCase());
+                            });
+
+                            if (params.inputValue !== '') {
+                              filtered.push({
+                                inputValue: params.inputValue,
+                                name: `Add "${params.inputValue}"`,
+                              });
+                            }
+
+                            return filtered;
+                          }}
                         />
                       );
                     }}
@@ -159,13 +189,11 @@ const CreateSalePage = () => {
                   <Controller
                     name="isMember"
                     control={control}
-                    render={({ field, fieldState: { error } }) => (
+                    render={({ field }) => (
                       <FormControlLabel
-                        control={<Checkbox {...field} disabled={loading} />}
+                        control={<Checkbox {...field} checked={field.value} disabled={loading} />}
                         label="Is member"
                         sx={{ fontWeight: 'bold' }}
-                        error={!!error}
-                        helperText={error?.message}
                       />
                     )}
                   />
@@ -180,7 +208,7 @@ const CreateSalePage = () => {
                         <Input
                           disabled={loading}
                           label="Date of payment"
-                          placeHolder="Enter the Date of Payement..."
+                          placeHolder="Enter the Date of Payment..."
                           error={!!error}
                           helperText={error?.message}
                           inputProps={{
@@ -189,10 +217,10 @@ const CreateSalePage = () => {
                             InputProps: {
                               inputProps: {
                                 max: `${format(new Date(), 'yyyy-MM-dd')}T${format(new Date(), 'hh:mm')}`,
+                                defaultValue: `${format(new Date(), 'yyyy-MM-dd')}T${format(new Date(), 'hh:mm')}`,
                               },
                             },
                           }}
-                          defaultValue={format(new Date(), 'yyyy-MM-ddThh:mm')}
                         />
                       );
                     }}
@@ -243,7 +271,7 @@ const CreateSalePage = () => {
             </Box>
           </Box>
         </Box>
-      </Form>
+      </form>
     </FormProvider>
   );
 };

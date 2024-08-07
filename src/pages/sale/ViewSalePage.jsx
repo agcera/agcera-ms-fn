@@ -151,7 +151,7 @@ const ViewSalePage = () => {
               </TableRow>
               <TableRow>
                 <StoreKey>Client Type :</StoreKey>
-                <StoreValue>{sale.client.isMember ? 'Member' : 'Guest'}</StoreValue>
+                <StoreValue>{sale.client?.isMember ? 'Member' : 'Guest'}</StoreValue>
               </TableRow>
               <TableRow>
                 <StoreKey>Client details :</StoreKey>
