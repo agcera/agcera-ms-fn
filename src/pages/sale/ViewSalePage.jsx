@@ -5,7 +5,7 @@ import { getSaleAction, selectSaleById } from '../../redux/salesSlice';
 import { useParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import Loader from '../../components/Loader';
-import { getUserAction, selectLoggedInUser, selectUserById } from '../../redux/usersSlice';
+import { getUserAction, selectLoggedInUser } from '../../redux/usersSlice';
 import { toast } from 'react-toastify';
 import { format } from 'date-fns';
 import RefundSaleModal from '../../components/sale/RefundSaleModal';
@@ -35,7 +35,6 @@ const ViewSalePage = () => {
 
   const refundedAt = sale?.refundedAt || false;
 
-  const client = useSelector(selectUserById(sale?.clientId));
   const user = useSelector(selectLoggedInUser);
   const [refundOpen, setRefundOpen] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
@@ -72,14 +71,9 @@ const ViewSalePage = () => {
 
   const clientDetails = useMemo(() => {
     if (!sale) return 'Fetching details ....';
-    if (sale.clientType === 'USER') {
-      if (sale.clientId === null) return <span className="text-secondary"> Deleted User </span>;
-      if (!client) return 'Fetching details ....';
-      return `${client.name} |---| ${client.email}, ${client.phone}`;
-    } else {
-      return sale.clientId;
-    }
-  }, [client, sale]);
+
+    return `${sale.client?.name} |---| ${sale.client?.phone}`;
+  }, [sale]);
   const soldProducts = useMemo(() => {
     return sale?.variations?.reduce((acc, variation) => {
       const product = acc.find((p) => p.id === variation.variation.productId);
@@ -157,7 +151,7 @@ const ViewSalePage = () => {
               </TableRow>
               <TableRow>
                 <StoreKey>Client Type :</StoreKey>
-                <StoreValue>{sale.clientType === 'USER' ? 'Member' : 'Guest'}</StoreValue>
+                <StoreValue>{sale.client?.isMember ? 'Member' : 'Guest'}</StoreValue>
               </TableRow>
               <TableRow>
                 <StoreKey>Client details :</StoreKey>

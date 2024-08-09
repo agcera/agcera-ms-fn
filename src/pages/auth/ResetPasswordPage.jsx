@@ -57,7 +57,7 @@ const ResetPasswordPage = () => {
 
         <Box className="w-full flex flex-col items-center mb-6">
           <Typography variant="header" className="text-center font-semibold text-dark mb-2">
-            Reset Password
+            {'Reset Password for ' + routeParams.name}
           </Typography>
           <HeaderUnderline className="m-auto" />
         </Box>

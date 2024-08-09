@@ -127,7 +127,7 @@ const SalesPage = () => {
       disableExport: true,
       sortable: false,
       renderCell: (params) => (
-        <MoreButton id={params.id} model={'sales'} className="my-2" hasEdit={false} hasRefund={user.role !== 'user'} />
+        <MoreButton id={params.id} model={'sales'} className="my-2" hasEdit={false} hasRefund={true} />
       ),
     },
   ].filter(Boolean);

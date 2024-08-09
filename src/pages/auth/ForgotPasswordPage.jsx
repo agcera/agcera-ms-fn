@@ -23,7 +23,7 @@ const ForgotPasswordPage = () => {
   } = useForm({
     resolver: yupResolver(forgotPasswordSchema),
     defaultValues: {
-      email: '',
+      phone: '',
     },
   });
 
@@ -48,7 +48,7 @@ const ForgotPasswordPage = () => {
 
         <Box className="w-full flex flex-col items-center mb-6">
           <Typography variant="header" className="text-center font-semibold text-dark mb-2">
-            Forgot Password
+            Change Password
           </Typography>
           <HeaderUnderline className="m-auto" />
         </Box>
@@ -63,13 +63,13 @@ const ForgotPasswordPage = () => {
         >
           <Input
             disabled={loading}
-            label="Email"
-            placeHolder="Enter your email..."
+            label="Phone"
+            placeHolder="Enter phone number..."
             className="max-w-[450px]"
-            error={!!errors.email}
-            helperText={errors.email?.message}
+            error={!!errors.phone}
+            helperText={errors.phone?.message}
             inputProps={{
-              ...register('email'),
+              ...register('phone'),
             }}
           />
 

@@ -13,6 +13,8 @@ dist
 dist-ssr
 *.local
 
+\src\pages\sale\createsale.jsx
+
 # Editor directories and files
 .idea
 .DS_Store

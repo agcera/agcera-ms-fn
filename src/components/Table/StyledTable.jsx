@@ -13,11 +13,20 @@ import { tokens } from '../../themeConfig';
 import Select from '../Select';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllPartialStoresAction, selectAllStores } from '../../redux/storesSlice';
+import { useNavigate } from 'react-router-dom';
+import ActionButton from '../ActionButton';
 
-const CustomToolbar = memo(function CustomToolbar({ disableSearch, enableStoreSelector, setStoreId, storeId }) {
+const CustomToolbar = memo(function CustomToolbar({
+  disableSearch,
+  enableStoreSelector,
+  setStoreId,
+  storeId,
+  enableSecurity,
+}) {
   const dispatch = useDispatch();
 
   const stores = useSelector(selectAllStores);
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(getAllPartialStoresAction());
@@ -25,8 +34,19 @@ const CustomToolbar = memo(function CustomToolbar({ disableSearch, enableStoreSe
 
   return (
     <GridToolbarContainer className="flex flex-row gap-2 justify-between mb-1">
-      <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
+      <Box>
+        <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
+        {enableSecurity && (
+          <ActionButton
+            bg={'#E6EEF5'}
+            content={'Security'}
+            className={'ml-2'}
+            onclick={() => navigate('/forgot-password')}
+          />
+        )}
+      </Box>
       {!disableSearch && <GridToolbarQuickFilter />}
+
       {enableStoreSelector && (
         <Select
           label="Store"
@@ -67,6 +87,7 @@ function StyledTable({
   disableSearch = false,
   minWidth,
   enableStoreSelector = false,
+  enableSecurity = false,
 }) {
   const [storeId, setStoreId] = useState(null);
 
@@ -217,7 +238,7 @@ function StyledTable({
         onSortModelChange={onSortModelChange}
         slots={{ toolbar: CustomToolbar }}
         slotProps={{
-          toolbar: { disableSearch, enableStoreSelector, setStoreId, storeId },
+          toolbar: { disableSearch, enableStoreSelector, enableSecurity, setStoreId, storeId },
           baseButton: {
             sx: {
               variant: 'contained',

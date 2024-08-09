@@ -11,7 +11,7 @@ import Input from '../Input';
 import LoadingButton from '../LoadingButton';
 
 const StyledTextField = ({ ...props }) => {
-  return <Input className="max-w-[450px]" {...props} />;
+  return <Input className="max-w-[450px]" {...props} type="password" />;
 };
 
 const LoginForm = () => {
@@ -58,6 +58,7 @@ const LoginForm = () => {
         <StyledTextField
           label="Password"
           placeHolder="Enter Password..."
+          password={true}
           error={!!errors.password}
           helperText={errors.password?.message}
           disabled={loading}

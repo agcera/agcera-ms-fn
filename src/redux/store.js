@@ -8,6 +8,7 @@ import salesSlice from './salesSlice';
 import storesSlice from './storesSlice';
 import transactionsSlice from './transactionsSlice';
 import usersSlice from './usersSlice';
+import clientSlice from './clientSlice';
 import { ENVIRONMENT } from '../constants';
 
 const middlewares = [];
@@ -26,7 +27,8 @@ const slices = combineSlices(
   analyticsSlice,
   transactionsSlice,
   movementsSlice,
-  deletedSlice
+  deletedSlice,
+  clientSlice
 );
 
 const store = configureStore({

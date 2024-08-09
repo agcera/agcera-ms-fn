@@ -24,6 +24,8 @@ const ViewTrashModel = ({ open = false, handleClose, id, model }) => {
 
   const deletedObject = open ? JSON.parse(deleted.description) : null;
 
+  console.log(deleted, 'tedted');
+
   useEffect(() => {
     dispatch(getDeletedItemByIdAction(id));
   }, [dispatch, id]);
@@ -98,7 +100,7 @@ const ViewTrashModel = ({ open = false, handleClose, id, model }) => {
                   {
                     // map amoung the store users to find one with role user
                     // if found return the name of the user
-                    deletedObject.store.users.find((u) => u.role === 'keeper').name || 'This store has no keepers'
+                    deletedObject.store.users.find((u) => u?.role === 'keeper')?.name || 'This store has no keepers'
                     // storeKeepers?.map((u) => u.name).join(', ') || 'This store has no keepers'
                   }
                 </TableValue>
@@ -157,10 +159,6 @@ const ViewTrashModel = ({ open = false, handleClose, id, model }) => {
               <TableRow>
                 <TableKey>Description</TableKey>
                 <TableValue>{deletedObject.product.description}</TableValue>
-              </TableRow>
-              <TableRow>
-                <TableKey>Variation </TableKey>
-                <TableValue>{deletedObject.product.variations[0].name}</TableValue>
               </TableRow>
             </TableBody>
           </Table>

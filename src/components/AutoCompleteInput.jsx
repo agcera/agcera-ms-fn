@@ -10,6 +10,7 @@ const AutoCompleteInput = ({
   error = false,
   disabled = false,
   required = true,
+  freeSolo = false,
   inputProps = {},
   labelProps = {},
   value,
@@ -37,6 +38,7 @@ const AutoCompleteInput = ({
       )}
       <Autocomplete
         {...inputProps}
+        freeSolo={freeSolo}
         value={value || null}
         onChange={onChange}
         inputValue={inputValue}
