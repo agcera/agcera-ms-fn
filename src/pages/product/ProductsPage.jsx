@@ -173,7 +173,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
     {
       field: 'variations',
       headerName: 'Variations',
-      flex: 1,
+      flex: 0,
       disableExport: true,
       renderCell: (params) => {
         return (

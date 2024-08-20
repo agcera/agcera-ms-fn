@@ -8,7 +8,7 @@ import AutoCompleteInput from '../AutoCompleteInput';
 import Loader from '../Loader';
 import SelectVariationsRow from './SelectVariationsRow';
 
-const SelectVariations = ({ loading }) => {
+const SelectVariations = ({ loading, onQuantityChange }) => {
   const dispatch = useDispatch();
   const { setValue, watch } = useFormContext();
   const [input, setInput] = useState('');
@@ -52,6 +52,7 @@ const SelectVariations = ({ loading }) => {
     remainingProductsRef[variation.productId] = newRemaining;
     // Add variation to form
     setValue(`variations.${option.value}`, 1);
+    onQuantityChange();
   };
   const handleRemove = (id) => {
     const variation = variations.find((v) => v.value === id);
@@ -65,6 +66,7 @@ const SelectVariations = ({ loading }) => {
     // Remove variation from to be sent on backend
     delete newVariations[id];
     setValue('variations', newVariations);
+    onQuantityChange();
   };
 
   useEffect(() => {
@@ -136,6 +138,7 @@ const SelectVariations = ({ loading }) => {
                   variation={variation}
                   handleRemove={handleRemove}
                   remainingProductsRef={remainingProductsRef}
+                  onQuantityChange={onQuantityChange}
                 />
               );
             })}
