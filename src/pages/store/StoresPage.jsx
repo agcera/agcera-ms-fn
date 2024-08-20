@@ -39,7 +39,7 @@ const StoresPage = () => {
     {
       field: 'isActive',
       headerName: 'Status',
-      flex: 0,
+      flex: 1,
       valueGetter: (params, row) => (row.isActive ? 'Active' : 'InActive'),
       renderCell: (params) => (
         <StatusBadge
@@ -58,7 +58,7 @@ const StoresPage = () => {
     {
       field: 'action',
       headerName: 'Action',
-      flex: 0,
+      flex: 1,
       disableExport: true,
       sortable: false,
       renderCell: (params) => {

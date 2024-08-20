@@ -45,7 +45,7 @@ const MovementPage = () => {
     {
       field: 'product',
       headerName: 'Product',
-      flex: 0,
+      flex: 1,
       valueGetter: (params, row) => row.product?.name,
     },
     { field: 'quantity', headerName: 'Quantity', flex: 0 },

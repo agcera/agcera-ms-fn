@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Checkbox, FormControlLabel, Grid, MenuItem, Stack } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, Grid, MenuItem, Stack, Typography } from '@mui/material';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,14 +18,35 @@ import { createSaleSchema } from '../../validations/sales.validation';
 import { format } from 'date-fns';
 import { getAllClientsAction, selectAllClients } from '../../redux/clientSlice';
 import AutoCompleteInput from '../../components/AutoCompleteInput';
+import { getAllStoreProductsAction, selectAllProductsBystoreId } from '../../redux/productsSlice';
 
 const CreateSalePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const profile = useSelector(selectLoggedInUser);
   const store = useSelector(selectStoreById(profile.storeId));
+  const storeProducts = useSelector(selectAllProductsBystoreId(profile.storeId));
   const [initLoading, setInitLoading] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  const calculateTotalAmount = () => {
+    const variations = watch('variations');
+    let allVariationsFromProducts = storeProducts.map((product) => product.variations).flat();
+
+    let total = 0;
+
+    // console.log(allVariationsFromProducts, 'store products');
+    Object.entries(variations).forEach(([key, quantity]) => {
+      const variation = allVariationsFromProducts.find((v) => v.id === key);
+      if (variation) {
+        total += quantity * variation.sellingPrice;
+      }
+    });
+    setTotalAmount(total);
+
+    console.log(total, 'total');
+  };
 
   const clients = useSelector(selectAllClients);
 
@@ -58,7 +79,11 @@ const CreateSalePage = () => {
   };
 
   useEffect(() => {
-    Promise.all([dispatch(getStoreAction(profile.storeId)), dispatch(getAllClientsAction())]).then((resp) => {
+    Promise.all([
+      dispatch(getStoreAction(profile.storeId)),
+      dispatch(getAllStoreProductsAction({ storeId: profile.storeId })),
+      dispatch(getAllClientsAction()),
+    ]).then((resp) => {
       setInitLoading(false);
       resp.forEach(({ error }) => {
         if (error) toast.error(error.message);
@@ -88,7 +113,16 @@ const CreateSalePage = () => {
           <Box className="px-4 py-2">
             <Box className="px-4 py-4">
               <Box className="py-4 mt-2">
-                <SelectVariations loading={loading} />
+                <SelectVariations loading={loading} onQuantityChange={calculateTotalAmount} />
+
+                {totalAmount > 0 && (
+                  <Box className="bg-primary-light mx-2 rounded-sm w-fit px-4 py-2 mt-4 mb-4">
+                    <Typography variant="h6" className=" text-sm text-background">
+                      {' '}
+                      Total Amount: {totalAmount} MZN
+                    </Typography>
+                  </Box>
+                )}
               </Box>
 
               <Grid container rowSpacing={1} columnSpacing={2}>

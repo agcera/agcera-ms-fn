@@ -6,7 +6,6 @@ import { MdMoreHoriz } from 'react-icons/md';
 import { RiRefund2Line } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import DeleteProductModal from '../products/DeleteProductModal';
-import { HiReceiptRefund } from 'react-icons/hi';
 import DeleteStoreModal from '../store/DeleteStoreModal';
 import DeleteSaleModal from '../sale/RefundSaleModal';
 import DeleteUserModal from '../user/DeleteUserModal';
@@ -90,13 +89,6 @@ function MoreButton({ id, model, hasDelete = false, hasRefund = false, hasDetail
           <MenuItem onClick={handleDelete}>
             <FaTrash className="mr-2" />
             Delete
-          </MenuItem>
-        )}
-
-        {hasRefund && (
-          <MenuItem onClick={handleRefund}>
-            <HiReceiptRefund className="mr-2" />
-            Refund
           </MenuItem>
         )}
       </Menu>

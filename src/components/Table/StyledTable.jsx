@@ -63,12 +63,14 @@ const CustomToolbar = memo(function CustomToolbar({
           <MenuItem key={'all'} value={'all'}>
             {` All`}
           </MenuItem>
-          {stores.map((store) => (
-            <MenuItem key={store.id} value={store.id}>
-              {' '}
-              {store.name}
-            </MenuItem>
-          ))}
+          {stores
+            .filter((store) => store.name != 'expired')
+            .map((store) => (
+              <MenuItem key={store.id} value={store.id}>
+                {' '}
+                {store.name}
+              </MenuItem>
+            ))}
         </Select>
       )}
     </GridToolbarContainer>

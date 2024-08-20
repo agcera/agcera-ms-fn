@@ -33,11 +33,25 @@ const SalesPage = () => {
             return acc;
           }, {});
         }
+
+        if (query?.search) {
+          query.clientPhone = encodeURIComponent(query.search);
+          console.log(query.clientPhone, query.search, 'serarchchckckc');
+          delete query.search;
+        }
       }
+
       return dispatch(getAllSalesAction(query));
     },
     [dispatch]
   );
+
+  // const fetchData = useCallback(
+  //   (query) => {
+  //     return dispatch(getAllUsersAction(query));
+  //   },
+  //   [dispatch]
+  // );
 
   const columns = [
     {
@@ -140,8 +154,8 @@ const SalesPage = () => {
         hasCreate={user.role === 'keeper' && (() => navigate('/dashboard/sales/create'))}
       />
       <StyledTable
-        enableStoreSelector={true}
-        disableSearch={true}
+        enableStoreSelector={user.role === 'admin'}
+        disableSearch={false}
         fetchData={fetchData}
         data={sales}
         columns={columns}

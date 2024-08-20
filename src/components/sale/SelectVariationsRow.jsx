@@ -19,6 +19,7 @@ const SelectVariationsRow = memo(function SelectVariationsRow({
   handleRemove,
   variation,
   remainingProductsRef,
+  onQuantityChange,
 }) {
   const { setValue } = useFormContext();
 
@@ -29,6 +30,7 @@ const SelectVariationsRow = memo(function SelectVariationsRow({
     remainingProductsRef[variation.productId] = remaining + variation.number;
     // Update the form
     setValue(`variations.${field[0]}`, field[1] - 1);
+    onQuantityChange();
   };
   const handleIncrement = (field) => {
     // calculate the remainings
@@ -39,6 +41,7 @@ const SelectVariationsRow = memo(function SelectVariationsRow({
     remainingProductsRef[variation.productId] = newRemaining;
     // Update the form
     setValue(`variations.${field[0]}`, field[1] + 1);
+    onQuantityChange();
   };
 
   return (
