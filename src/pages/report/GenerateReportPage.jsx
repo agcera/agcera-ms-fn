@@ -26,6 +26,7 @@ const GenerateReportPage = () => {
   const dispatch = useDispatch();
   const theme = useTheme();
   const stores = useSelector(selectAllStores);
+  const user = useSelector(selectLoggedInUser);
   const [loading, setLoading] = useState(false);
   const [initLoading, setinitLoading] = useState(true);
   const [url, setUrl] = useState(null);
@@ -149,14 +150,16 @@ const GenerateReportPage = () => {
             hasBack={true}
             otherActions={
               url && [
-                <ActionButton
-                  color="primary.light"
-                  className="text-white"
-                  key="0"
-                  disabled={collected}
-                  onClick={handleCollectProfit}
-                  content="Collect Profit"
-                />,
+                user.role === 'admin' && (
+                  <ActionButton
+                    color="primary.light"
+                    className="text-white"
+                    key="0"
+                    disabled={collected}
+                    onClick={handleCollectProfit}
+                    content="Collect Profit"
+                  />
+                ),
                 <ActionButton
                   bg={colors.blue.main}
                   color={colors.text_dark.main}
