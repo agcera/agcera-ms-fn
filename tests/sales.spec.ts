@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { format } from 'date-fns';
 import { login } from './helpers/auth';
 import { credentials } from './helpers/data';
 
@@ -334,13 +335,13 @@ test('blocks sales in collected time ranges and allows refunds after collection'
   await page.getByPlaceholder('Choose or enter a value').fill('E2E Collected Client');
   await page.getByPlaceholder('Enter phone number ...').fill('+258840000920');
 
-  const blockedDate = cashT2.toISOString().slice(0, 16);
+  const blockedDate = format(cashT2, "yyyy-MM-dd'T'HH:mm");
   await page.getByLabel('Date of payment').fill(blockedDate);
 
   await page.getByRole('button', { name: /Confirm Payment/i }).click();
-  await expect(page.getByText(/Cannot create a sale in a collected time range for this payment method/i)).toBeVisible();
+  await expect(page.getByText(/Cannot create a sale in a collected time range/i)).toBeVisible();
 
-  const allowedDate = new Date().toISOString().slice(0, 16);
+  const allowedDate = format(new Date(), "yyyy-MM-dd'T'HH:mm");
   await page.getByLabel('Date of payment').fill(allowedDate);
 
   const createResponsePromise = page.waitForResponse(

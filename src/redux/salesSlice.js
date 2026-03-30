@@ -14,9 +14,15 @@ export const getAllSalesAction = createAsyncThunk('sales/getAllSalesAction', asy
   return response.data;
 });
 
-export const createSaleAction = createAsyncThunk('sales/createSaleAction', async (data) => {
-  const response = await axiosInstance.post('/sales', data);
-  return response.data;
+export const createSaleAction = createAsyncThunk('sales/createSaleAction', async (data, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.post('/sales', data);
+    return response.data;
+  } catch (error) {
+    const message =
+      typeof error === 'string' ? error : error?.response?.data?.message || error?.message || 'Failed to create sale';
+    return rejectWithValue({ message });
+  }
 });
 
 export const deleteSaleAction = createAsyncThunk('sales/deleteSaleAction', async (id) => {

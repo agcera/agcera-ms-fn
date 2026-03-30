@@ -96,7 +96,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
 
       products.forEach((product) => {
         const selectedVariation =
-          variationMap[product.id] || (product.variations.length > 0 ? product.variations[0].name : '');
+          variationMap[product.id] || (product.variations.find((v) => v.number === 1) || product.variations[0]).name;
         const costPrice = getCostPriceForVariation(product.variations, selectedVariation);
         const sellingPrice = getSellingPriceForVariation(product.variations, selectedVariation);
         const quantity = getQuantityForStore(product.stores);
@@ -114,7 +114,10 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
     // Initialize variationMap with the first variation for each row
     const initialVariationMap = {};
     products.forEach((product) => {
-      initialVariationMap[product.id] = product.variations.length > 0 ? product.variations[0].name : '';
+      initialVariationMap[product.id] =
+        product.variations.length > 0
+          ? (product.variations.find((v) => v.number === 1) || product.variations[0]).name
+          : '';
     });
     setVariationMap(initialVariationMap);
     // Calculate initial totals
@@ -164,7 +167,10 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
       align: 'center',
       renderCell: (params) => {
         const selectedVariation =
-          variationMap[params.row.id] || (params.row.variations.length > 0 ? params.row.variations[0].name : '');
+          variationMap[params.row.id] ||
+          (params.row.variations.length > 0
+            ? (params.row.variations.find((v) => v.number === 1) || params.row.variations[0]).name
+            : '');
 
         const variationNumber = params.row.variations.find((v) => v.name === selectedVariation).number;
         return Math.floor(getQuantityForStore(params.value) / variationNumber);
@@ -183,11 +189,13 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
               value={variationMap[params.row.id] || ''}
               onChange={(e) => handleChange(e, params.row.id)}
             >
-              {(params.value || []).map((param) => (
-                <MenuItem key={param.id} value={param.name}>
-                  {param.name}
-                </MenuItem>
-              ))}
+              {[...params.value]
+                .sort((a, b) => a.number - b.number)
+                .map((param) => (
+                  <MenuItem key={param.id} value={param.name}>
+                    {param.name}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
         );

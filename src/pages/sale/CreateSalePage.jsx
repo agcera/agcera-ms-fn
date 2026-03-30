@@ -84,10 +84,11 @@ const CreateSalePage = () => {
     }
 
     setLoading(true);
-    dispatch(createSaleAction(payload)).then(({ error }) => {
+    dispatch(createSaleAction(payload)).then((action) => {
       setLoading(false);
-      if (error) {
-        return toast.error(error.message);
+      if (action.error) {
+        const message = action.payload?.message || action.error.message;
+        return toast.error(message);
       } else {
         navigate('/dashboard/sales');
       }
@@ -266,8 +267,8 @@ const CreateSalePage = () => {
                             type: 'datetime-local',
                             InputProps: {
                               inputProps: {
-                                max: `${format(new Date(), 'yyyy-MM-dd')}T${format(new Date(), 'hh:mm')}`,
-                                defaultValue: `${format(new Date(), 'yyyy-MM-dd')}T${format(new Date(), 'hh:mm')}`,
+                                max: `${format(new Date(), 'yyyy-MM-dd')}T${format(new Date(), 'HH:mm')}`,
+                                defaultValue: `${format(new Date(), 'yyyy-MM-dd')}T${format(new Date(), 'HH:mm')}`,
                               },
                             },
                           }}
