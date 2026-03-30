@@ -118,15 +118,17 @@ const ViewStorePage = () => {
               </TableRow>
               <TableRow>
                 <StoreKey>Telephone number:</StoreKey>
-                <StoreValue>{store.phone}</StoreValue>
+                <StoreValue>{store.phone ? store.phone : 'N/A'}</StoreValue>
               </TableRow>
               <TableRow>
                 <StoreKey>Location:</StoreKey>
-                <StoreValue>{capitalize(store.location)}</StoreValue>
+                <StoreValue>{store.location ? capitalize(store.location) : 'N/A'}</StoreValue>
               </TableRow>
               <TableRow>
                 <StoreKey>Opening Date:</StoreKey>
-                <StoreValue>{format(new Date(store.createdAt), 'do MMM yyyy h:mm a')}</StoreValue>
+                <StoreValue>
+                  {store.createdAt ? format(new Date(store.createdAt), 'do MMM yyyy h:mm a') : 'N/A'}
+                </StoreValue>
               </TableRow>
               <TableRow>
                 <StoreKey>Status:</StoreKey>

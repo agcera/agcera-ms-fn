@@ -217,7 +217,7 @@ function StyledTable({
       }}
     >
       <DataGrid
-        className="overflow-x-auto"
+        // className="overflow-x-auto"
         loading={loading}
         rows={data}
         columns={columns}

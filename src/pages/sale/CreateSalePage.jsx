@@ -19,6 +19,7 @@ import { format } from 'date-fns';
 import { getAllClientsAction, selectAllClients } from '../../redux/clientSlice';
 import AutoCompleteInput from '../../components/AutoCompleteInput';
 import { getAllStoreProductsAction, selectAllProductsBystoreId } from '../../redux/productsSlice';
+import { selectAllMixtures } from '../../redux/mixturesSlice';
 
 const CreateSalePage = () => {
   const dispatch = useDispatch();
@@ -26,26 +27,32 @@ const CreateSalePage = () => {
   const profile = useSelector(selectLoggedInUser);
   const store = useSelector(selectStoreById(profile.storeId));
   const storeProducts = useSelector(selectAllProductsBystoreId(profile.storeId));
+  const mixtures = useSelector(selectAllMixtures);
   const [initLoading, setInitLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
 
   const calculateTotalAmount = () => {
     const variations = watch('variations');
+    const selectedMixtures = watch('mixtures');
     let allVariationsFromProducts = storeProducts.map((product) => product.variations).flat();
 
     let total = 0;
 
-    // console.log(allVariationsFromProducts, 'store products');
     Object.entries(variations).forEach(([key, quantity]) => {
       const variation = allVariationsFromProducts.find((v) => v.id === key);
       if (variation) {
         total += quantity * variation.sellingPrice;
       }
     });
-    setTotalAmount(total);
 
-    console.log(total, 'total');
+    Object.entries(selectedMixtures || {}).forEach(([key, quantity]) => {
+      const mixture = mixtures.find((m) => m.id === key);
+      if (mixture) {
+        total += quantity * mixture.sellingPrice;
+      }
+    });
+    setTotalAmount(total);
   };
 
   const clients = useSelector(selectAllClients);
@@ -57,6 +64,7 @@ const CreateSalePage = () => {
     defaultValues: {
       storeId: null,
       variations: {},
+      mixtures: {},
       paymentMethod: 'CASH',
       clientName: '',
       phone: '',
@@ -67,8 +75,16 @@ const CreateSalePage = () => {
   const { control, setValue, watch, handleSubmit } = methods;
 
   const onSubmit = (data) => {
+    const payload = { ...data };
+    if (!Object.keys(payload.variations || {}).length) {
+      delete payload.variations;
+    }
+    if (!Object.keys(payload.mixtures || {}).length) {
+      delete payload.mixtures;
+    }
+
     setLoading(true);
-    dispatch(createSaleAction(data)).then(({ error }) => {
+    dispatch(createSaleAction(payload)).then(({ error }) => {
       setLoading(false);
       if (error) {
         return toast.error(error.message);
@@ -294,7 +310,10 @@ const CreateSalePage = () => {
                   loading={loading}
                   variant="contained"
                   type="submit"
-                  disabled={Object.keys(watch('variations') || {}).length <= 0}
+                  disabled={
+                    Object.keys(watch('variations') || {}).length <= 0 &&
+                    Object.keys(watch('mixtures') || {}).length <= 0
+                  }
                 >
                   Confirm Payment
                 </LoadingButton>

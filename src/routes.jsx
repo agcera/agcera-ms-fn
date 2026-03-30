@@ -13,6 +13,9 @@ import TrashPage from './pages/history/TrashPage';
 import CreateProductPage from './pages/product/CreateProductPage';
 import ProductsPage from './pages/product/ProductsPage';
 import UpdateProductPage from './pages/product/UpdateProductPage';
+import CreateMixturePage from './pages/mixture/CreateMixturePage';
+import MixturesPage from './pages/mixture/MixturesPage';
+import UpdateMixturePage from './pages/mixture/UpdateMixturePage';
 import GenerateReportPage from './pages/report/GenerateReportPage';
 import CreateSalePage from './pages/sale/CreateSalePage';
 import SalesPage from './pages/sale/SalesPage';
@@ -66,6 +69,11 @@ const router = createBrowserRouter(
             <Route path="" element={<ProductsPage />} />
             <Route path=":id/update" element={<Protected Component={UpdateProductPage} allowed={['admin']} />} />
             <Route path="create" element={<Protected Component={CreateProductPage} allowed={['admin']} />} />
+          </Route>
+          <Route path="mixtures" element={<Outlet />}>
+            <Route path="" element={<Protected Component={MixturesPage} allowed={['admin']} />} />
+            <Route path=":id/update" element={<Protected Component={UpdateMixturePage} allowed={['admin']} />} />
+            <Route path="create" element={<Protected Component={CreateMixturePage} allowed={['admin']} />} />
           </Route>
           <Route path="history" element={<Outlet />}>
             <Route path="" element={<MovementsPage />} />

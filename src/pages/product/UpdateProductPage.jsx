@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { Box, Button, Grid, Stack, Typography, MenuItem } from '@mui/material';
+import Select from '../../components/Select';
 import { useEffect, useState } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -57,7 +58,7 @@ const UpdateProductPage = () => {
           sellingPrice: data.sellingPrice,
         },
       ];
-    } else {
+    } else if (type === 'SPECIAL') {
       productData.variations = data.variations;
     }
     setLoading(true);
@@ -91,7 +92,7 @@ const UpdateProductPage = () => {
         setValue('number', number);
         setValue('sellingPrice', sellingPrice);
         setValue('description', description || '');
-      } else {
+      } else if (type === 'SPECIAL') {
         variations.forEach((variation, index) => {
           setValue(`variations[${index}].name`, variation.name);
           setValue(`variations[${index}].number`, variation.number);
@@ -130,7 +131,7 @@ const UpdateProductPage = () => {
         <PageHeader title="Update Product" hasBack={true} backTo="/dashboard/products" />
 
         <Grid container rowSpacing={1} columnSpacing={2} className="px-4 mb-8">
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <Input
               label="Product Name"
               placeHolder="Enter product name..."
@@ -140,6 +141,19 @@ const UpdateProductPage = () => {
               helperText={errors.name?.message}
               inputProps={{ ...register('name') }}
             />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Select
+              label="Type"
+              placeHolder="Select the product type"
+              disabled={true}
+              error={!!errors.type}
+              helperText={errors.type?.message}
+              inputProps={{ value: type, onChange: (e) => setType(e.target.value) }}
+            >
+              <MenuItem value={'STANDARD'}>Standard</MenuItem>
+              <MenuItem value={'SPECIAL'}>Special</MenuItem>
+            </Select>
           </Grid>
           {type === 'STANDARD' && (
             <>

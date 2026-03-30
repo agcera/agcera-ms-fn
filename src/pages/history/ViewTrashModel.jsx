@@ -24,8 +24,6 @@ const ViewTrashModel = ({ open = false, handleClose, id, model }) => {
 
   const deletedObject = open ? JSON.parse(deleted.description) : null;
 
-  console.log(deleted, 'tedted');
-
   useEffect(() => {
     dispatch(getDeletedItemByIdAction(id));
   }, [dispatch, id]);

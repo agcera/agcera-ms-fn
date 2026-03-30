@@ -47,14 +47,24 @@ const ViewSalePage = () => {
   };
 
   // build column for variations to be displayed in the table
-  const transformedData = sale?.variations.map((variations) => ({
-    id: variations.variation.id,
-    productName: variations.variation.product.name,
-    variationName: variations.variation.name,
-    variationNumber: variations.variation.number,
-    quantity: variations.quantity,
-    totalSellingPrice: variations.quantity * variations.variation.sellingPrice,
-  }));
+  const transformedData = [
+    ...(sale?.variations || []).map((variations) => ({
+      id: variations.variation.id,
+      productName: variations.variation.product.name,
+      variationName: variations.variation.name,
+      variationNumber: variations.variation.number,
+      quantity: variations.quantity,
+      totalSellingPrice: variations.quantity * variations.variation.sellingPrice,
+    })),
+    ...(sale?.mixtures || []).map((mixture) => ({
+      id: mixture.mixture.id,
+      productName: mixture.mixture.name,
+      variationName: 'Mixture',
+      variationNumber: 1,
+      quantity: mixture.quantity,
+      totalSellingPrice: mixture.quantity * mixture.mixture.sellingPrice,
+    })),
+  ];
 
   const columns = [
     { field: 'productName', headerName: 'Product Name', flex: 1 },
@@ -75,7 +85,9 @@ const ViewSalePage = () => {
     return `${sale.client?.name} |---| ${sale.client?.phone}`;
   }, [sale]);
   const soldProducts = useMemo(() => {
-    return sale?.variations?.reduce((acc, variation) => {
+    const variations = sale?.variations || [];
+    const mixtures = sale?.mixtures || [];
+    const products = variations.reduce((acc, variation) => {
       const product = acc.find((p) => p.id === variation.variation.productId);
       if (product) {
         product.variations.push(variation.variation);
@@ -87,7 +99,15 @@ const ViewSalePage = () => {
       }
       return acc;
     }, []);
-  }, [sale?.variations]);
+
+    const mixtureProducts = mixtures.map((mix) => ({
+      id: mix.mixture.id,
+      name: mix.mixture.name,
+      variations: [{ name: 'Mixture', number: 1 }],
+    }));
+
+    return [...products, ...mixtureProducts];
+  }, [sale?.variations, sale?.mixtures]);
 
   useEffect(() => {
     dispatch(getSaleAction(saleId)).then(({ error }) => {

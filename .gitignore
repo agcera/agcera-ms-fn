@@ -12,6 +12,7 @@ package-lock.json
 dist
 dist-ssr
 *.local
+.github/instructions
 
 \src\pages\sale\createsale.jsx
 
@@ -26,3 +27,4 @@ dist-ssr
 
 # Environment variables
 .env
+

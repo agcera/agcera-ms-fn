@@ -36,7 +36,6 @@ const SalesPage = () => {
 
         if (query?.search) {
           query.clientPhone = encodeURIComponent(query.search);
-          console.log(query.clientPhone, query.search, 'serarchchckckc');
           delete query.search;
         }
       }
@@ -69,23 +68,38 @@ const SalesPage = () => {
       flex: 3,
       sortable: false,
       disableExport: true,
-      renderCell: (params) => (
-        <Box className="">
-          {params.value.map((variations, index) => (
-            <Box
-              className={`flex mb-2 mt-1 ${index % 2 === 0 ? 'bg-[#E6EEF5]' : 'bg-[#CFCFCF]'}`} // Apply background color dynamically based on index
-              key={variations.variation.id}
-            >
-              <Box className="mr-1">{variations.variation.product.name};</Box>
-              <Box className="mr-1">
-                <span className="font-semibold">Var:</span> {variations.variation.name};
+      renderCell: (params) => {
+        const variationRows = (params.row.variations || []).map((variation) => ({
+          id: variation.variation.id,
+          name: variation.variation.product.name,
+          label: `Var: ${variation.variation.name}`,
+          quantity: variation.quantity,
+          total: variation.quantity * variation.variation.sellingPrice,
+        }));
+        const mixtureRows = (params.row.mixtures || []).map((mixture) => ({
+          id: mixture.mixture.id,
+          name: mixture.mixture.name,
+          label: 'Mixture',
+          quantity: mixture.quantity,
+          total: mixture.quantity * mixture.mixture.sellingPrice,
+        }));
+        const rows = [...variationRows, ...mixtureRows];
+
+        return (
+          <Box className="w-full">
+            {rows.map((row, index) => (
+              <Box className={`flex mt-1 ${index % 2 === 0 ? 'bg-[#E6EEF5]' : 'bg-[#CFCFCF]'}`} key={row.id}>
+                <Box className="mr-1">{row.name};</Box>
+                <Box className="mr-1">
+                  <span className="font-semibold">{row.label}</span>;
+                </Box>
+                <Box className="mr-1"> {row.quantity} pcs;</Box>
+                <Box className="mr-1">{row.total} MZN</Box>
               </Box>
-              <Box className="mr-1"> {variations.quantity} pcs;</Box>
-              <Box className="mr-1">{variations.quantity * variations.variation.sellingPrice} MZN</Box>
-            </Box>
-          ))}
-        </Box>
-      ),
+            ))}
+          </Box>
+        );
+      },
     },
     {
       field: 'total',

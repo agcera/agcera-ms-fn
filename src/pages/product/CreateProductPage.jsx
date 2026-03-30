@@ -1,18 +1,18 @@
-import { Box, Button, Grid, MenuItem, Stack, Typography } from '@mui/material';
-import PageHeader from '../../components/PageHeader';
-import Input from '../../components/Input';
-import Select from '../../components/Select';
-import { Link, useNavigate } from 'react-router-dom';
-import { Form, FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Box, Button, Grid, MenuItem, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
-import { productCreateSpecialSchema, productCreateStandardSchema } from '../../validations/products.validation';
-import Variations from '../../components/products/Variations';
-import { createProductAction } from '../../redux/productsSlice';
-import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
-import LoadingButton from '../../components/LoadingButton';
+import { Form, FormProvider, useForm } from 'react-hook-form';
 import { PiUploadFill } from 'react-icons/pi';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import Input from '../../components/Input';
+import LoadingButton from '../../components/LoadingButton';
+import PageHeader from '../../components/PageHeader';
+import Variations from '../../components/products/Variations';
+import Select from '../../components/Select';
+import { createProductAction } from '../../redux/productsSlice';
+import { productCreateSpecialSchema, productCreateStandardSchema } from '../../validations/products.validation';
 
 const CreateProductPage = () => {
   const dispatch = useDispatch();
@@ -56,7 +56,7 @@ const CreateProductPage = () => {
           sellingPrice: data.sellingPrice,
         },
       ];
-    } else {
+    } else if (type === 'SPECIAL') {
       productData.variations = data.variations;
     }
 

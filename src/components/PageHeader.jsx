@@ -1,6 +1,5 @@
-import { Typography, Box, Stack, Button } from '@mui/material';
+import { Typography, Box, Stack, Button, useTheme } from '@mui/material';
 import { tokens } from '../themeConfig';
-import { useTheme } from '@mui/system';
 import ActionButton from './ActionButton';
 import { Link, useNavigate } from 'react-router-dom';
 import { PiSkipBackLight } from 'react-icons/pi';

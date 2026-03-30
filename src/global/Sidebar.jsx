@@ -10,6 +10,7 @@ import {
   MdOutlineProductionQuantityLimits,
   MdOutlineStore,
 } from 'react-icons/md';
+import { TbCategory } from 'react-icons/tb';
 import { RiExchangeDollarFill } from 'react-icons/ri';
 import { Menu, MenuItem, Sidebar as ProSidebar, SubMenu } from 'react-pro-sidebar';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -134,6 +135,7 @@ const Sidebar = () => {
             {isStoreKeeperUp && <Item title="Analytics" to="/dashboard/analytics" icon={<MdAnalytics />} />}
             {isAdmin && <Item title="Stores" to="/dashboard/stores" icon={<MdOutlineStore />} />}
             {isAdmin && <Item title="Products" to="/dashboard/products" icon={<MdOutlineProductionQuantityLimits />} />}
+            {isAdmin && <Item title="Mixtures" to="/dashboard/mixtures" icon={<TbCategory />} />}
             {isStoreKeeper && (
               <Item title="Store" to={`/dashboard/stores/${user.storeId}/store`} icon={<MdOutlineStore />} />
             )}

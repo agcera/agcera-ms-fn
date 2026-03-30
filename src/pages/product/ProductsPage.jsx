@@ -7,6 +7,7 @@ import PageHeader from '../../components/PageHeader';
 import MoreButton from '../../components/Table/MoreButton';
 import StatusBadge from '../../components/Table/StatusBadge';
 import StyledTable from '../../components/Table/StyledTable';
+import ZoomableImage from '../../components/ZoomableImage';
 import { getAllProductsAction, selectAllProducts } from '../../redux/productsSlice';
 import { selectLoggedInUser } from '../../redux/usersSlice';
 
@@ -162,7 +163,6 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
       flex: 0,
       align: 'center',
       renderCell: (params) => {
-        console.log(params.row, 'this is params .row');
         const selectedVariation =
           variationMap[params.row.id] || (params.row.variations.length > 0 ? params.row.variations[0].name : '');
 
@@ -255,37 +255,37 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
   ].filter((b) => b && !omit.includes(b.field) && !(!storeId && b.field === 'stores'));
 
   // Zoomable image component
-  const ZoomableImage = ({ image }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  // const ZoomableImage = ({ image }) => {
+  //   const [isHovered, setIsHovered] = useState(false);
+  //   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 
-    const handleMouseMove = (e) => {
-      const { left, top, width, height } = e.target.getBoundingClientRect();
-      const x = (e.pageX - left) / width;
-      const y = (e.pageY - top) / height;
-      setCursorPosition({ x, y });
-    };
+  //   const handleMouseMove = (e) => {
+  //     const { left, top, width, height } = e.target.getBoundingClientRect();
+  //     const x = (e.pageX - left) / width;
+  //     const y = (e.pageY - top) / height;
+  //     setCursorPosition({ x, y });
+  //   };
 
-    return (
-      <div
-        className="relative w-20 h-20 overflow-hidden"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onMouseMove={handleMouseMove}
-      >
-        <img
-          src={image}
-          className="absolute top-[-10px] left-0 w-full h-full transition-transform duration-300 transform-gpu"
-          style={{
-            transform: isHovered
-              ? `scale(1.5) translate(-${cursorPosition.x * 50}%, -${cursorPosition.y * 50}%)`
-              : 'scale(1)',
-          }}
-          alt="productImage"
-        />
-      </div>
-    );
-  };
+  //   return (
+  //     <div
+  //       className="relative w-20 h-20 overflow-hidden"
+  //       onMouseEnter={() => setIsHovered(true)}
+  //       onMouseLeave={() => setIsHovered(false)}
+  //       onMouseMove={handleMouseMove}
+  //     >
+  //       <img
+  //         src={image}
+  //         className="absolute top-[-10px] left-0 w-full h-full transition-transform duration-300 transform-gpu"
+  //         style={{
+  //           transform: isHovered
+  //             ? `scale(1.5) translate(-${cursorPosition.x * 50}%, -${cursorPosition.y * 50}%)`
+  //             : 'scale(1)',
+  //         }}
+  //         alt="productImage"
+  //       />
+  //     </div>
+  //   );
+  // };
 
   return (
     <Box>

@@ -4,9 +4,11 @@ import { useFormContext } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getAllStoreProductsAction, selectAllProductsBystoreId } from '../../redux/productsSlice';
+import { getAllMixturesAction, selectAllMixtures } from '../../redux/mixturesSlice';
 import AutoCompleteInput from '../AutoCompleteInput';
 import Loader from '../Loader';
 import SelectVariationsRow from './SelectVariationsRow';
+import SelectMixturesRow from './SelectMixturesRow';
 
 const SelectVariations = ({ loading, onQuantityChange }) => {
   const dispatch = useDispatch();
@@ -16,9 +18,11 @@ const SelectVariations = ({ loading, onQuantityChange }) => {
   const [fetchVariationLoading, setFetchVariationLoading] = useState(false);
 
   const watchedVariations = watch('variations');
+  const watchedMixtures = watch('mixtures');
 
   const storeId = watch('storeId');
   const products = useSelector(selectAllProductsBystoreId(storeId));
+  const mixtures = useSelector(selectAllMixtures);
   const variations = useMemo(() => {
     return products?.reduce((acc, product) => {
       const variations = product.variations;
@@ -29,15 +33,34 @@ const SelectVariations = ({ loading, onQuantityChange }) => {
             ...variation,
             label: `${capitalize(product.name)} (${capitalize(variation.name)})`,
             value: variation.id,
+            kind: 'variation',
           };
         }),
       ];
     }, []);
   }, [products]);
+  const mixtureOptions = useMemo(
+    () =>
+      (mixtures || []).map((mixture) => ({
+        ...mixture,
+        label: `Mixture: ${capitalize(mixture.name)}`,
+        value: mixture.id,
+        kind: 'mixture',
+      })),
+    [mixtures]
+  );
+
   const fields = Object.entries(watchedVariations || {});
+  const mixtureFields = Object.entries(watchedMixtures || {});
 
   const handleProductChoosed = (e, option) => {
     setInput('');
+    if (option.kind === 'mixture') {
+      setValue(`mixtures.${option.value}`, 1);
+      onQuantityChange();
+      return;
+    }
+
     // Get the removed products and total products in store
     const variation = variations.find((v) => v.value === option.value);
     const product = products.find((p) => p.id === variation.productId);
@@ -54,7 +77,15 @@ const SelectVariations = ({ loading, onQuantityChange }) => {
     setValue(`variations.${option.value}`, 1);
     onQuantityChange();
   };
-  const handleRemove = (id) => {
+  const handleRemove = (id, kind = 'variation') => {
+    if (kind === 'mixture') {
+      const newMixtures = { ...watchedMixtures };
+      delete newMixtures[id];
+      setValue('mixtures', newMixtures);
+      onQuantityChange();
+      return;
+    }
+
     const variation = variations.find((v) => v.value === id);
     const newVariations = { ...watchedVariations };
 
@@ -76,6 +107,7 @@ const SelectVariations = ({ loading, onQuantityChange }) => {
       setFetchVariationLoading(false);
       if (error) toast.error(error.message);
     });
+    dispatch(getAllMixturesAction({ limit: 200 }));
   }, [storeId, dispatch]);
 
   if (!products?.length && fetchVariationLoading) {
@@ -104,7 +136,10 @@ const SelectVariations = ({ loading, onQuantityChange }) => {
         placeHolder="Choose products to purchase..."
         className="mb-4"
         disabled={!storeId || loading}
-        options={variations.filter((v) => !fields.find((f) => f[0] === v.value))}
+        options={[
+          ...variations.filter((v) => !fields.find((f) => f[0] === v.value)),
+          ...mixtureOptions.filter((m) => !mixtureFields.find((f) => f[0] === m.value)),
+        ]}
         value={null}
         onChange={handleProductChoosed}
         inputValue={input}
@@ -113,31 +148,49 @@ const SelectVariations = ({ loading, onQuantityChange }) => {
           <MenuItem key={key} {...otherProps}>
             <ListItemText
               primary={option.label}
-              secondary={`${option.number} product${option.number > 1 ? 's' : ''}`}
+              secondary={
+                option.kind === 'mixture'
+                  ? `Selling ${option.sellingPrice} MZN`
+                  : `${option.number} product${option.number > 1 ? 's' : ''}`
+              }
             />
           </MenuItem>
         )}
       />
 
       <Box className="w-full flex flex-col gap-2">
-        {fields.length === 0 && (
+        {fields.length === 0 && mixtureFields.length === 0 && (
           <Typography variant="body1" color="secondary.light" className="text-center">
-            No products selected yet, please add atleast one product
+            No products selected yet, please add at least one product
           </Typography>
         )}
         <Table className="border-separate border-spacing-y-2">
           <TableBody>
             {fields.map((field) => {
               const variation = variations.find((v) => v.value === field[0]);
-              if (!variation) return;
+              if (!variation) return null;
               return (
                 <SelectVariationsRow
                   key={field[0]}
                   field={field}
                   loading={loading}
                   variation={variation}
-                  handleRemove={handleRemove}
+                  handleRemove={(id) => handleRemove(id, 'variation')}
                   remainingProductsRef={remainingProductsRef}
+                  onQuantityChange={onQuantityChange}
+                />
+              );
+            })}
+            {mixtureFields.map((field) => {
+              const mixture = mixtureOptions.find((m) => m.value === field[0]);
+              if (!mixture) return null;
+              return (
+                <SelectMixturesRow
+                  key={field[0]}
+                  field={field}
+                  loading={loading}
+                  mixture={mixture}
+                  handleRemove={(id) => handleRemove(id, 'mixture')}
                   onQuantityChange={onQuantityChange}
                 />
               );
