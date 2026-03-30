@@ -46,25 +46,30 @@ const ViewSalePage = () => {
     setRefundOpen(false);
   };
 
-  // build column for variations to be displayed in the table
-  const transformedData = [
-    ...(sale?.variations || []).map((variations) => ({
-      id: variations.variation.id,
-      productName: variations.variation.product.name,
-      variationName: variations.variation.name,
-      variationNumber: variations.variation.number,
-      quantity: variations.quantity,
-      totalSellingPrice: variations.quantity * variations.variation.sellingPrice,
-    })),
-    ...(sale?.mixtures || []).map((mixture) => ({
+  // build rows for products table
+  const productRows = (sale?.variations || []).map((variations) => ({
+    type: 'variation',
+    id: variations.variation.id,
+    productName: variations.variation.product.name,
+    variationName: variations.variation.name,
+    variationNumber: variations.variation.number,
+    quantity: variations.quantity,
+    totalSellingPrice: variations.quantity * variations.variation.sellingPrice,
+  }));
+
+  // build rows for mixtures table
+  const mixtureRows = (sale?.mixtures || []).map((mixture) => {
+    const items = mixture.mixture?.items || [];
+
+    return {
+      type: 'mixture',
       id: mixture.mixture.id,
-      productName: mixture.mixture.name,
-      variationName: 'Mixture',
-      variationNumber: 1,
+      mixtureName: mixture.mixture.name,
+      items,
       quantity: mixture.quantity,
       totalSellingPrice: mixture.quantity * mixture.mixture.sellingPrice,
-    })),
-  ];
+    };
+  });
 
   const columns = [
     { field: 'productName', headerName: 'Product Name', flex: 1 },
@@ -79,35 +84,58 @@ const ViewSalePage = () => {
     },
   ];
 
+  const mixtureColumns = [
+    { field: 'mixtureName', headerName: 'Mixture', flex: 1 },
+    {
+      field: 'items',
+      headerName: 'Products',
+      flex: 2,
+      renderCell: (params) => {
+        const items = params.row?.items || [];
+        if (!items.length) return 'No items';
+
+        const rows = items.map((item, index) => {
+          const product = item.product;
+          const count = (item.number || 0) * (params.row?.quantity || 0);
+
+          return {
+            id: item.id || product?.id || `${index}`,
+            name: product?.name || 'Product',
+            count,
+          };
+        });
+
+        return (
+          <Box className="w-full">
+            {rows.map((row, index) => (
+              <Box
+                className={`flex flex-wrap mt-1 ${index % 2 === 0 ? 'bg-[#E6EEF5]' : 'bg-[#CFCFCF]'}`}
+                key={`${row.id}-${index}`}
+              >
+                <Box className="mr-1">{row.name};</Box>
+                <Box className="mr-1"> {row.count} pcs;</Box>
+              </Box>
+            ))}
+          </Box>
+        );
+      },
+    },
+    { field: 'quantity', headerName: 'Quantity', flex: 0, valueGetter: (params, row) => `${row.quantity} pcs` },
+    {
+      field: 'totalSellingPrice',
+      headerName: 'Total Selling Price',
+      flex: 1,
+      valueGetter: (params, row) => `${row.totalSellingPrice} MZN`,
+    },
+  ];
+
   const clientDetails = useMemo(() => {
     if (!sale) return 'Fetching details ....';
 
     return `${sale.client?.name} |---| ${sale.client?.phone}`;
   }, [sale]);
-  const soldProducts = useMemo(() => {
-    const variations = sale?.variations || [];
-    const mixtures = sale?.mixtures || [];
-    const products = variations.reduce((acc, variation) => {
-      const product = acc.find((p) => p.id === variation.variation.productId);
-      if (product) {
-        product.variations.push(variation.variation);
-      } else {
-        acc.push({
-          ...variation.variation.product,
-          variations: [variation.variation],
-        });
-      }
-      return acc;
-    }, []);
-
-    const mixtureProducts = mixtures.map((mix) => ({
-      id: mix.mixture.id,
-      name: mix.mixture.name,
-      variations: [{ name: 'Mixture', number: 1 }],
-    }));
-
-    return [...products, ...mixtureProducts];
-  }, [sale?.variations, sale?.mixtures]);
+  const hasProducts = useMemo(() => productRows.length > 0, [productRows.length]);
+  const hasMixtures = useMemo(() => mixtureRows.length > 0, [mixtureRows.length]);
 
   useEffect(() => {
     dispatch(getSaleAction(saleId)).then(({ error }) => {
@@ -214,12 +242,25 @@ const ViewSalePage = () => {
               Products purchased
             </Typography>
 
-            {soldProducts?.length > 0 ? (
-              <StyledTable data={transformedData} columns={columns} />
+            {hasProducts ? (
+              <StyledTable data={productRows} columns={columns} />
             ) : (
-              // <ProductsTable products={soldProducts} omit={['action', 'createdAt']} />
               <Typography color="secondary.light" className="text-center py-4">
                 This sale has no products
+              </Typography>
+            )}
+          </Box>
+
+          <Box className="w-full py-2">
+            <Typography variant="subHeader" className="font-semibold" color="primary.light">
+              Mixtures purchased
+            </Typography>
+
+            {hasMixtures ? (
+              <StyledTable data={mixtureRows} columns={mixtureColumns} rowheight={'auto'} />
+            ) : (
+              <Typography color="secondary.light" className="text-center py-4">
+                This sale has no mixtures
               </Typography>
             )}
           </Box>

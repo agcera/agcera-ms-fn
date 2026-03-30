@@ -70,19 +70,42 @@ const SalesPage = () => {
       disableExport: true,
       renderCell: (params) => {
         const variationRows = (params.row.variations || []).map((variation) => ({
+          type: 'variation',
           id: variation.variation.id,
           name: variation.variation.product.name,
           label: `Var: ${variation.variation.name}`,
           quantity: variation.quantity,
           total: variation.quantity * variation.variation.sellingPrice,
         }));
-        const mixtureRows = (params.row.mixtures || []).map((mixture) => ({
-          id: mixture.mixture.id,
-          name: mixture.mixture.name,
-          label: 'Mixture',
-          quantity: mixture.quantity,
-          total: mixture.quantity * mixture.mixture.sellingPrice,
-        }));
+        const mixtureRows = (params.row.mixtures || []).flatMap((mixture) => {
+          const items = mixture.mixture?.items || [];
+          if (!items.length) {
+            return [
+              {
+                type: 'mixture',
+                id: mixture.mixture.id,
+                name: mixture.mixture.name,
+                label: 'Mixture',
+                quantity: mixture.quantity,
+                total: mixture.quantity * mixture.mixture.sellingPrice,
+              },
+            ];
+          }
+
+          return items.map((item, index) => {
+            const product = item.product;
+            const unitPrice = product?.variations?.[0]?.sellingPrice || 0;
+            const quantity = mixture.quantity * (item.number || 0);
+            return {
+              type: 'mixture',
+              id: `${mixture.mixture.id}-${product?.id || index}`,
+              name: product?.name || 'Product',
+              label: `Mixture: ${mixture.mixture.name}`,
+              quantity,
+              total: quantity * unitPrice,
+            };
+          });
+        });
         const rows = [...variationRows, ...mixtureRows];
 
         return (
@@ -94,7 +117,7 @@ const SalesPage = () => {
                   <span className="font-semibold">{row.label}</span>;
                 </Box>
                 <Box className="mr-1"> {row.quantity} pcs;</Box>
-                <Box className="mr-1">{row.total} MZN</Box>
+                {row.type === 'variation' && <Box className="mr-1">{row.total} MZN</Box>}
               </Box>
             ))}
           </Box>
@@ -124,22 +147,29 @@ const SalesPage = () => {
         !row.refundedAt && !row.checkedAt
           ? 'Delivered'
           : format(new Date(row.checkedAt || row.refundedAt), 'd MMM yyyy'),
-      renderCell: (params) => (
-        <Tooltip
-          title={params.row.refundedAt ? 'Refunded' : params.row.checkedAt ? 'Collected' : 'Delivered'}
-          placement="top"
-          disableInteractive
-          arrow
-        >
-          <div>
-            <StatusBadge
-              status={params.value}
-              bg={params.row.checkedAt ? 'bg-gray-200' : params.value === 'Delivered' ? 'bg-green-500' : 'bg-red-500'}
-              color={'white'}
-            />
-          </div>
-        </Tooltip>
-      ),
+      renderCell: (params) => {
+        let statusBgColor;
+        if (params.row.refundedAt) {
+          statusBgColor = 'bg-red-500';
+        } else if (params.row.checkedAt) {
+          statusBgColor = 'bg-gray-200';
+        } else {
+          statusBgColor = 'bg-green-500';
+        }
+
+        return (
+          <Tooltip
+            title={params.row.refundedAt ? 'Refunded' : params.row.checkedAt ? 'Collected' : 'Delivered'}
+            placement="top"
+            disableInteractive
+            arrow
+          >
+            <div>
+              <StatusBadge status={params.value} bg={statusBgColor} color={'white'} />
+            </div>
+          </Tooltip>
+        );
+      },
     },
     {
       field: 'createdAt',

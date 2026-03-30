@@ -2,6 +2,11 @@ import { test, expect } from '@playwright/test';
 import { login } from './helpers/auth';
 import { credentials } from './helpers/data';
 
+const pngBuffer = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+nm4kAAAAASUVORK5CYII=',
+  'base64'
+);
+
 const getStoreProductQuantity = async (page: any, storeId: string, productId: string) => {
   const response = await page.request.get(`http://localhost:4100/api/v1/stores/${storeId}/products`);
   const body = await response.json();
@@ -52,7 +57,7 @@ test('sales page supports create, view, and refund', async ({ page }) => {
         image: {
           name: 'special.png',
           mimeType: 'image/png',
-          buffer: Buffer.from('special'),
+          buffer: pngBuffer,
         },
       },
     });
@@ -97,7 +102,7 @@ test('sales page supports create, view, and refund', async ({ page }) => {
         image: {
           name: 'mixture.png',
           mimeType: 'image/png',
-          buffer: Buffer.from('mixture'),
+          buffer: pngBuffer,
         },
       },
     });
@@ -226,4 +231,188 @@ test('sales page supports create, view, and refund', async ({ page }) => {
       await page.request.delete(`http://localhost:4100/api/v1/products/${specialProductId}`);
     }
   }
+});
+
+test('blocks sales in collected time ranges and allows refunds after collection', async ({ page }) => {
+  await login(page, credentials.admin.phone, credentials.admin.password);
+
+  const usersResponse = await page.request.get(
+    `http://localhost:4100/api/v1/users?search=${encodeURIComponent(credentials.keeper.phone)}`
+  );
+  const usersBody = await usersResponse.json();
+  const keeperUser = usersBody.data?.users?.find((u: { phone: string }) => u.phone === credentials.keeper.phone);
+  const keeperStoreId = keeperUser?.storeId;
+  expect(keeperStoreId).toBeTruthy();
+
+  const productsResponse = await page.request.get(
+    `http://localhost:4100/api/v1/products?search=${encodeURIComponent('UnoProducto')}`
+  );
+  const productsBody = await productsResponse.json();
+  const unoProduct = productsBody.data?.products?.find((p: { name: string }) => p.name.includes('UnoProducto'));
+  const unoProductId = unoProduct?.id;
+  expect(unoProductId).toBeTruthy();
+
+  const variationsResponse = await page.request.get(`http://localhost:4100/api/v1/products/${unoProductId}/variations`);
+  const variationsBody = await variationsResponse.json();
+  const unoVariationId = variationsBody.data?.[0]?.id;
+  expect(unoVariationId).toBeTruthy();
+
+  const loginApi = async (phone: string, password: string) => {
+    await page.request.post('http://localhost:4100/api/v1/users/login', {
+      data: { phone, password },
+    });
+  };
+
+  await loginApi(credentials.keeper.phone, credentials.keeper.password);
+
+  const cashT1 = new Date(Date.now() - 4 * 60 * 60 * 1000);
+  const cashT2 = new Date(Date.now() - 3 * 60 * 60 * 1000);
+  const cashT3 = new Date(Date.now() - 2 * 60 * 60 * 1000);
+
+  const futureBase = Date.now() + 7 * 24 * 60 * 60 * 1000;
+  const mpesaT1 = new Date(futureBase + 60 * 60 * 1000);
+  const mpesaT2 = new Date(futureBase + 2 * 60 * 60 * 1000);
+  const mpesaT3 = new Date(futureBase + 3 * 60 * 60 * 1000);
+
+  const createSaleApi = async (payload: any) => {
+    const response = await page.request.post('http://localhost:4100/api/v1/sales', { data: payload });
+    expect(response.status()).toBe(200);
+    return response.json();
+  };
+
+  await createSaleApi({
+    storeId: keeperStoreId,
+    paymentMethod: 'CASH',
+    clientName: 'E2E Cash Before',
+    phone: '+258840000920',
+    isMember: false,
+    doneOn: cashT1.toISOString(),
+    variations: {
+      [unoVariationId]: 1,
+    },
+  });
+
+  await createSaleApi({
+    storeId: keeperStoreId,
+    paymentMethod: 'CASH',
+    clientName: 'E2E Cash After',
+    phone: '+258840000921',
+    isMember: false,
+    doneOn: cashT3.toISOString(),
+    variations: {
+      [unoVariationId]: 1,
+    },
+  });
+
+  const collectAround = async (date: Date) => {
+    await loginApi(credentials.admin.phone, credentials.admin.password);
+    const from = new Date(date.getTime() - 5 * 60 * 1000).toISOString();
+    const to = new Date(date.getTime() + 5 * 60 * 1000).toISOString();
+    const response = await page.request.post('http://localhost:4100/api/v1/stores/collectProfit', {
+      data: { storeId: keeperStoreId, from, to },
+    });
+    expect(response.status()).toBe(200);
+    await loginApi(credentials.keeper.phone, credentials.keeper.password);
+  };
+
+  await collectAround(cashT1);
+  await collectAround(cashT3);
+
+  await page.context().clearCookies();
+  await login(page, credentials.keeper.phone, credentials.keeper.password);
+
+  await page.goto('/dashboard/sales/create');
+  await expect(page.locator('.MuiTypography-header', { hasText: /Make a sell/i })).toBeVisible();
+
+  const productPicker = page.getByPlaceholder('Choose products to purchase...');
+  await productPicker.fill('UnoProducto');
+  await page
+    .getByRole('option', { name: /UnoProducto/i })
+    .first()
+    .click({ timeout: 5000 });
+
+  await page.getByPlaceholder('Choose or enter a value').fill('E2E Collected Client');
+  await page.getByPlaceholder('Enter phone number ...').fill('+258840000920');
+
+  const blockedDate = cashT2.toISOString().slice(0, 16);
+  await page.getByLabel('Date of payment').fill(blockedDate);
+
+  await page.getByRole('button', { name: /Confirm Payment/i }).click();
+  await expect(page.getByText(/Cannot create a sale in a collected time range for this payment method/i)).toBeVisible();
+
+  const allowedDate = new Date().toISOString().slice(0, 16);
+  await page.getByLabel('Date of payment').fill(allowedDate);
+
+  const createResponsePromise = page.waitForResponse(
+    (resp) => resp.url().includes('/api/v1/sales') && resp.request().method() === 'POST',
+    { timeout: 15000 }
+  );
+  await page.getByRole('button', { name: /Confirm Payment/i }).click();
+  const createResponse = await createResponsePromise;
+  await expect(page).toHaveURL(/\/dashboard\/sales/);
+  expect(createResponse.ok()).toBeTruthy();
+
+  const createBody = await createResponse.json();
+  const saleId = createBody?.data?.id;
+  expect(saleId).toBeTruthy();
+
+  await loginApi(credentials.keeper.phone, credentials.keeper.password);
+
+  await createSaleApi({
+    storeId: keeperStoreId,
+    paymentMethod: 'M-PESA',
+    clientName: 'E2E Mpesa Before',
+    phone: '+258840000922',
+    isMember: false,
+    doneOn: mpesaT1.toISOString(),
+    variations: {
+      [unoVariationId]: 1,
+    },
+  });
+
+  const refundSale = await createSaleApi({
+    storeId: keeperStoreId,
+    paymentMethod: 'M-PESA',
+    clientName: 'E2E Refund Sale',
+    phone: '+258840000923',
+    isMember: false,
+    doneOn: mpesaT2.toISOString(),
+    variations: {
+      [unoVariationId]: 1,
+    },
+  });
+
+  await createSaleApi({
+    storeId: keeperStoreId,
+    paymentMethod: 'M-PESA',
+    clientName: 'E2E Mpesa After',
+    phone: '+258840000924',
+    isMember: false,
+    doneOn: mpesaT3.toISOString(),
+    variations: {
+      [unoVariationId]: 1,
+    },
+  });
+
+  await collectAround(mpesaT1);
+  await collectAround(mpesaT3);
+
+  await page.context().clearCookies();
+  await login(page, credentials.keeper.phone, credentials.keeper.password);
+
+  const refundSaleId = refundSale?.data?.id;
+  expect(refundSaleId).toBeTruthy();
+
+  await page.goto(`/dashboard/sales/${refundSaleId}`);
+  await page.getByRole('button', { name: /Refund/i }).click();
+  await page.getByPlaceholder('Enter sale name to delete').fill('I Understand');
+  const refundResponsePromise = page.waitForResponse(
+    (resp) => resp.url().includes(`/api/v1/sales/${refundSaleId}`) && resp.request().method() === 'PATCH'
+  );
+  await page.getByRole('button', { name: /Yes, Refund/i }).click();
+  const refundResponse = await refundResponsePromise;
+  const refundStatus = refundResponse.status();
+  const refundBody = await refundResponse.json();
+  expect(refundStatus).toBe(200);
+  expect(refundBody?.message?.sale?.refundedAt || refundBody?.data?.refundedAt).toBeTruthy();
 });

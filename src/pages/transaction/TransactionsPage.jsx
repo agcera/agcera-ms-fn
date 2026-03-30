@@ -60,7 +60,7 @@ const TransactionsPage = () => {
       field: 'paymentMethod',
       headerName: 'Payment',
       flex: 0,
-      valueGetter: (params, row) => row.paymentMethod,
+      valueGetter: (params, row) => row.paymentMethod || 'N/A',
     },
     {
       field: 'checked',

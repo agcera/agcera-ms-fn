@@ -14,7 +14,7 @@ dist-ssr
 *.local
 .github/instructions
 
-\src\pages\sale\createsale.jsx
+test-results/*
 
 # Editor directories and files
 .idea

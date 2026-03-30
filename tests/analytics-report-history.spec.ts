@@ -56,6 +56,27 @@ test('report page enforces keeper constraints', async ({ page }) => {
   expect(size).toBeGreaterThan(1000);
 });
 
+test('report pdf differs between admin and keeper', async ({ page }) => {
+  await login(page, credentials.admin.phone, credentials.admin.password);
+
+  await page.goto('/dashboard/report');
+  await expect(page.locator('.MuiTypography-header', { hasText: /Generate Report/i })).toBeVisible();
+  await page.getByRole('button', { name: /Generate Report/i }).click();
+  const adminPdf = await readPdfFromEmbed(page);
+  expect(adminPdf.header).toBe('%PDF');
+
+  await page.context().clearCookies();
+  await login(page, credentials.keeper.phone, credentials.keeper.password);
+
+  await page.goto('/dashboard/report');
+  await expect(page.locator('.MuiTypography-header', { hasText: /Generate Report/i })).toBeVisible();
+  await page.getByRole('button', { name: /Generate Report/i }).click();
+  const keeperPdf = await readPdfFromEmbed(page);
+  expect(keeperPdf.header).toBe('%PDF');
+
+  expect(adminPdf.size).toBeGreaterThan(keeperPdf.size);
+});
+
 test('history and trash pages load', async ({ page }) => {
   await login(page, credentials.admin.phone, credentials.admin.password);
 

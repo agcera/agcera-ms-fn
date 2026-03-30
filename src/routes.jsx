@@ -71,7 +71,7 @@ const router = createBrowserRouter(
             <Route path="create" element={<Protected Component={CreateProductPage} allowed={['admin']} />} />
           </Route>
           <Route path="mixtures" element={<Outlet />}>
-            <Route path="" element={<Protected Component={MixturesPage} allowed={['admin']} />} />
+            <Route path="" element={<Protected Component={MixturesPage} allowed={['admin', 'keeper']} />} />
             <Route path=":id/update" element={<Protected Component={UpdateMixturePage} allowed={['admin']} />} />
             <Route path="create" element={<Protected Component={CreateMixturePage} allowed={['admin']} />} />
           </Route>

@@ -8,11 +8,14 @@ import MoreButton from '../../components/Table/MoreButton';
 import StyledTable from '../../components/Table/StyledTable';
 import ZoomableImage from '../../components/ZoomableImage';
 import { getAllMixturesAction, selectAllMixtures } from '../../redux/mixturesSlice';
+import { selectLoggedInUser } from '../../redux/usersSlice';
 
 const MixturesPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const mixtures = useSelector(selectAllMixtures);
+  const user = useSelector(selectLoggedInUser);
+  const isAdmin = user.role === 'admin';
 
   const fetchData = useCallback(
     (query) => {
@@ -98,19 +101,26 @@ const MixturesPage = () => {
       flex: 1.5,
       valueGetter: (params, row) => (row.createdAt ? format(new Date(row.createdAt), 'do MMM yyyy h:mm a') : 'N/a'),
     },
-    {
+  ];
+
+  if (isAdmin) {
+    columns.push({
       field: 'action',
       headerName: 'Action',
       flex: 0,
       disableExport: true,
       sortable: false,
       renderCell: (params) => <MoreButton id={params.id} model={'mixtures'} hasDetails={false} hasDelete={true} />,
-    },
-  ];
+    });
+  }
 
   return (
     <Box className="size-full flex flex-col">
-      <PageHeader title="Mixtures" hasCreate={() => navigate('/dashboard/mixtures/create')} hasGenerateReport={true} />
+      <PageHeader
+        title="Mixtures"
+        hasCreate={!isAdmin ? false : () => navigate('/dashboard/mixtures/create')}
+        hasGenerateReport={true}
+      />
       <StyledTable fetchData={fetchData} columns={columns} data={mixtures} rowheight={'auto'} />
     </Box>
   );
