@@ -1,25 +1,35 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Checkbox, FormControlLabel, Grid, MenuItem, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  FormHelperText,
+  Grid,
+  MenuItem,
+  Stack,
+  Typography,
+} from '@mui/material';
+import { format } from 'date-fns';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import AutoCompleteInput from '../../components/AutoCompleteInput';
 import Input from '../../components/Input';
 import Loader from '../../components/Loader';
 import LoadingButton from '../../components/LoadingButton';
 import PageHeader from '../../components/PageHeader';
 import Select from '../../components/Select';
 import SelectVariations from '../../components/sale/SelectVariations';
+import { getAllClientsAction, selectAllClients } from '../../redux/clientSlice';
+import { selectAllMixtures } from '../../redux/mixturesSlice';
+import { getAllStoreProductsAction, selectAllProductsBystoreId } from '../../redux/productsSlice';
 import { createSaleAction } from '../../redux/salesSlice';
 import { getStoreAction, selectStoreById } from '../../redux/storesSlice';
 import { selectLoggedInUser } from '../../redux/usersSlice';
 import { createSaleSchema } from '../../validations/sales.validation';
-import { format } from 'date-fns';
-import { getAllClientsAction, selectAllClients } from '../../redux/clientSlice';
-import AutoCompleteInput from '../../components/AutoCompleteInput';
-import { getAllStoreProductsAction, selectAllProductsBystoreId } from '../../redux/productsSlice';
-import { selectAllMixtures } from '../../redux/mixturesSlice';
 
 const CreateSalePage = () => {
   const dispatch = useDispatch();
@@ -32,31 +42,6 @@ const CreateSalePage = () => {
   const [loading, setLoading] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
 
-  const calculateTotalAmount = () => {
-    const variations = watch('variations');
-    const selectedMixtures = watch('mixtures');
-    let allVariationsFromProducts = storeProducts.map((product) => product.variations).flat();
-
-    let total = 0;
-
-    Object.entries(variations).forEach(([key, quantity]) => {
-      const variation = allVariationsFromProducts.find((v) => v.id === key);
-      if (variation) {
-        total += quantity * variation.sellingPrice;
-      }
-    });
-
-    Object.entries(selectedMixtures || {}).forEach(([key, quantity]) => {
-      const mixture = mixtures.find((m) => m.id === key);
-      if (mixture) {
-        total += quantity * mixture.sellingPrice;
-      }
-    });
-    setTotalAmount(total);
-  };
-
-  const clients = useSelector(selectAllClients);
-
   const methods = useForm({
     mode: 'onChange',
     criteriaMode: 'all',
@@ -65,22 +50,70 @@ const CreateSalePage = () => {
       storeId: null,
       variations: {},
       mixtures: {},
-      paymentMethod: 'CASH',
+      payments: [{ paymentMethod: 'CASH', amount: 0 }],
       clientName: '',
       phone: '',
       isMember: false,
     },
   });
-
   const { control, setValue, watch, handleSubmit } = methods;
 
+  const {
+    fields: paymentFields,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: 'payments',
+  });
+
+  const variations = watch('variations');
+  const selectedMixtures = watch('mixtures');
+  const payments = watch('payments') || [];
+
+  const calculateTotalAmount = () => {
+    let allVariationsFromProducts = (storeProducts || []).map((product) => product.variations).flat();
+
+    let total = 0;
+
+    Object.entries(variations || {}).forEach(([key, quantity]) => {
+      const variation = allVariationsFromProducts.find((v) => v.id === key);
+      if (variation) {
+        total += quantity * variation.sellingPrice;
+      }
+    });
+
+    Object.entries(selectedMixtures || {}).forEach(([key, quantity]) => {
+      const mixture = (mixtures || []).find((m) => m.id === key);
+      if (mixture) {
+        total += quantity * mixture.sellingPrice;
+      }
+    });
+
+    if (total !== totalAmount) setTotalAmount(total);
+  };
+
+  const clients = useSelector(selectAllClients);
+
+  const totalPayments = payments.reduce((sum, p) => sum + Number(p?.amount || 0), 0);
+  const remainingAmount = totalAmount - totalPayments;
+
   const onSubmit = (data) => {
+    if (remainingAmount !== 0) {
+      return toast.error('Total payment amount must equal the sale total');
+    }
     const payload = { ...data };
     if (!Object.keys(payload.variations || {}).length) {
       delete payload.variations;
     }
     if (!Object.keys(payload.mixtures || {}).length) {
       delete payload.mixtures;
+    }
+    if (Array.isArray(payload.payments) && payload.payments.length) {
+      payload.payments = payload.payments.map((payment) => ({
+        ...payment,
+        amount: Number(payment.amount || 0),
+      }));
     }
 
     setLoading(true);
@@ -94,6 +127,16 @@ const CreateSalePage = () => {
       }
     });
   };
+
+  useEffect(() => {
+    calculateTotalAmount();
+  }, [variations, selectedMixtures, storeProducts, mixtures]);
+
+  useEffect(() => {
+    if (payments.length === 1) {
+      setValue('payments.0.amount', totalAmount);
+    }
+  }, [payments.length, setValue, totalAmount]);
 
   useEffect(() => {
     Promise.all([
@@ -191,26 +234,26 @@ const CreateSalePage = () => {
                               {option.name} ({option.phone})
                             </Box>
                           )}
-                          filterOptions={(options, params) => {
-                            let filtered = options.filter((option) => {
-                              if (typeof option === 'string') {
-                                return option.toLowerCase().includes(params.inputValue.toLowerCase());
-                              }
-                              if (option.inputValue) {
-                                return option.inputValue.toLowerCase().includes(params.inputValue.toLowerCase());
-                              }
-                              return option.name.toLowerCase().includes(params.inputValue.toLowerCase());
-                            });
+                          // filterOptions={(options, params) => {
+                          //   let filtered = options.filter((option) => {
+                          //     if (typeof option === 'string') {
+                          //       return option.toLowerCase().includes(params.inputValue.toLowerCase());
+                          //     }
+                          //     if (option.inputValue) {
+                          //       return option.inputValue.toLowerCase().includes(params.inputValue.toLowerCase());
+                          //     }
+                          //     return option.name.toLowerCase().includes(params.inputValue.toLowerCase());
+                          //   });
 
-                            if (params.inputValue !== '') {
-                              filtered.push({
-                                inputValue: params.inputValue,
-                                name: `Add "${params.inputValue}"`,
-                              });
-                            }
+                          //   if (params.inputValue !== '') {
+                          //     filtered.push({
+                          //       inputValue: params.inputValue,
+                          //       name: `Add "${params.inputValue}"`,
+                          //     });
+                          //   }
 
-                            return filtered;
-                          }}
+                          //   return filtered;
+                          // }}
                         />
                       );
                     }}
@@ -278,31 +321,103 @@ const CreateSalePage = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12}>
-                  <Controller
+                <Controller
+                  name="payments"
+                  control={control}
+                  render={({ fieldState }) => (
+                    <Box className="px-4 pt-4 w-full">
+                      <Typography variant="subHeader" className="font-medium pb-2">
+                        Payments <span className="text-secondary"> *</span>
+                      </Typography>
+                      {paymentFields.map((payment, index) => (
+                        <Grid container item xs={12} columnSpacing={2} key={payment.id}>
+                          <Grid item xs={12} sm={6}>
+                            <Controller
+                              disabled={loading}
+                              name={`payments.${index}.paymentMethod`}
+                              control={control}
+                              render={({ field, fieldState: { error } }) => {
+                                return (
+                                  <Select
+                                    label={`Payment method ${paymentFields.length > 1 ? index + 1 : ''}`}
+                                    error={!!error}
+                                    helperText={error?.message}
+                                    inputProps={{ ...field }}
+                                  >
+                                    <MenuItem value="P.O.S">P.O.S</MenuItem>
+                                    <MenuItem value="CASH">CASH</MenuItem>
+                                    <MenuItem value="M-PESA">M Pesa</MenuItem>
+                                    <MenuItem value="E-MOLA">E MOla</MenuItem>
+                                    <MenuItem value="BANCO BIM">Banco BIM</MenuItem>
+                                    <MenuItem value="BANCO BCI">Banco BCI</MenuItem>
+                                  </Select>
+                                );
+                              }}
+                            />
+                          </Grid>
+
+                          <Grid item xs={12} sm={4}>
+                            <Controller
+                              disabled={loading}
+                              name={`payments.${index}.amount`}
+                              control={control}
+                              render={({ field, fieldState: { error } }) => {
+                                return (
+                                  <Input
+                                    label="Payment amount"
+                                    placeHolder="Amount"
+                                    error={!!error}
+                                    helperText={error?.message}
+                                    inputProps={{ ...field, type: 'number', min: 0 }}
+                                  />
+                                );
+                              }}
+                            />
+                          </Grid>
+
+                          <Grid item xs={12} sm={2} className="pt-2 sm:pt-5">
+                            {paymentFields.length > 1 && (
+                              <Button
+                                variant="outlined"
+                                color="secondary"
+                                disabled={loading}
+                                onClick={() => remove(index)}
+                              >
+                                Remove
+                              </Button>
+                            )}
+                          </Grid>
+                        </Grid>
+                      ))}
+
+                      {fieldState.error && (
+                        <FormHelperText error={true}>
+                          {fieldState.error.message || fieldState.error.root?.message}
+                        </FormHelperText>
+                      )}
+                    </Box>
+                  )}
+                />
+
+                <Grid item xs={12} className="flex flex-col gap-2">
+                  <Typography variant="body2" color="secondary">
+                    Total payments: {totalPayments} MZN
+                  </Typography>
+                  <Typography variant="body2" color={remainingAmount === 0 ? 'primary.light' : 'error'}>
+                    Remaining: {remainingAmount} MZN
+                  </Typography>
+                  <Button
+                    variant="outlined"
                     disabled={loading}
-                    name="paymentMethod"
-                    control={control}
-                    render={({ field, fieldState: { error } }) => {
-                      return (
-                        <Select
-                          label="Payment method"
-                          error={!!error}
-                          helperText={error?.message}
-                          inputProps={{ ...field }}
-                        >
-                          <MenuItem value="P.O.S">P.O.S</MenuItem>
-                          <MenuItem value="CASH" selected>
-                            CASH
-                          </MenuItem>
-                          <MenuItem value="M-PESA">M Pesa</MenuItem>
-                          <MenuItem value="E-MOLA">E MOla</MenuItem>
-                          <MenuItem value="BANCO BIM">Banco BIM</MenuItem>
-                          <MenuItem value="BANCO BCI">Banco BCI</MenuItem>
-                        </Select>
-                      );
-                    }}
-                  />
+                    onClick={() =>
+                      append({
+                        paymentMethod: 'CASH',
+                        amount: Math.max(remainingAmount, 0),
+                      })
+                    }
+                  >
+                    Add payment method
+                  </Button>
                 </Grid>
               </Grid>
 
@@ -312,8 +427,8 @@ const CreateSalePage = () => {
                   variant="contained"
                   type="submit"
                   disabled={
-                    Object.keys(watch('variations') || {}).length <= 0 &&
-                    Object.keys(watch('mixtures') || {}).length <= 0
+                    (Object.keys(variations || {}).length <= 0 && Object.keys(selectedMixtures || {}).length <= 0) ||
+                    remainingAmount !== 0
                   }
                 >
                   Confirm Payment

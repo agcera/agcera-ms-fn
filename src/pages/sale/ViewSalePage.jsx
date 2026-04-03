@@ -195,7 +195,11 @@ const ViewSalePage = () => {
               </TableRow>
               <TableRow>
                 <StoreKey>Payment method :</StoreKey>
-                <StoreValue>{sale.paymentMethod}</StoreValue>
+                <StoreValue>
+                  {(sale.payments || []).length
+                    ? sale.payments.map((payment) => `${payment.paymentMethod} (${payment.amount} MZN)`).join(', ')
+                    : 'N/A'}
+                </StoreValue>
               </TableRow>
               <TableRow>
                 <StoreKey>Client Type :</StoreKey>

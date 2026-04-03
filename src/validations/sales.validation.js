@@ -1,4 +1,5 @@
 import yup from '.';
+import { paymentMethodsEnum } from '../constants/sales.constant';
 
 export const createSaleSchema = yup
   .object({
@@ -6,7 +7,17 @@ export const createSaleSchema = yup
     // variations: yup.object().pattern(yup.string().required(), yup.number().integer().required()).min(1).required(),
     variations: yup.object(),
     mixtures: yup.object(),
-    paymentMethod: yup.string().oneOf(['M-PESA', 'E-MOLA', 'P.O.S', 'BANCO BIM', 'BANCO BCI', 'CASH']).required(),
+    payments: yup
+      .array()
+      .of(
+        yup.object({
+          paymentMethod: yup.string().oneOf(paymentMethodsEnum).required(),
+          amount: yup.number().moreThan(0, 'Payment amount must be greater than 0').required(),
+        })
+      )
+      .uniqueField('paymentMethod', 'Each payment method can only be used once')
+      .min(1, 'Please provide payment(s) for this sale')
+      .required(),
     clientName: yup.string().required(),
     phone: yup
       .string()

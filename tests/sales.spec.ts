@@ -255,8 +255,11 @@ test('blocks sales in collected time ranges and allows refunds after collection'
 
   const variationsResponse = await page.request.get(`http://localhost:4100/api/v1/products/${unoProductId}/variations`);
   const variationsBody = await variationsResponse.json();
-  const unoVariationId = variationsBody.data?.[0]?.id;
+  const variationFromProduct = unoProduct?.variations?.[0];
+  const unoVariationId = variationFromProduct?.id || variationsBody.data?.[0]?.id;
+  const unoVariationPrice = Number(variationFromProduct?.sellingPrice ?? variationsBody.data?.[0]?.sellingPrice ?? 0);
   expect(unoVariationId).toBeTruthy();
+  expect(unoVariationPrice).toBeGreaterThan(0);
 
   const loginApi = async (phone: string, password: string) => {
     await page.request.post('http://localhost:4100/api/v1/users/login', {
@@ -283,7 +286,7 @@ test('blocks sales in collected time ranges and allows refunds after collection'
 
   await createSaleApi({
     storeId: keeperStoreId,
-    paymentMethod: 'CASH',
+    payments: [{ paymentMethod: 'CASH', amount: unoVariationPrice }],
     clientName: 'E2E Cash Before',
     phone: '+258840000920',
     isMember: false,
@@ -295,7 +298,7 @@ test('blocks sales in collected time ranges and allows refunds after collection'
 
   await createSaleApi({
     storeId: keeperStoreId,
-    paymentMethod: 'CASH',
+    payments: [{ paymentMethod: 'CASH', amount: unoVariationPrice }],
     clientName: 'E2E Cash After',
     phone: '+258840000921',
     isMember: false,
@@ -361,7 +364,7 @@ test('blocks sales in collected time ranges and allows refunds after collection'
 
   await createSaleApi({
     storeId: keeperStoreId,
-    paymentMethod: 'M-PESA',
+    payments: [{ paymentMethod: 'M-PESA', amount: unoVariationPrice }],
     clientName: 'E2E Mpesa Before',
     phone: '+258840000922',
     isMember: false,
@@ -373,7 +376,7 @@ test('blocks sales in collected time ranges and allows refunds after collection'
 
   const refundSale = await createSaleApi({
     storeId: keeperStoreId,
-    paymentMethod: 'M-PESA',
+    payments: [{ paymentMethod: 'M-PESA', amount: unoVariationPrice }],
     clientName: 'E2E Refund Sale',
     phone: '+258840000923',
     isMember: false,
@@ -385,7 +388,7 @@ test('blocks sales in collected time ranges and allows refunds after collection'
 
   await createSaleApi({
     storeId: keeperStoreId,
-    paymentMethod: 'M-PESA',
+    payments: [{ paymentMethod: 'M-PESA', amount: unoVariationPrice }],
     clientName: 'E2E Mpesa After',
     phone: '+258840000924',
     isMember: false,
@@ -416,4 +419,139 @@ test('blocks sales in collected time ranges and allows refunds after collection'
   const refundBody = await refundResponse.json();
   expect(refundStatus).toBe(200);
   expect(refundBody?.message?.sale?.refundedAt || refundBody?.data?.refundedAt).toBeTruthy();
+});
+
+test('supports multiple payments and blocks mismatched totals', async ({ page }) => {
+  const uniqueSuffix = String(Date.now()).slice(-6);
+  let mixtureId: string | undefined;
+
+  try {
+    await page.request.post('http://localhost:4100/api/v1/users/login', {
+      data: { phone: credentials.admin.phone, password: credentials.admin.password },
+    });
+
+    const productsResponse = await page.request.get(
+      `http://localhost:4100/api/v1/products?search=${encodeURIComponent('UnoProducto')}`
+    );
+    const productsBody = await productsResponse.json();
+    const unoProduct = productsBody.data?.products?.find((p: { name: string }) => p.name.includes('UnoProducto'));
+    const unoProductId = unoProduct?.id;
+    expect(unoProductId).toBeTruthy();
+
+    const variationsResponse = await page.request.get(
+      `http://localhost:4100/api/v1/products/${unoProductId}/variations`
+    );
+    const variationsBody = await variationsResponse.json();
+    const variationFromProduct = unoProduct?.variations?.[0];
+    const unoVariationId = variationFromProduct?.id || variationsBody.data?.[0]?.id;
+    const unoVariationPrice = Number(variationFromProduct?.sellingPrice ?? variationsBody.data?.[0]?.sellingPrice ?? 0);
+    expect(unoVariationId).toBeTruthy();
+    expect(unoVariationPrice).toBeGreaterThan(0);
+
+    const mixtureName = `E2E Mixture ${uniqueSuffix}`;
+    const mixtureCreateResponse = await page.request.post('http://localhost:4100/api/v1/mixtures', {
+      multipart: {
+        name: mixtureName,
+        costPrice: '10',
+        sellingPrice: '20',
+        description: 'E2E mixture',
+        'items[0][productId]': unoProductId,
+        'items[0][number]': '1',
+        image: {
+          name: 'mixture.png',
+          mimeType: 'image/png',
+          buffer: pngBuffer,
+        },
+      },
+    });
+    expect(mixtureCreateResponse.status()).toBe(201);
+    const mixtureBody = await mixtureCreateResponse.json();
+    mixtureId = mixtureBody.data?.id;
+    const mixtureSellingPrice = Number(mixtureBody.data?.sellingPrice || 20);
+
+    await page.context().clearCookies();
+    await login(page, credentials.keeper.phone, credentials.keeper.password);
+
+    await page.goto('/dashboard/sales/create');
+    await expect(page.locator('.MuiTypography-header', { hasText: /Make a sell/i })).toBeVisible();
+
+    const productPicker = page.getByPlaceholder('Choose products to purchase...');
+    await productPicker.fill('UnoProducto');
+    await page
+      .getByRole('option', { name: /UnoProducto/i })
+      .first()
+      .click({ timeout: 5000 });
+    await expect(page.getByText(/Total Amount:/i)).toBeVisible({ timeout: 10000 });
+
+    await page.getByPlaceholder('Choose or enter a value').fill('E2E Multi Payment');
+    await page.getByPlaceholder('Enter phone number ...').fill('+258840000930');
+
+    await page.getByRole('button', { name: /Add payment method/i }).click();
+
+    const firstAmount = Number((unoVariationPrice / 2).toFixed(2));
+    const secondAmount = Number((unoVariationPrice - firstAmount).toFixed(2));
+
+    const paymentMethod1 = page
+      .getByText(/Payment method 1/i)
+      .locator('..')
+      .getByRole('combobox');
+    await paymentMethod1.click();
+    await page.getByRole('option', { name: /P\.O\.S/i }).click();
+
+    const paymentMethod2 = page
+      .getByText(/Payment method 2/i)
+      .locator('..')
+      .getByRole('combobox');
+    await paymentMethod2.click();
+    await page.getByRole('option', { name: /M Pesa/i }).click();
+
+    await page.getByLabel('Payment amount').nth(0).fill(firstAmount.toString());
+    await page.getByLabel('Payment amount').nth(1).fill(secondAmount.toString());
+    await expect(page.getByText(/Each payment method can only be used once/i)).toHaveCount(0);
+
+    const createResponsePromise = page.waitForResponse(
+      (resp) => resp.url().includes('/api/v1/sales') && resp.request().method() === 'POST',
+      { timeout: 15000 }
+    );
+    await expect(page.getByRole('button', { name: /Confirm Payment/i })).toBeEnabled();
+    await page.getByRole('button', { name: /Confirm Payment/i }).click();
+    const createResponse = await createResponsePromise;
+    await expect(page).toHaveURL(/\/dashboard\/sales/);
+    expect(createResponse.ok()).toBeTruthy();
+
+    await page.goto('/dashboard/sales/create');
+    await expect(page.locator('.MuiTypography-header', { hasText: /Make a sell/i })).toBeVisible();
+
+    const mismatchPicker = page.getByPlaceholder('Choose products to purchase...');
+    await mismatchPicker.fill('UnoProducto');
+    await page
+      .getByRole('option', { name: /UnoProducto/i })
+      .first()
+      .click({ timeout: 5000 });
+    await mismatchPicker.fill(mixtureName);
+    const mixtureOption = page.getByRole('option', { name: new RegExp(mixtureName, 'i') }).first();
+    await expect(mixtureOption).toBeVisible({ timeout: 10000 });
+    await mixtureOption.click({ timeout: 5000 });
+
+    await expect(page.getByText(/Total Amount:/i)).toBeVisible({ timeout: 10000 });
+
+    await page.getByPlaceholder('Choose or enter a value').fill('E2E Mismatch');
+    await page.getByPlaceholder('Enter phone number ...').fill('+258840000931');
+
+    const totalAmount = unoVariationPrice + mixtureSellingPrice;
+    const mismatchAmount =
+      totalAmount > 1 ? Number((totalAmount - 1).toFixed(2)) : Number((totalAmount / 2).toFixed(2));
+    await page.getByLabel('Payment amount').first().fill(String(mismatchAmount));
+
+    await expect(page.getByRole('button', { name: /Confirm Payment/i })).toBeDisabled();
+    await expect(page.getByText(/Remaining:\s*1 MZN/i)).toBeVisible();
+  } finally {
+    await page.request.post('http://localhost:4100/api/v1/users/login', {
+      data: { phone: credentials.admin.phone, password: credentials.admin.password },
+    });
+
+    if (mixtureId) {
+      await page.request.delete(`http://localhost:4100/api/v1/mixtures/${mixtureId}`);
+    }
+  }
 });

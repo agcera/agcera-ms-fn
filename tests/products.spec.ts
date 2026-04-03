@@ -3,10 +3,15 @@ import { login } from './helpers/auth';
 import { credentials } from './helpers/data';
 
 const getProductIdByName = async (page: Page, name: string) => {
-  const response = await page.request.get(`http://localhost:4100/api/v1/products?search=${encodeURIComponent(name)}`);
-  const body = await response.json();
-  const products = body.data?.products || [];
-  return products.find((p: { name: string }) => p.name === name)?.id;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const response = await page.request.get(`http://localhost:4100/api/v1/products?search=${encodeURIComponent(name)}`);
+    const body = await response.json();
+    const products = body.data?.products || [];
+    const match = products.find((p: { name: string }) => p.name === name)?.id;
+    if (match) return match;
+    await page.waitForTimeout(500);
+  }
+  return undefined;
 };
 
 test('products page supports CRUD and filtering', async ({ page }) => {

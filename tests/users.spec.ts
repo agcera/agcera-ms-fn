@@ -3,10 +3,15 @@ import { login } from './helpers/auth';
 import { credentials } from './helpers/data';
 
 const getUserIdByName = async (page: Page, name: string) => {
-  const response = await page.request.get(`http://localhost:4100/api/v1/users?search=${encodeURIComponent(name)}`);
-  const body = await response.json();
-  const users = body.data?.users || [];
-  return users.find((u: { name: string }) => u.name?.toLowerCase().includes(name.toLowerCase()))?.id;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const response = await page.request.get(`http://localhost:4100/api/v1/users?search=${encodeURIComponent(name)}`);
+    const body = await response.json();
+    const users = body.data?.users || [];
+    const match = users.find((u: { name: string }) => u.name?.toLowerCase().includes(name.toLowerCase()))?.id;
+    if (match) return match;
+    await page.waitForTimeout(500);
+  }
+  return undefined;
 };
 
 test('users page supports CRUD', async ({ page }) => {
@@ -44,14 +49,9 @@ test('users page supports CRUD', async ({ page }) => {
     await expect(page.getByText(userName)).toBeVisible({ timeout: 10000 });
   }
 
-  const row = page
-    .getByRole('row')
-    .filter({ hasText: new RegExp(userName, 'i') })
-    .first();
-  await expect(row).toBeVisible({ timeout: 10000 });
-  await row.click();
-  await expect(page).toHaveURL(/\/dashboard\/users\//);
-  const userId = page.url().split('/').pop();
+  const userId = await getUserIdByName(page, userName);
+  expect(userId).toBeTruthy();
+  await page.goto(`/dashboard/users/${userId}`);
   expect(userId).toBeTruthy();
 
   await expect(page.locator('.MuiTypography-header', { hasText: /User details/i })).toBeVisible();

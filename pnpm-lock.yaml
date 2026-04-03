@@ -14,8 +14,8 @@ importers:
         specifier: ~11.11.5
         version: 11.11.5(@emotion/react@11.11.4(@types/react@18.2.79)(react@18.2.0))(@types/react@18.2.79)(react@18.2.0)
       '@hookform/resolvers':
-        specifier: ~3.3.4
-        version: 3.3.4(react-hook-form@7.51.5(react@18.2.0))
+        specifier: ~5.2.2
+        version: 5.2.2(react-hook-form@7.72.1(react@18.2.0))
       '@mui/material':
         specifier: ~5.15.15
         version: 5.15.21(@emotion/react@11.11.4(@types/react@18.2.79)(react@18.2.0))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.2.79)(react@18.2.0))(@types/react@18.2.79)(react@18.2.0))(@types/react@18.2.79)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -68,8 +68,8 @@ importers:
         specifier: ~18.2.0
         version: 18.2.0(react@18.2.0)
       react-hook-form:
-        specifier: ~7.51.3
-        version: 7.51.5(react@18.2.0)
+        specifier: ~7.72.1
+        version: 7.72.1(react@18.2.0)
       react-icons:
         specifier: ~5.1.0
         version: 5.1.0(react@18.2.0)
@@ -555,11 +555,11 @@ packages:
     resolution:
       { integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg== }
 
-  '@hookform/resolvers@3.3.4':
+  '@hookform/resolvers@5.2.2':
     resolution:
-      { integrity: sha512-o5cgpGOuJYrd+iMKvkttOclgwRW86EsWJZZRC23prf0uU2i48Htq4PuT73AVb9ionFyZrwYEITuOFGF+BydEtQ== }
+      { integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA== }
     peerDependencies:
-      react-hook-form: ^7.0.0
+      react-hook-form: ^7.55.0
 
   '@humanfs/core@0.19.1':
     resolution:
@@ -921,6 +921,10 @@ packages:
       { integrity: sha512-PrsWNQ8BuE00O3Xsx3ALh2Df8fAj9+cvvX9AIA6o4KpATR98c9mud4XtDWVvsEuyia5U4tVSTKygawyJkjm60w== }
     cpu: [x64]
     os: [win32]
+
+  '@standard-schema/utils@0.3.0':
+    resolution:
+      { integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g== }
 
   '@tailwindcss/aspect-ratio@0.4.2':
     resolution:
@@ -2508,12 +2512,12 @@ packages:
     resolution:
       { integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ== }
 
-  react-hook-form@7.51.5:
+  react-hook-form@7.72.1:
     resolution:
-      { integrity: sha512-J2ILT5gWx1XUIJRETiA7M19iXHlG74+6O3KApzvqB/w8S5NQR7AbU8HVZrMALdmDgWpRPYiZJl0zx8Z4L2mP6Q== }
-    engines: { node: '>=12.22.0' }
+      { integrity: sha512-RhwBoy2ygeVZje+C+bwJ8g0NjTdBmDlJvAUHTxRjTmSUKPYsKfMphkS2sgEMotsY03bP358yEYlnUeZy//D9Ig== }
+    engines: { node: '>=18.0.0' }
     peerDependencies:
-      react: ^16.8.0 || ^17 || ^18
+      react: ^16.8.0 || ^17 || ^18 || ^19
 
   react-icons@5.1.0:
     resolution:
@@ -3576,9 +3580,10 @@ snapshots:
 
   '@floating-ui/utils@0.2.11': {}
 
-  '@hookform/resolvers@3.3.4(react-hook-form@7.51.5(react@18.2.0))':
+  '@hookform/resolvers@5.2.2(react-hook-form@7.72.1(react@18.2.0))':
     dependencies:
-      react-hook-form: 7.51.5(react@18.2.0)
+      '@standard-schema/utils': 0.3.0
+      react-hook-form: 7.72.1(react@18.2.0)
 
   '@humanfs/core@0.19.1': {}
 
@@ -3826,6 +3831,8 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.60.0':
     optional: true
+
+  '@standard-schema/utils@0.3.0': {}
 
   '@tailwindcss/aspect-ratio@0.4.2(tailwindcss@3.4.19(yaml@2.6.1))':
     dependencies:
@@ -5205,7 +5212,7 @@ snapshots:
 
   react-fast-compare@3.2.2: {}
 
-  react-hook-form@7.51.5(react@18.2.0):
+  react-hook-form@7.72.1(react@18.2.0):
     dependencies:
       react: 18.2.0
 

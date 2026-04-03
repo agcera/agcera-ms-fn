@@ -1,4 +1,4 @@
-import { Box, Tooltip } from '@mui/material';
+import { Box, Tooltip, Typography } from '@mui/material';
 import { format } from 'date-fns';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -177,7 +177,27 @@ const SalesPage = () => {
       flex: 1,
       valueGetter: (params, row) => format(new Date(row.createdAt), 'do MMM yyyy h:mm a'),
     },
-    { field: 'paymentMethod', headerName: 'Payment', flex: 0 },
+    {
+      field: 'payments',
+      headerName: 'Payment',
+      flex: 2,
+      sortable: false,
+      valueGetter: (params, row) =>
+        (row.payments || []).length
+          ? row.payments.map((payment) => `${payment.paymentMethod} (${payment.amount} MZN)`)
+          : 'N/A',
+      renderCell: (params) => {
+        return (
+          <div className="w-full">
+            {params.row.payments?.map((payment) => (
+              <Typography variant="body2" key={payment.id}>
+                {payment.paymentMethod} ({payment.amount} MZN)
+              </Typography>
+            )) || <Typography variant="body2">N/A</Typography>}
+          </div>
+        );
+      },
+    },
     {
       field: 'action',
       headerName: 'Action',
