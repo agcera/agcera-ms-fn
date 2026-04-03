@@ -24,6 +24,7 @@ const ZoomableImage = ({ image }) => {
         style={{
           transformOrigin: `${cursorPosition.x * 100}% ${cursorPosition.y * 100}%`,
           transform: isHovered ? 'scale(2)' : 'scale(1)',
+          objectFit: 'contain',
         }}
         alt="productImage"
       />
