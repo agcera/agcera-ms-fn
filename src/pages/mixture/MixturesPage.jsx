@@ -22,6 +22,8 @@ const MixturesPage = () => {
       if (query?.sort) {
         query.sort = Object.keys(query.sort).reduce((acc, key) => {
           switch (key) {
+            case 'items':
+              acc['items.product.name'] = query.sort[key];
             case 'sellingPrice':
               acc['sellingPrice'] = query.sort[key];
               break;
@@ -83,7 +85,7 @@ const MixturesPage = () => {
         );
       },
     },
-    {
+    isAdmin && {
       field: 'costPrice',
       headerName: 'Cost Price',
       flex: 1,
@@ -101,7 +103,7 @@ const MixturesPage = () => {
       flex: 1.5,
       valueGetter: (params, row) => (row.createdAt ? format(new Date(row.createdAt), 'do MMM yyyy h:mm a') : 'N/a'),
     },
-  ];
+  ].filter(Boolean);
 
   if (isAdmin) {
     columns.push({
