@@ -91,3 +91,8 @@
     src: url('/fonts/GraphikSemiboldItalic.otf') format('opentype');
   }
 }
+
+
+/* input::placeholder {
+  font-size: 12px
+} */

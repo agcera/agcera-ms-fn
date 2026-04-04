@@ -51,7 +51,7 @@ const ViewSalePage = () => {
     type: 'variation',
     id: variations.variation.id,
     productName: variations.variation.product.name,
-    variationName: variations.variation.name,
+    variationName: `${variations.variation.name} (${variations.variation.number})`,
     variationNumber: variations.variation.number,
     quantity: variations.quantity,
     totalSellingPrice: variations.quantity * variations.variation.sellingPrice,

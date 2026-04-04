@@ -503,11 +503,10 @@ test('supports multiple payments and blocks mismatched totals', async ({ page })
       .locator('..')
       .getByRole('combobox');
     await paymentMethod2.click();
-    await page.getByRole('option', { name: /M Pesa/i }).click();
+    await page.getByRole('option', { name: /P\.O\.S/i }).click();
 
     await page.getByLabel('Payment amount').nth(0).fill(firstAmount.toString());
     await page.getByLabel('Payment amount').nth(1).fill(secondAmount.toString());
-    await expect(page.getByText(/Each payment method can only be used once/i)).toHaveCount(0);
 
     const createResponsePromise = page.waitForResponse(
       (resp) => resp.url().includes('/api/v1/sales') && resp.request().method() === 'POST',
@@ -515,6 +514,15 @@ test('supports multiple payments and blocks mismatched totals', async ({ page })
     );
     await expect(page.getByRole('button', { name: /Confirm Payment/i })).toBeEnabled();
     await page.getByRole('button', { name: /Confirm Payment/i }).click();
+
+    await expect(page.getByText(/Each payment method can only be used once/i)).toBeVisible();
+
+    await paymentMethod2.click();
+    await page.getByRole('option', { name: /M Pesa/i }).click();
+
+    await expect(page.getByRole('button', { name: /Confirm Payment/i })).toBeEnabled();
+    await page.getByRole('button', { name: /Confirm Payment/i }).click();
+
     const createResponse = await createResponsePromise;
     await expect(page).toHaveURL(/\/dashboard\/sales/);
     expect(createResponse.ok()).toBeTruthy();

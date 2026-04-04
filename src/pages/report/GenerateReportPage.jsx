@@ -257,15 +257,15 @@ const GeneratePageForm = ({ loading }) => {
                   return (
                     <AutoCompleteInput
                       label="Store"
-                      placeHolder="Select a store to generate a report or leave empty to generate a report for all stores..."
+                      placeHolder="Select a store to generate a report or leave empty to generate a report for all stores"
                       error={!!error}
                       helperText={error?.message}
                       required={false}
                       options={options}
                       disabled={loading}
                       value={options.find((o) => o.value === field.value)}
-                      onChange={(e, option) => field.onChange(option.value)}
-                      inputProps={{ ...field }}
+                      onChange={(e, option) => field.onChange(option?.value)}
+                      inputProps={{ ...field, classes: { input: 'placeholder:text-[12px]' } }}
                     />
                   );
                 }}

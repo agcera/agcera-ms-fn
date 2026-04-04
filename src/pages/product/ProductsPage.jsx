@@ -193,7 +193,7 @@ export const ProductsTable = ({ products, fetchData, omit = [], storeId, project
                 .sort((a, b) => a.number - b.number)
                 .map((param) => (
                   <MenuItem key={param.id} value={param.name}>
-                    {param.name}
+                    {param.name} ({param.number})
                   </MenuItem>
                 ))}
             </Select>

@@ -77,8 +77,8 @@ const MixturesPage = () => {
                 className={`flex flex-wrap mt-1 ${index % 2 === 0 ? 'bg-[#E6EEF5]' : 'bg-[#CFCFCF]'}`}
                 key={`${row.id}-${index}`}
               >
-                <Box className="mr-1">{row.name};</Box>
-                <Box className="mr-1"> {row.quantity} pcs;</Box>
+                <Box className="mr-0.5">{row.name};</Box>
+                <Box className="mr-0.5"> {row.quantity} pcs;</Box>
               </Box>
             ))}
           </Box>

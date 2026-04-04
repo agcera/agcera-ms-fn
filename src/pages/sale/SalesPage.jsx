@@ -73,7 +73,7 @@ const SalesPage = () => {
           type: 'variation',
           id: variation.variation.id,
           name: variation.variation.product.name,
-          label: `Var: ${variation.variation.name}`,
+          label: `Var: ${variation.variation.name} (${variation.variation.number})`,
           quantity: variation.quantity,
           total: variation.quantity * variation.variation.sellingPrice,
         }));
@@ -111,13 +111,13 @@ const SalesPage = () => {
         return (
           <Box className="w-full">
             {rows.map((row, index) => (
-              <Box className={`flex mt-1 ${index % 2 === 0 ? 'bg-[#E6EEF5]' : 'bg-[#CFCFCF]'}`} key={row.id}>
-                <Box className="mr-1">{row.name};</Box>
-                <Box className="mr-1">
+              <Box className={`flex flex-wrap mt-1 ${index % 2 === 0 ? 'bg-[#E6EEF5]' : 'bg-[#CFCFCF]'}`} key={row.id}>
+                <Box className="mr-0.5">{row.name};</Box>
+                <Box className="mr-0.5">
                   <span className="font-semibold">{row.label}</span>;
                 </Box>
-                <Box className="mr-1"> {row.quantity} pcs;</Box>
-                {row.type === 'variation' && <Box className="mr-1">{row.total} MZN</Box>}
+                <Box className="mr-0.5"> {row.quantity} pcs;</Box>
+                {row.type === 'variation' && <Box className="mr-0.5">{row.total} MZN</Box>}
               </Box>
             ))}
           </Box>

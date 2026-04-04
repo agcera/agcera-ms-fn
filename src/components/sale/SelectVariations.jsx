@@ -31,7 +31,7 @@ const SelectVariations = ({ loading, onQuantityChange }) => {
         ...variations.map((variation) => {
           return {
             ...variation,
-            label: `${capitalize(product.name)} (${capitalize(variation.name)})`,
+            label: `${capitalize(product.name)} - ${capitalize(variation.name)} (${variation.number})`,
             value: variation.id,
             kind: 'variation',
           };
