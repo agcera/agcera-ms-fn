@@ -73,7 +73,7 @@ const SalesPage = () => {
           type: 'variation',
           id: variation.variation.id,
           name: variation.variation.product.name,
-          label: `Var: ${variation.variation.name} (${variation.variation.number})`,
+          label: `Var: ${variation.variation.name}(${variation.variation.number})`,
           quantity: variation.quantity,
           total: variation.quantity * variation.variation.sellingPrice,
         }));
@@ -184,7 +184,7 @@ const SalesPage = () => {
       sortable: false,
       valueGetter: (params, row) =>
         (row.payments || []).length
-          ? row.payments.map((payment) => `${payment.paymentMethod} (${payment.amount} MZN)`)
+          ? row.payments.map((payment) => `${payment.paymentMethod}(${payment.amount} MZN)`)
           : 'N/A',
       renderCell: (params) => {
         return (

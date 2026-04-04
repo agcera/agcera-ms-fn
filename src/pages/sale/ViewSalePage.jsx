@@ -51,7 +51,7 @@ const ViewSalePage = () => {
     type: 'variation',
     id: variations.variation.id,
     productName: variations.variation.product.name,
-    variationName: `${variations.variation.name} (${variations.variation.number})`,
+    variationName: `${variations.variation.name}(${variations.variation.number})`,
     variationNumber: variations.variation.number,
     quantity: variations.quantity,
     totalSellingPrice: variations.quantity * variations.variation.sellingPrice,
@@ -197,7 +197,7 @@ const ViewSalePage = () => {
                 <StoreKey>Payment method :</StoreKey>
                 <StoreValue>
                   {(sale.payments || []).length
-                    ? sale.payments.map((payment) => `${payment.paymentMethod} (${payment.amount} MZN)`).join(', ')
+                    ? sale.payments.map((payment) => `${payment.paymentMethod}(${payment.amount} MZN)`).join(', ')
                     : 'N/A'}
                 </StoreValue>
               </TableRow>
