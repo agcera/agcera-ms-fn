@@ -7,7 +7,7 @@ import { MdDelete } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllProductsAction, selectAllProducts } from '../../redux/productsSlice';
 
-const MixtureItems = ({ loading }) => {
+const ComboItems = ({ loading }) => {
   const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({ name: 'items' });
 
@@ -29,7 +29,7 @@ const MixtureItems = ({ loading }) => {
     <Box className="w-full">
       <Stack direction="row" spacing={2} className="justify-between items-end mb-4">
         <Typography variant="subHeader" className="font-medium">
-          Mixture items <span className="text-secondary"> *</span>
+          Combo items <span className="text-secondary"> *</span>
         </Typography>
         <Button onClick={addNewItem} disabled={loading}>
           Add item
@@ -96,15 +96,15 @@ const MixtureItems = ({ loading }) => {
         ))}
       </Box>
       <Box className="px-4 py-1">
-        <MixtureItemsError />
+        <ComboItemsError />
       </Box>
     </Box>
   );
 };
 
-export default MixtureItems;
+export default ComboItems;
 
-export const MixtureItemsError = () => {
+export const ComboItemsError = () => {
   const {
     formState: { errors },
   } = useFormContext();

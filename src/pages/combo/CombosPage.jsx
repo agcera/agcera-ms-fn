@@ -7,13 +7,13 @@ import PageHeader from '../../components/PageHeader';
 import MoreButton from '../../components/Table/MoreButton';
 import StyledTable from '../../components/Table/StyledTable';
 import ZoomableImage from '../../components/ZoomableImage';
-import { getAllMixturesAction, selectAllMixtures } from '../../redux/mixturesSlice';
+import { getAllCombosAction, selectAllCombos } from '../../redux/combosSlice';
 import { selectLoggedInUser } from '../../redux/usersSlice';
 
-const MixturesPage = () => {
+const CombosPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const mixtures = useSelector(selectAllMixtures);
+  const combos = useSelector(selectAllCombos);
   const user = useSelector(selectLoggedInUser);
   const isAdmin = user.role === 'admin';
 
@@ -36,7 +36,7 @@ const MixturesPage = () => {
           return acc;
         }, {});
       }
-      return dispatch(getAllMixturesAction(query));
+      return dispatch(getAllCombosAction(query));
     },
     [dispatch]
   );
@@ -56,7 +56,7 @@ const MixturesPage = () => {
       flex: 2,
       valueGetter: (params, row) => row.items?.length || 0,
       renderCell: (params) => {
-        const items = params.row?.items || params.row?.MixtureItems || [];
+        const items = params.row?.items || params.row?.ComboItems || [];
         if (!items.length) return '0';
 
         const rows = items.map((item, index) => {
@@ -112,20 +112,20 @@ const MixturesPage = () => {
       flex: 0,
       disableExport: true,
       sortable: false,
-      renderCell: (params) => <MoreButton id={params.id} model={'mixtures'} hasDetails={false} hasDelete={true} />,
+      renderCell: (params) => <MoreButton id={params.id} model={'combos'} hasDetails={false} hasDelete={true} />,
     });
   }
 
   return (
     <Box className="size-full flex flex-col">
       <PageHeader
-        title="Mixtures"
-        hasCreate={!isAdmin ? false : () => navigate('/dashboard/mixtures/create')}
+        title="Combos"
+        hasCreate={!isAdmin ? false : () => navigate('/dashboard/combos/create')}
         hasGenerateReport={true}
       />
-      <StyledTable fetchData={fetchData} columns={columns} data={mixtures} rowheight={'auto'} />
+      <StyledTable fetchData={fetchData} columns={columns} data={combos} rowheight={'auto'} />
     </Box>
   );
 };
 
-export default MixturesPage;
+export default CombosPage;

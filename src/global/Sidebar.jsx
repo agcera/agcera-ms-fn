@@ -135,7 +135,7 @@ const Sidebar = () => {
             {isStoreKeeperUp && <Item title="Analytics" to="/dashboard/analytics" icon={<MdAnalytics />} />}
             {isAdmin && <Item title="Stores" to="/dashboard/stores" icon={<MdOutlineStore />} />}
             {isAdmin && <Item title="Products" to="/dashboard/products" icon={<MdOutlineProductionQuantityLimits />} />}
-            {isStoreKeeperUp && <Item title="Mixtures" to="/dashboard/mixtures" icon={<TbCategory />} />}
+            {isStoreKeeperUp && <Item title="Combos" to="/dashboard/combos" icon={<TbCategory />} />}
             {isStoreKeeper && (
               <Item title="Store" to={`/dashboard/stores/${user.storeId}/store`} icon={<MdOutlineStore />} />
             )}

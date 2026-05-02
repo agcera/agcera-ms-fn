@@ -24,7 +24,7 @@ import PageHeader from '../../components/PageHeader';
 import Select from '../../components/Select';
 import SelectVariations from '../../components/sale/SelectVariations';
 import { getAllClientsAction, selectAllClients } from '../../redux/clientSlice';
-import { selectAllMixtures } from '../../redux/mixturesSlice';
+import { selectAllCombos } from '../../redux/combosSlice';
 import { getAllStoreProductsAction, selectAllProductsBystoreId } from '../../redux/productsSlice';
 import { createSaleAction } from '../../redux/salesSlice';
 import { getStoreAction, selectStoreById } from '../../redux/storesSlice';
@@ -37,7 +37,7 @@ const CreateSalePage = () => {
   const profile = useSelector(selectLoggedInUser);
   const store = useSelector(selectStoreById(profile.storeId));
   const storeProducts = useSelector(selectAllProductsBystoreId(profile.storeId));
-  const mixtures = useSelector(selectAllMixtures);
+  const combos = useSelector(selectAllCombos);
   const [initLoading, setInitLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
@@ -49,7 +49,7 @@ const CreateSalePage = () => {
     defaultValues: {
       storeId: null,
       variations: {},
-      mixtures: {},
+      combos: {},
       payments: [{ paymentMethod: 'CASH', amount: 0 }],
       clientName: '',
       phone: '',
@@ -68,7 +68,7 @@ const CreateSalePage = () => {
   });
 
   const variations = watch('variations');
-  const selectedMixtures = watch('mixtures');
+  const selectedCombos = watch('combos');
   const payments = watch('payments') || [];
 
   const calculateTotalAmount = () => {
@@ -83,10 +83,10 @@ const CreateSalePage = () => {
       }
     });
 
-    Object.entries(selectedMixtures || {}).forEach(([key, quantity]) => {
-      const mixture = (mixtures || []).find((m) => m.id === key);
-      if (mixture) {
-        total += quantity * mixture.sellingPrice;
+    Object.entries(selectedCombos || {}).forEach(([key, quantity]) => {
+      const combo = (combos || []).find((m) => m.id === key);
+      if (combo) {
+        total += quantity * combo.sellingPrice;
       }
     });
 
@@ -106,8 +106,8 @@ const CreateSalePage = () => {
     if (!Object.keys(payload.variations || {}).length) {
       delete payload.variations;
     }
-    if (!Object.keys(payload.mixtures || {}).length) {
-      delete payload.mixtures;
+    if (!Object.keys(payload.combos || {}).length) {
+      delete payload.combos;
     }
     if (Array.isArray(payload.payments) && payload.payments.length) {
       payload.payments = payload.payments.map((payment) => ({
@@ -130,7 +130,7 @@ const CreateSalePage = () => {
 
   useEffect(() => {
     calculateTotalAmount();
-  }, [variations, selectedMixtures, storeProducts, mixtures]);
+  }, [variations, selectedCombos, storeProducts, combos]);
 
   useEffect(() => {
     if (payments.length === 1) {
@@ -427,7 +427,7 @@ const CreateSalePage = () => {
                   variant="contained"
                   type="submit"
                   disabled={
-                    (Object.keys(variations || {}).length <= 0 && Object.keys(selectedMixtures || {}).length <= 0) ||
+                    (Object.keys(variations || {}).length <= 0 && Object.keys(selectedCombos || {}).length <= 0) ||
                     remainingAmount !== 0
                   }
                 >

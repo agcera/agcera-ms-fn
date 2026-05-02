@@ -6,7 +6,7 @@ import { MdMoreHoriz } from 'react-icons/md';
 import { RiRefund2Line } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import DeleteProductModal from '../products/DeleteProductModal';
-import DeleteMixtureModal from '../mixtures/DeleteMixtureModal';
+import DeleteComboModal from '../combos/DeleteComboModal';
 import DeleteStoreModal from '../store/DeleteStoreModal';
 import DeleteSaleModal from '../sale/RefundSaleModal';
 import DeleteUserModal from '../user/DeleteUserModal';
@@ -98,8 +98,8 @@ function MoreButton({ id, model, hasDelete = false, hasRefund = false, hasDetail
         model === 'products' && (
           <DeleteProductModal key={model} id={id} open={deleteOpen} handleClose={handleCloseDelete} />
         ),
-        model === 'mixtures' && (
-          <DeleteMixtureModal key={model} id={id} open={deleteOpen} handleClose={handleCloseDelete} />
+        model === 'combos' && (
+          <DeleteComboModal key={model} id={id} open={deleteOpen} handleClose={handleCloseDelete} />
         ),
         model === 'stores' && (
           <DeleteStoreModal key={model} id={id} open={deleteOpen} handleClose={handleCloseDelete} />

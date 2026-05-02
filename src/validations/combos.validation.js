@@ -1,6 +1,6 @@
 import yup from '.';
 
-export const mixtureCreateSchema = yup.object({
+export const comboCreateSchema = yup.object({
   name: yup.string().required(),
   costPrice: yup
     .number()
@@ -25,7 +25,7 @@ export const mixtureCreateSchema = yup.object({
     .required(),
 });
 
-export const mixtureUpdateSchema = yup.object({
+export const comboUpdateSchema = yup.object({
   name: yup.string(),
   costPrice: yup
     .number()

@@ -3,7 +3,7 @@ import { createLogger } from 'redux-logger';
 import analyticsSlice from './analyticsSlice';
 import deletedSlice from './deletedSlice';
 import movementsSlice from './historySlice';
-import mixturesSlice from './mixturesSlice';
+import combosSlice from './combosSlice';
 import productsSlice from './productsSlice';
 import salesSlice from './salesSlice';
 import storesSlice from './storesSlice';
@@ -28,7 +28,7 @@ const slices = combineSlices(
   analyticsSlice,
   transactionsSlice,
   movementsSlice,
-  mixturesSlice,
+  combosSlice,
   deletedSlice,
   clientSlice
 );

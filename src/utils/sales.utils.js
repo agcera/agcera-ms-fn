@@ -3,8 +3,8 @@ export const calculateTotal = (sale) => {
   sale.variations.forEach((variation) => {
     total += variation.quantity * variation.variation.sellingPrice;
   });
-  (sale.mixtures || []).forEach((mixture) => {
-    total += mixture.quantity * mixture.mixture.sellingPrice;
+  (sale.combos || []).forEach((combo) => {
+    total += combo.quantity * combo.combo.sellingPrice;
   });
   return total;
 };
@@ -14,15 +14,15 @@ export const calculateProfit = (sale) => {
   sale.variations.forEach((variation) => {
     totalSellingPrice += variation.quantity * variation.variation.sellingPrice;
   });
-  (sale.mixtures || []).forEach((mixture) => {
-    totalSellingPrice += mixture.quantity * mixture.mixture.sellingPrice;
+  (sale.combos || []).forEach((combo) => {
+    totalSellingPrice += combo.quantity * combo.combo.sellingPrice;
   });
   let totalCostPrice = 0;
   sale.variations.forEach((variation) => {
     totalCostPrice += variation.quantity * variation.variation.costPrice;
   });
-  (sale.mixtures || []).forEach((mixture) => {
-    totalCostPrice += mixture.quantity * mixture.mixture.costPrice;
+  (sale.combos || []).forEach((combo) => {
+    totalCostPrice += combo.quantity * combo.combo.costPrice;
   });
   return totalSellingPrice - totalCostPrice;
 };

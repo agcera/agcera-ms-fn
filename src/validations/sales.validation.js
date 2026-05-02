@@ -6,7 +6,7 @@ export const createSaleSchema = yup
     storeId: yup.string().required(),
     // variations: yup.object().pattern(yup.string().required(), yup.number().integer().required()).min(1).required(),
     variations: yup.object(),
-    mixtures: yup.object(),
+    combos: yup.object(),
     payments: yup
       .array()
       .of(
@@ -29,9 +29,9 @@ export const createSaleSchema = yup
     doneOn: yup.date().nullable(),
   })
   .test(
-    'products-or-mixtures',
-    'Please select at least one product or mixture',
+    'products-or-combos',
+    'Please select at least one product or combo',
     (value) =>
       (value?.variations && Object.keys(value.variations).length > 0) ||
-      (value?.mixtures && Object.keys(value.mixtures).length > 0)
+      (value?.combos && Object.keys(value.combos).length > 0)
   );

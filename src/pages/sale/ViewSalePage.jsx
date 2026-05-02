@@ -57,17 +57,17 @@ const ViewSalePage = () => {
     totalSellingPrice: variations.quantity * variations.variation.sellingPrice,
   }));
 
-  // build rows for mixtures table
-  const mixtureRows = (sale?.mixtures || []).map((mixture) => {
-    const items = mixture.mixture?.items || [];
+  // build rows for combos table
+  const comboRows = (sale?.combos || []).map((combo) => {
+    const items = combo.combo?.items || [];
 
     return {
-      type: 'mixture',
-      id: mixture.mixture.id,
-      mixtureName: mixture.mixture.name,
+      type: 'combo',
+      id: combo.combo.id,
+      comboName: combo.combo.name,
       items,
-      quantity: mixture.quantity,
-      totalSellingPrice: mixture.quantity * mixture.mixture.sellingPrice,
+      quantity: combo.quantity,
+      totalSellingPrice: combo.quantity * combo.combo.sellingPrice,
     };
   });
 
@@ -84,8 +84,8 @@ const ViewSalePage = () => {
     },
   ];
 
-  const mixtureColumns = [
-    { field: 'mixtureName', headerName: 'Mixture', flex: 1 },
+  const comboColumns = [
+    { field: 'comboName', headerName: 'Combo', flex: 1 },
     {
       field: 'items',
       headerName: 'Products',
@@ -135,7 +135,7 @@ const ViewSalePage = () => {
     return `${sale.client?.name} |---| ${sale.client?.phone}`;
   }, [sale]);
   const hasProducts = useMemo(() => productRows.length > 0, [productRows.length]);
-  const hasMixtures = useMemo(() => mixtureRows.length > 0, [mixtureRows.length]);
+  const hasCombos = useMemo(() => comboRows.length > 0, [comboRows.length]);
 
   useEffect(() => {
     dispatch(getSaleAction(saleId)).then(({ error }) => {
@@ -257,14 +257,14 @@ const ViewSalePage = () => {
 
           <Box className="w-full py-2">
             <Typography variant="subHeader" className="font-semibold" color="primary.light">
-              Mixtures purchased
+              Combos purchased
             </Typography>
 
-            {hasMixtures ? (
-              <StyledTable data={mixtureRows} columns={mixtureColumns} rowheight={'auto'} />
+            {hasCombos ? (
+              <StyledTable data={comboRows} columns={comboColumns} rowheight={'auto'} />
             ) : (
               <Typography color="secondary.light" className="text-center py-4">
-                This sale has no mixtures
+                This sale has no combos
               </Typography>
             )}
           </Box>

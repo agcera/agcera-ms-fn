@@ -13,9 +13,9 @@ import TrashPage from './pages/history/TrashPage';
 import CreateProductPage from './pages/product/CreateProductPage';
 import ProductsPage from './pages/product/ProductsPage';
 import UpdateProductPage from './pages/product/UpdateProductPage';
-import CreateMixturePage from './pages/mixture/CreateMixturePage';
-import MixturesPage from './pages/mixture/MixturesPage';
-import UpdateMixturePage from './pages/mixture/UpdateMixturePage';
+import CreateComboPage from './pages/combo/CreateComboPage';
+import CombosPage from './pages/combo/CombosPage';
+import UpdateComboPage from './pages/combo/UpdateComboPage';
 import GenerateReportPage from './pages/report/GenerateReportPage';
 import CreateSalePage from './pages/sale/CreateSalePage';
 import SalesPage from './pages/sale/SalesPage';
@@ -70,10 +70,10 @@ const router = createBrowserRouter(
             <Route path=":id/update" element={<Protected Component={UpdateProductPage} allowed={['admin']} />} />
             <Route path="create" element={<Protected Component={CreateProductPage} allowed={['admin']} />} />
           </Route>
-          <Route path="mixtures" element={<Outlet />}>
-            <Route path="" element={<Protected Component={MixturesPage} allowed={['admin', 'keeper']} />} />
-            <Route path=":id/update" element={<Protected Component={UpdateMixturePage} allowed={['admin']} />} />
-            <Route path="create" element={<Protected Component={CreateMixturePage} allowed={['admin']} />} />
+          <Route path="combos" element={<Outlet />}>
+            <Route path="" element={<Protected Component={CombosPage} allowed={['admin', 'keeper']} />} />
+            <Route path=":id/update" element={<Protected Component={UpdateComboPage} allowed={['admin']} />} />
+            <Route path="create" element={<Protected Component={CreateComboPage} allowed={['admin']} />} />
           </Route>
           <Route path="history" element={<Outlet />}>
             <Route path="" element={<MovementsPage />} />

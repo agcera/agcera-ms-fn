@@ -77,17 +77,17 @@ const SalesPage = () => {
           quantity: variation.quantity,
           total: variation.quantity * variation.variation.sellingPrice,
         }));
-        const mixtureRows = (params.row.mixtures || []).flatMap((mixture) => {
-          const items = mixture.mixture?.items || [];
+        const comboRows = (params.row.combos || []).flatMap((combo) => {
+          const items = combo.combo?.items || [];
           if (!items.length) {
             return [
               {
-                type: 'mixture',
-                id: mixture.mixture.id,
-                name: mixture.mixture.name,
-                label: 'Mixture',
-                quantity: mixture.quantity,
-                total: mixture.quantity * mixture.mixture.sellingPrice,
+                type: 'combo',
+                id: combo.combo.id,
+                name: combo.combo.name,
+                label: 'Combo',
+                quantity: combo.quantity,
+                total: combo.quantity * combo.combo.sellingPrice,
               },
             ];
           }
@@ -95,18 +95,18 @@ const SalesPage = () => {
           return items.map((item, index) => {
             const product = item.product;
             const unitPrice = product?.variations?.[0]?.sellingPrice || 0;
-            const quantity = mixture.quantity * (item.number || 0);
+            const quantity = combo.quantity * (item.number || 0);
             return {
-              type: 'mixture',
-              id: `${mixture.mixture.id}-${product?.id || index}`,
+              type: 'combo',
+              id: `${combo.combo.id}-${product?.id || index}`,
               name: product?.name || 'Product',
-              label: `Mixture: ${mixture.mixture.name}`,
+              label: `Combo: ${combo.combo.name}`,
               quantity,
               total: quantity * unitPrice,
             };
           });
         });
-        const rows = [...variationRows, ...mixtureRows];
+        const rows = [...variationRows, ...comboRows];
 
         return (
           <Box className="w-full">

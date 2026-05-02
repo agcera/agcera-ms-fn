@@ -13,16 +13,16 @@ const CustomTableCell = ({ children, className, ...props }) => {
   );
 };
 
-const SelectMixturesRow = memo(function SelectMixturesRow({ field, loading, handleRemove, mixture, onQuantityChange }) {
+const SelectCombosRow = memo(function SelectCombosRow({ field, loading, handleRemove, combo, onQuantityChange }) {
   const { setValue } = useFormContext();
 
   const handleDecrement = (field) => {
     if (field[1] <= 1) return;
-    setValue(`mixtures.${field[0]}`, field[1] - 1);
+    setValue(`combos.${field[0]}`, field[1] - 1);
     onQuantityChange();
   };
   const handleIncrement = (field) => {
-    setValue(`mixtures.${field[0]}`, field[1] + 1);
+    setValue(`combos.${field[0]}`, field[1] + 1);
     onQuantityChange();
   };
 
@@ -30,7 +30,7 @@ const SelectMixturesRow = memo(function SelectMixturesRow({ field, loading, hand
     <TableRow key={field[0]}>
       <CustomTableCell colSpan={3} className="border-l pl-4 rounded-l-md">
         <Typography variant="body1" className="font-medium">
-          {mixture.label}
+          {combo.label}
         </Typography>
       </CustomTableCell>
 
@@ -47,7 +47,7 @@ const SelectMixturesRow = memo(function SelectMixturesRow({ field, loading, hand
       </CustomTableCell>
 
       <CustomTableCell align="center">
-        <Typography>Total: {field[1] * mixture.sellingPrice} MZN</Typography>
+        <Typography>Total: {field[1] * combo.sellingPrice} MZN</Typography>
       </CustomTableCell>
 
       <CustomTableCell align="center">
@@ -63,4 +63,4 @@ const SelectMixturesRow = memo(function SelectMixturesRow({ field, loading, hand
   );
 });
 
-export default SelectMixturesRow;
+export default SelectCombosRow;

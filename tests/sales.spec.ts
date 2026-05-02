@@ -20,7 +20,7 @@ const getStoreProductQuantity = async (page: any, storeId: string, productId: st
 test('sales page supports create, view, and refund', async ({ page }) => {
   const uniqueSuffix = String(Date.now()).slice(-6);
   let specialProductId: string | undefined;
-  let mixtureId: string | undefined;
+  let comboId: string | undefined;
 
   try {
     await login(page, credentials.admin.phone, credentials.admin.password);
@@ -91,25 +91,25 @@ test('sales page supports create, view, and refund', async ({ page }) => {
       },
     });
 
-    const mixtureName = `E2E Mixture ${uniqueSuffix}`;
-    const mixtureCreateResponse = await page.request.post('http://localhost:4100/api/v1/mixtures', {
+    const comboName = `E2E Combo ${uniqueSuffix}`;
+    const comboCreateResponse = await page.request.post('http://localhost:4100/api/v1/combos', {
       multipart: {
-        name: mixtureName,
+        name: comboName,
         costPrice: '10',
         sellingPrice: '20',
-        description: 'E2E mixture',
+        description: 'E2E combo',
         'items[0][productId]': unoProductId,
         'items[0][number]': '1',
         image: {
-          name: 'mixture.png',
+          name: 'combo.png',
           mimeType: 'image/png',
           buffer: pngBuffer,
         },
       },
     });
-    expect(mixtureCreateResponse.status()).toBe(201);
-    const mixtureBody = await mixtureCreateResponse.json();
-    mixtureId = mixtureBody.data?.id;
+    expect(comboCreateResponse.status()).toBe(201);
+    const comboBody = await comboCreateResponse.json();
+    comboId = comboBody.data?.id;
 
     await page.context().clearCookies();
     await login(page, credentials.keeper.phone, credentials.keeper.password);
@@ -184,20 +184,20 @@ test('sales page supports create, view, and refund', async ({ page }) => {
     expect(standardSale.data).toBeTruthy();
     expect(standardSale.data?.variations?.length).toBeGreaterThan(0);
 
-    const mixtureSale = await createSale('E2E Client Mixture', '+258840000778', [mixtureName]);
-    expect(mixtureSale.data).toBeTruthy();
-    expect(mixtureSale.data?.mixtures?.length).toBeGreaterThan(0);
+    const comboSale = await createSale('E2E Client Combo', '+258840000778', [comboName]);
+    expect(comboSale.data).toBeTruthy();
+    expect(comboSale.data?.combos?.length).toBeGreaterThan(0);
 
     const beforeMixedQuantity = await getStoreProductQuantity(page, keeperStoreId, unoProductId);
 
     const mixedSale = await createSale('E2E Client Mixed', '+258840000779', [
       'UnoProducto',
       specialProductName,
-      mixtureName,
+      comboName,
     ]);
     expect(mixedSale.data).toBeTruthy();
     expect(mixedSale.data?.variations?.length).toBeGreaterThan(0);
-    expect(mixedSale.data?.mixtures?.length).toBeGreaterThan(0);
+    expect(mixedSale.data?.combos?.length).toBeGreaterThan(0);
 
     const afterMixedQuantity = await getStoreProductQuantity(page, keeperStoreId, unoProductId);
     expect(afterMixedQuantity).toBe(beforeMixedQuantity - 2);
@@ -224,8 +224,8 @@ test('sales page supports create, view, and refund', async ({ page }) => {
       data: { phone: credentials.admin.phone, password: credentials.admin.password },
     });
 
-    if (mixtureId) {
-      await page.request.delete(`http://localhost:4100/api/v1/mixtures/${mixtureId}`);
+    if (comboId) {
+      await page.request.delete(`http://localhost:4100/api/v1/combos/${comboId}`);
     }
 
     if (specialProductId) {
@@ -423,7 +423,7 @@ test('blocks sales in collected time ranges and allows refunds after collection'
 
 test('supports multiple payments and blocks mismatched totals', async ({ page }) => {
   const uniqueSuffix = String(Date.now()).slice(-6);
-  let mixtureId: string | undefined;
+  let comboId: string | undefined;
 
   try {
     await page.request.post('http://localhost:4100/api/v1/users/login', {
@@ -448,26 +448,26 @@ test('supports multiple payments and blocks mismatched totals', async ({ page })
     expect(unoVariationId).toBeTruthy();
     expect(unoVariationPrice).toBeGreaterThan(0);
 
-    const mixtureName = `E2E Mixture ${uniqueSuffix}`;
-    const mixtureCreateResponse = await page.request.post('http://localhost:4100/api/v1/mixtures', {
+    const comboName = `E2E Combo ${uniqueSuffix}`;
+    const comboCreateResponse = await page.request.post('http://localhost:4100/api/v1/combos', {
       multipart: {
-        name: mixtureName,
+        name: comboName,
         costPrice: '10',
         sellingPrice: '20',
-        description: 'E2E mixture',
+        description: 'E2E combo',
         'items[0][productId]': unoProductId,
         'items[0][number]': '1',
         image: {
-          name: 'mixture.png',
+          name: 'combo.png',
           mimeType: 'image/png',
           buffer: pngBuffer,
         },
       },
     });
-    expect(mixtureCreateResponse.status()).toBe(201);
-    const mixtureBody = await mixtureCreateResponse.json();
-    mixtureId = mixtureBody.data?.id;
-    const mixtureSellingPrice = Number(mixtureBody.data?.sellingPrice || 20);
+    expect(comboCreateResponse.status()).toBe(201);
+    const comboBody = await comboCreateResponse.json();
+    comboId = comboBody.data?.id;
+    const comboSellingPrice = Number(comboBody.data?.sellingPrice || 20);
 
     await page.context().clearCookies();
     await login(page, credentials.keeper.phone, credentials.keeper.password);
@@ -536,17 +536,17 @@ test('supports multiple payments and blocks mismatched totals', async ({ page })
       .getByRole('option', { name: /UnoProducto/i })
       .first()
       .click({ timeout: 5000 });
-    await mismatchPicker.fill(mixtureName);
-    const mixtureOption = page.getByRole('option', { name: new RegExp(mixtureName, 'i') }).first();
-    await expect(mixtureOption).toBeVisible({ timeout: 10000 });
-    await mixtureOption.click({ timeout: 5000 });
+    await mismatchPicker.fill(comboName);
+    const comboOption = page.getByRole('option', { name: new RegExp(comboName, 'i') }).first();
+    await expect(comboOption).toBeVisible({ timeout: 10000 });
+    await comboOption.click({ timeout: 5000 });
 
     await expect(page.getByText(/Total Amount:/i)).toBeVisible({ timeout: 10000 });
 
     await page.getByPlaceholder('Choose or enter a value').fill('E2E Mismatch');
     await page.getByPlaceholder('Enter phone number ...').fill('+258840000931');
 
-    const totalAmount = unoVariationPrice + mixtureSellingPrice;
+    const totalAmount = unoVariationPrice + comboSellingPrice;
     const mismatchAmount =
       totalAmount > 1 ? Number((totalAmount - 1).toFixed(2)) : Number((totalAmount / 2).toFixed(2));
     await page.getByLabel('Payment amount').first().fill(String(mismatchAmount));
@@ -558,8 +558,8 @@ test('supports multiple payments and blocks mismatched totals', async ({ page })
       data: { phone: credentials.admin.phone, password: credentials.admin.password },
     });
 
-    if (mixtureId) {
-      await page.request.delete(`http://localhost:4100/api/v1/mixtures/${mixtureId}`);
+    if (comboId) {
+      await page.request.delete(`http://localhost:4100/api/v1/combos/${comboId}`);
     }
   }
 });

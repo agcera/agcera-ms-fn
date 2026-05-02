@@ -7,23 +7,23 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Input from '../../components/Input';
 import LoadingButton from '../../components/LoadingButton';
 import PageHeader from '../../components/PageHeader';
-import MixtureItems from '../../components/mixtures/MixtureItems';
+import ComboItems from '../../components/combos/ComboItems';
 import Loader from '../../components/Loader';
 import { toast } from 'react-toastify';
-import { getMixtureAction, selectMixtureById, updateMixtureAction } from '../../redux/mixturesSlice';
-import { mixtureUpdateSchema } from '../../validations/mixtures.validation';
+import { getComboAction, selectComboById, updateComboAction } from '../../redux/combosSlice';
+import { comboUpdateSchema } from '../../validations/combos.validation';
 
-const UpdateMixturePage = () => {
+const UpdateComboPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const routeParams = useParams();
-  const mixture = useSelector(selectMixtureById(routeParams.id));
+  const combo = useSelector(selectComboById(routeParams.id));
   const [image, setImage] = useState(null);
   const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const methods = useForm({
-    resolver: yupResolver(mixtureUpdateSchema),
+    resolver: yupResolver(comboUpdateSchema),
     defaultValues: {
       name: '',
       costPrice: 0,
@@ -42,7 +42,7 @@ const UpdateMixturePage = () => {
   } = methods;
 
   const onSubmit = (data) => {
-    const mixtureData = {
+    const comboData = {
       name: data.name,
       costPrice: data.costPrice,
       sellingPrice: data.sellingPrice,
@@ -50,10 +50,10 @@ const UpdateMixturePage = () => {
       image,
     };
     setLoading(true);
-    dispatch(updateMixtureAction({ id: routeParams.id, data: mixtureData })).then(({ payload, error }) => {
+    dispatch(updateComboAction({ id: routeParams.id, data: comboData })).then(({ payload, error }) => {
       setLoading(false);
       if (payload) {
-        navigate('/dashboard/mixtures');
+        navigate('/dashboard/combos');
       } else {
         toast.error(error.message);
       }
@@ -62,15 +62,15 @@ const UpdateMixturePage = () => {
 
   useEffect(() => {
     if (routeParams.id) {
-      dispatch(getMixtureAction(routeParams.id)).then(() => {
+      dispatch(getComboAction(routeParams.id)).then(() => {
         setInitialLoading(false);
       });
     }
   }, [dispatch, routeParams.id]);
 
   useEffect(() => {
-    if (mixture) {
-      const { name, costPrice, sellingPrice, items } = mixture;
+    if (combo) {
+      const { name, costPrice, sellingPrice, items } = combo;
       reset({
         name,
         costPrice,
@@ -81,9 +81,9 @@ const UpdateMixturePage = () => {
         })),
       });
     }
-  }, [reset, mixture]);
+  }, [reset, combo]);
 
-  if (!mixture && initialLoading) {
+  if (!combo && initialLoading) {
     return (
       <Box className="w-full h-full flex">
         <Loader className="m-auto" />
@@ -91,13 +91,13 @@ const UpdateMixturePage = () => {
     );
   }
 
-  if (!mixture) {
+  if (!combo) {
     return (
       <Box className="w-full h-full flex flex-col">
-        <PageHeader title="Update Mixture" hasBack={true} backTo="/dashboard/mixtures" />
+        <PageHeader title="Update Combo" hasBack={true} backTo="/dashboard/combos" />
         <Box className="w-full h-full flex grow">
           <Typography variant="subHeader" className="text-center m-auto" color="secondary.light">
-            Mixture not found, check the mixture id
+            Combo not found, check the combo id
           </Typography>
         </Box>
       </Box>
@@ -108,13 +108,13 @@ const UpdateMixturePage = () => {
     <FormProvider {...methods}>
       <form method="patch" action="" onSubmit={handleSubmit(onSubmit)}>
         <Box className="w-full h-full">
-          <PageHeader title="Update Mixture" hasBack={true} backTo="/dashboard/mixtures" />
+          <PageHeader title="Update Combo" hasBack={true} backTo="/dashboard/combos" />
 
           <Grid container rowSpacing={1} columnSpacing={2} className="px-4 mb-8">
             <Grid item xs={12} md={6}>
               <Input
-                label="Mixture Name"
-                placeHolder="Enter mixture name..."
+                label="Combo Name"
+                placeHolder="Enter combo name..."
                 disabled={loading}
                 required={false}
                 error={!!errors.name}
@@ -125,7 +125,7 @@ const UpdateMixturePage = () => {
             <Grid item xs={12} md={6}>
               <Input
                 label="Cost Price"
-                placeHolder="Enter mixture cost price..."
+                placeHolder="Enter combo cost price..."
                 disabled={loading}
                 error={!!errors.costPrice}
                 helperText={errors.costPrice?.message}
@@ -135,7 +135,7 @@ const UpdateMixturePage = () => {
             <Grid item xs={12} md={6}>
               <Input
                 label="Selling Price"
-                placeHolder="Enter mixture selling price..."
+                placeHolder="Enter combo selling price..."
                 disabled={loading}
                 error={!!errors.sellingPrice}
                 helperText={errors.sellingPrice?.message}
@@ -149,12 +149,12 @@ const UpdateMixturePage = () => {
           </Grid>
 
           <Box className="px-4 mb-8">
-            <MixtureItems loading={loading} />
+            <ComboItems loading={loading} />
           </Box>
 
           <Box className="flex flex-col px-4 mb-4 gap-2">
             <Typography variant="subHeader" component="label" htmlFor="image" className="font-medium">
-              Mixture Image
+              Combo Image
             </Typography>
             <Input
               disabled={loading}
@@ -170,8 +170,8 @@ const UpdateMixturePage = () => {
               }}
             />
             <img
-              src={image ? URL.createObjectURL(image) : mixture.image}
-              alt="mixture"
+              src={image ? URL.createObjectURL(image) : combo.image}
+              alt="combo"
               className="max-w-[500px] w-full h-full aspect-[2/1] object-cover border border-dashed rounded-md p-2"
             />
           </Box>
@@ -179,7 +179,7 @@ const UpdateMixturePage = () => {
           <Stack direction="row-reverse" spacing={2} className="px-4 mb-4">
             <Button
               LinkComponent={Link}
-              to="/dashboard/mixtures"
+              to="/dashboard/combos"
               color="secondary"
               className="max-w-[175px] w-full"
               disabled={loading}
@@ -192,7 +192,7 @@ const UpdateMixturePage = () => {
               className="max-w-[175px] w-full"
               disabled={!isDirty || loading}
             >
-              Update mixture
+              Update combo
             </LoadingButton>
           </Stack>
         </Box>
@@ -201,4 +201,4 @@ const UpdateMixturePage = () => {
   );
 };
 
-export default UpdateMixturePage;
+export default UpdateComboPage;

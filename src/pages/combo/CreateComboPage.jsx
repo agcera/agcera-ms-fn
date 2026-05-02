@@ -8,19 +8,19 @@ import { toast } from 'react-toastify';
 import PageHeader from '../../components/PageHeader';
 import Input from '../../components/Input';
 import LoadingButton from '../../components/LoadingButton';
-import MixtureItems from '../../components/mixtures/MixtureItems';
-import { createMixtureAction } from '../../redux/mixturesSlice';
-import { mixtureCreateSchema } from '../../validations/mixtures.validation';
+import ComboItems from '../../components/combos/ComboItems';
+import { createComboAction } from '../../redux/combosSlice';
+import { comboCreateSchema } from '../../validations/combos.validation';
 import { PiUploadFill } from 'react-icons/pi';
 
-const CreateMixturePage = () => {
+const CreateComboPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const methods = useForm({
-    resolver: yupResolver(mixtureCreateSchema),
+    resolver: yupResolver(comboCreateSchema),
     defaultValues: {
       name: '',
       costPrice: 0,
@@ -46,10 +46,10 @@ const CreateMixturePage = () => {
     };
 
     setLoading(true);
-    dispatch(createMixtureAction(payload)).then(({ payload, error }) => {
+    dispatch(createComboAction(payload)).then(({ payload, error }) => {
       setLoading(false);
       if (payload) {
-        navigate('/dashboard/mixtures');
+        navigate('/dashboard/combos');
       } else {
         toast.error(error.message);
       }
@@ -60,13 +60,13 @@ const CreateMixturePage = () => {
     <FormProvider {...methods}>
       <form method="post" action="" onSubmit={handleSubmit(onSubmit)}>
         <Box className="w-full h-full">
-          <PageHeader title="Create Mixture" hasBack={true} backTo="/dashboard/mixtures" />
+          <PageHeader title="Create Combo" hasBack={true} backTo="/dashboard/combos" />
 
           <Grid container rowSpacing={1} columnSpacing={2} className="px-4 mb-8">
             <Grid item xs={12} md={6}>
               <Input
-                label="Mixture Name"
-                placeHolder="Enter mixture name..."
+                label="Combo Name"
+                placeHolder="Enter combo name..."
                 disabled={loading}
                 error={!!errors.name}
                 helperText={errors.name?.message}
@@ -76,7 +76,7 @@ const CreateMixturePage = () => {
             <Grid item xs={12} md={6}>
               <Input
                 label="Cost Price"
-                placeHolder="Enter mixture cost price..."
+                placeHolder="Enter combo cost price..."
                 disabled={loading}
                 error={!!errors.costPrice}
                 helperText={errors.costPrice?.message}
@@ -86,7 +86,7 @@ const CreateMixturePage = () => {
             <Grid item xs={12} md={6}>
               <Input
                 label="Selling Price"
-                placeHolder="Enter mixture selling price..."
+                placeHolder="Enter combo selling price..."
                 disabled={loading}
                 error={!!errors.sellingPrice}
                 helperText={errors.sellingPrice?.message}
@@ -100,12 +100,12 @@ const CreateMixturePage = () => {
           </Grid>
 
           <Box className="px-4 mb-8">
-            <MixtureItems loading={loading} />
+            <ComboItems loading={loading} />
           </Box>
 
           <Box className="flex flex-col px-4 mb-4 gap-2">
             <Typography variant="subHeader" component="label" htmlFor="image" className="font-medium">
-              Mixture Image <span className="text-secondary"> *</span>
+              Combo Image <span className="text-secondary"> *</span>
             </Typography>
             <Input
               disabled={loading}
@@ -134,7 +134,7 @@ const CreateMixturePage = () => {
             ) : (
               <img
                 src={URL.createObjectURL(image)}
-                alt="mixture"
+                alt="combo"
                 className="max-w-[500px] w-full h-full aspect-[2/1] object-cover border border-dashed rounded-md p-2"
               />
             )}
@@ -143,7 +143,7 @@ const CreateMixturePage = () => {
           <Stack direction="row-reverse" spacing={2} className="px-4 mb-4">
             <Button
               LinkComponent={Link}
-              to="/dashboard/mixtures"
+              to="/dashboard/combos"
               color="secondary"
               className="max-w-[175px] w-full"
               disabled={loading}
@@ -156,7 +156,7 @@ const CreateMixturePage = () => {
               className="max-w-[175px] w-full"
               disabled={!isDirty || !image || loading}
             >
-              Add mixture
+              Add combo
             </LoadingButton>
           </Stack>
         </Box>
@@ -165,4 +165,4 @@ const CreateMixturePage = () => {
   );
 };
 
-export default CreateMixturePage;
+export default CreateComboPage;
